@@ -216,3 +216,38 @@
 2013-04-17 10:59:23 overwrite css/screen.css 
 2013-04-17 11:00:53 overwrite css/screen.css 
 2013-04-17 11:01:43 overwrite css/screen.css 
+2013-04-17 14:54:35 overwrite css/screen.css 
+2013-04-17 14:54:55 overwrite css/screen.css 
+2013-04-17 15:53:15 identical css/screen.css 
+2013-04-17 15:57:44 overwrite css/screen.css 
+2013-04-17 16:02:51 overwrite css/screen.css 
+2013-04-17 16:02:58 overwrite css/screen.css 
+2013-04-17 16:03:05 overwrite css/screen.css 
+2013-04-17 16:08:28 overwrite css/screen.css 
+2013-04-17 16:10:57 overwrite css/screen.css 
+2013-04-17 16:14:50 overwrite css/screen.css 
+2013-04-17 16:17:49 identical css/screen.css 
+2013-04-17 16:20:02 overwrite css/screen.css 
+2013-04-17 16:20:18 overwrite css/screen.css 
+2013-04-17 16:20:43 overwrite css/screen.css 
+2013-04-17 16:20:56 overwrite css/screen.css 
+2013-04-17 16:21:10 overwrite css/screen.css 
+2013-04-17 16:21:19 overwrite css/screen.css 
+2013-04-17 16:23:45     error sass/screen.scss (Line 323: Invalid CSS after "			bottom": expected ";", was ": 0;")
+2013-04-17 16:23:46 overwrite css/screen.css 
+2013-04-17 16:23:51     error sass/screen.scss (Line 323: Invalid CSS after "			bottom": expected ";", was ": 0;")
+2013-04-17 16:23:52 identical css/screen.css 
+2013-04-17 16:24:04 overwrite css/screen.css 
+2013-04-17 16:29:58 overwrite css/screen.css 
+2013-04-17 16:30:39 overwrite css/screen.css 
+2013-04-17 16:31:12     error sass/screen.scss (Line 325: Invalid CSS after "				font-family": expected ";", was ": 'lato', sans-...")
+2013-04-17 16:31:13 overwrite css/screen.css 
+2013-04-17 16:31:21 overwrite css/screen.css 
+2013-04-17 16:33:17 overwrite css/screen.css 
+2013-04-17 16:34:02 overwrite css/screen.css 
+2013-04-17 16:34:16 overwrite css/screen.css 
+2013-04-17 16:34:24 overwrite css/screen.css 
+2013-04-17 16:34:58     error sass/screen.scss (Line 325: Undefined mixin 'text-shadow'.)
+2013-04-17 16:34:59 overwrite css/screen.css 
+2013-04-17 16:35:16 overwrite css/screen.css 
+2013-04-17 16:35:46 overwrite css/screen.css 

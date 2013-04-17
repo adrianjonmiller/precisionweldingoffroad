@@ -42,5 +42,9 @@ jQuery(document).ready(function($) {
 //	$(window).resize(function() {
 //		$('.home-body').backgroundPosition();
 //	});
+
+$('.flexslider').flexslider({
+    animation: "fade"
+  });
 	
 });
