@@ -3,7 +3,7 @@
 	<div class="container">
 	<div class="grid">
 		<h1><a href="/" id="logo"><img src="/wp-content/themes/starkers-child/img/logo.png" alt="<?php bloginfo( 'name' ); ?>" /></a></h1>
-		<div class="blog-description"><?php bloginfo( 'description' ); ?></div>
+<!--		<div class="blog-description"><?php bloginfo( 'description' ); ?></div>-->
 		<?php 
 		
 		if( is_user_logged_in() ) {
