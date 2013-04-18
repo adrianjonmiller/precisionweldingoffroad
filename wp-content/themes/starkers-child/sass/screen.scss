@@ -324,7 +324,13 @@ $border-radius: 12px;
 			font-weight: 100;
 			text-shadow: 0 -1px #000;
 			
-			@include adjust-font-size-to(72px);
+			p {
+				font-weight: 100;
+				margin: 0;
+				line-height: 1em;
+			}
+			
+			@include adjust-font-size-to(60px);
 		}
 			
 		.flex-control-paging li a {
