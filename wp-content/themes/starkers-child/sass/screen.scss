@@ -315,7 +315,7 @@ $border-radius: 12px;
 	.flexslider {
 		border: solid thin #6e6e6e;
 			
-		.banner-title {
+		.banner-heading {
 			position: absolute;
 			top: 120px;
 			right: $pad;
@@ -324,13 +324,14 @@ $border-radius: 12px;
 			font-weight: 100;
 			text-shadow: 0 -1px #000;
 			
-			p {
-				font-weight: 100;
-				margin: 0;
-				line-height: 1em;
-			}
-			
 			@include adjust-font-size-to(60px);
+		}
+		
+		p {
+			font-weight: 300;
+			margin: 0;
+			line-height: 1em;
+			@include adjust-font-size-to(24px);
 		}
 			
 		.flex-control-paging li a {
