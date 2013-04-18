@@ -260,3 +260,17 @@
 2013-04-17 17:16:40 overwrite css/screen.css 
 2013-04-17 17:16:45 overwrite css/screen.css 
 2013-04-17 17:16:58 overwrite css/screen.css 
+2013-04-17 17:20:29 overwrite css/screen.css 
+2013-04-17 17:20:53 overwrite css/screen.css 
+2013-04-17 17:21:37 overwrite css/screen.css 
+2013-04-17 17:21:51 overwrite css/screen.css 
+2013-04-17 17:22:03 overwrite css/screen.css 
+2013-04-17 17:22:07 overwrite css/screen.css 
+2013-04-17 17:22:14 overwrite css/screen.css 
+2013-04-17 17:22:29     error sass/screen.scss (Line 326: Invalid CSS after "				display": expected ";", was ": table-cell;")
+2013-04-17 17:22:30 overwrite css/screen.css 
+2013-04-17 17:22:38     error sass/screen.scss (Line 326: Invalid CSS after "				font-family": expected ";", was ": 'lato', sans-...")
+2013-04-17 17:22:38 overwrite css/screen.css 
+2013-04-17 17:22:46     error sass/screen.scss (Line 326: Invalid CSS after "				font-family": expected ";", was ": 'lato', sans-...")
+2013-04-17 17:22:47 identical css/screen.css 
+2013-04-17 17:22:59 overwrite css/screen.css 

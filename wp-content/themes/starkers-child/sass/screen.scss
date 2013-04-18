@@ -314,26 +314,30 @@ $border-radius: 12px;
 	
 	.flexslider {
 		border: solid thin #6e6e6e;
-			
-		.banner-heading {
-			position: absolute;
-			top: 120px;
-			right: $pad;
-			display: table-cell;
-			font-family: 'lato', sans-serif;
-			font-weight: 100;
-			text-shadow: 0 -1px #000;
-			
-			@include adjust-font-size-to(60px);
-		}
 		
-		p {
-			font-weight: 300;
-			margin: 0;
-			line-height: 1em;
-			@include adjust-font-size-to(24px);
-		}
+		.banner-text {
+			position: absolute;
+			right: $pad;
+			display: block;
+			width: 33.33333%;
 			
+			h3 {
+				padding-top: 60px;
+				font-family: 'lato', sans-serif;
+				font-weight: 100;
+				text-shadow: 0 -1px #000;
+				white-space: normal;
+				
+				@include adjust-font-size-to(60px);
+			}
+			
+			p {
+				font-weight: 300;
+				margin: 0;
+				line-height: 1em;
+				@include adjust-font-size-to(24px);
+			}
+		}	
 		.flex-control-paging li a {
 			background-color: gray;
 			
