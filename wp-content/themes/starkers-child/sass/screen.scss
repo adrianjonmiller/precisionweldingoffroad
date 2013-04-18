@@ -317,9 +317,11 @@ $border-radius: 12px;
 		
 		.banner-text {
 			position: absolute;
+			top: 0;
 			right: $pad;
 			display: block;
-			width: 33.33333%;
+			width: 50%;
+			text-align: right;
 			
 			h3 {
 				padding-top: 60px;
