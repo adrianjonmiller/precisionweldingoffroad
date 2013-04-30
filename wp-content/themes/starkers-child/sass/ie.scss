@@ -137,3 +137,159 @@ header, #main, footer {
 .container {
 max-width: 960px;
 }
+
+
+header {
+	background: url(../img/bg_menu_dark.png);
+	background-repeat: no-repeat;
+	background-position: left 80px;
+	background-color: #222;
+//	@include transition-duration(.25s);
+	
+//	@include box-shadow(0 0 5px rgba(0,0,0,.75));
+	z-index: 10;
+	position: fixed;
+	width: 100%;
+	top: 0;
+	
+	.grid {
+		margin-bottom: 0;
+		height: 120px;
+		position: relative;
+	}
+	
+	h1 {
+		padding-top: 20px;
+		
+		img {
+			width: 325px;
+		}
+	}
+	
+	.blog-description {
+		font-family: 'economica', sans-serif;
+		font-weight: 100;
+		font-size: 1.3em;
+		position: absolute;
+		top: 26px;
+		left: 350px;
+		color: #eee;
+		text-shadow: 0 -1px #000, 0 1px #000;
+	}
+	
+	.logo-small {
+		position: absolute;
+		top: 50px;
+		display: block;
+		width: 250px;
+		height: 40px;
+		overflow: hidden;
+		
+		img {
+			width: 250px;
+			position: absolute;
+			top: 100%;
+//			@include transition-duration(.25s);
+		}
+	}
+	
+	nav {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			display: inline-block;
+			font-family: 'Ubuntu', sans-serif;
+			float: left;
+	//			@include transition-duration(.25s);
+					
+			ul {
+				display: block;
+				@include clearfix();
+				max-width: 1180px;
+				margin: 0 auto;
+				border-left: solid thin black;
+				border-right: solid thin #444;
+				
+				li {
+					float: left;
+					position: relative;
+					padding: 0 $pad;
+					border-right: solid thin black;
+					border-left: solid thin #444;
+					height: 40px;
+					vertical-align: middle;
+					display: inline-table;
+					
+					&:last-of-type {
+					}
+					
+					&:hover, &.current-menu-item.top-level {
+//							@include box-shadow(0 0 30px rgba(black, 0.3) inset);
+					}
+					
+					
+					
+					a {
+						text-decoration: none;
+						vertical-align: middle;
+						display: table-cell;
+						text-shadow: 0 1px #000;
+						font-size: 1.1em;
+						font-weight: 300;
+						color: #ccc;
+						font-family: 'Economica', sans-serif;
+						
+						&:hover {
+							text-decoration: none;
+						}
+					}
+					
+					ul.sub-menu {
+						position: absolute;
+						left: -999em;
+						top: 100%;
+						background-color: rgba(black, 0.75);
+						background-image: url(../img/whitey.png);
+						background-repeat: repeat;
+						background-position: top left;
+						border: none;
+						height: 0;
+						overflow: hidden;
+						display: block;
+						
+//						@include box-shadow(0 3px 3px rgba(black, 0.6));
+//						@include transition-property(height);
+//						@include transition-duration(.25s);
+						
+						li {
+							display: block;
+							float: none;
+							border: none;
+							padding: 0;
+							border-bottom: inset thin gray;
+							height: auto;
+							padding: $pad/4 $pad/2;
+							
+							
+							a {
+								white-space: nowrap;
+								border: none;
+								display: block;
+								line-height: 1.2em;
+								text-shadow: 0 1px #fff;
+								color: #636363;
+							}
+						}
+					}
+					
+					&:hover {
+						ul.sub-menu {
+							left: 0;
+							height: auto;
+						}
+					}
+				}
+			}
+		}  
+	
+}

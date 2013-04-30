@@ -317,3 +317,10 @@
 2013-04-26 16:40:30     error sass/ie.scss (Line 141: Undefined mixin 'container-width'.)
 2013-04-26 16:40:30 overwrite css/ie.css 
 2013-04-26 16:40:40 overwrite css/ie.css 
+2013-04-30 14:41:11     error sass/ie.scss (Line 149: Undefined mixin 'box-shadow'.)
+2013-04-30 14:41:11 overwrite css/ie.css 
+2013-04-30 14:41:35     error sass/ie.scss (Line 149: Undefined mixin 'box-shadow'.)
+2013-04-30 14:41:35 overwrite css/ie.css 
+2013-04-30 14:41:54     error sass/ie.scss (Line 192: Undefined mixin 'transition-duration'.)
+2013-04-30 14:41:55 overwrite css/ie.css 
+2013-04-30 14:42:16 overwrite css/ie.css 

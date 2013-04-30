@@ -174,3 +174,148 @@ header, #main, footer {
 .container {
   max-width: 960px;
 }
+
+/* line 142, ../sass/ie.scss */
+header {
+  background: url(../img/bg_menu_dark.png);
+  background-repeat: no-repeat;
+  background-position: left 80px;
+  background-color: #222;
+  z-index: 10;
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+/* line 155, ../sass/ie.scss */
+header .grid {
+  margin-bottom: 0;
+  height: 120px;
+  position: relative;
+}
+/* line 161, ../sass/ie.scss */
+header h1 {
+  padding-top: 20px;
+}
+/* line 164, ../sass/ie.scss */
+header h1 img {
+  width: 325px;
+}
+/* line 169, ../sass/ie.scss */
+header .blog-description {
+  font-family: 'economica', sans-serif;
+  font-weight: 100;
+  font-size: 1.3em;
+  position: absolute;
+  top: 26px;
+  left: 350px;
+  color: #eee;
+  text-shadow: 0 -1px #000, 0 1px #000;
+}
+/* line 180, ../sass/ie.scss */
+header .logo-small {
+  position: absolute;
+  top: 50px;
+  display: block;
+  width: 250px;
+  height: 40px;
+  overflow: hidden;
+}
+/* line 188, ../sass/ie.scss */
+header .logo-small img {
+  width: 250px;
+  position: absolute;
+  top: 100%;
+}
+/* line 196, ../sass/ie.scss */
+header nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: inline-block;
+  font-family: 'Ubuntu', sans-serif;
+  float: left;
+}
+/* line 205, ../sass/ie.scss */
+header nav ul {
+  display: block;
+  zoom: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  border-left: solid thin black;
+  border-right: solid thin #444;
+}
+/* line 14, ../sass/ie.scss */
+header nav ul:before, header nav ul:after {
+  content: "\0020";
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+/* line 21, ../sass/ie.scss */
+header nav ul:after {
+  clear: both;
+}
+/* line 213, ../sass/ie.scss */
+header nav ul li {
+  float: left;
+  position: relative;
+  padding: 0 16px;
+  border-right: solid thin black;
+  border-left: solid thin #444;
+  height: 40px;
+  vertical-align: middle;
+  display: inline-table;
+}
+/* line 232, ../sass/ie.scss */
+header nav ul li a {
+  text-decoration: none;
+  vertical-align: middle;
+  display: table-cell;
+  text-shadow: 0 1px #000;
+  font-size: 1.1em;
+  font-weight: 300;
+  color: #ccc;
+  font-family: 'Economica', sans-serif;
+}
+/* line 242, ../sass/ie.scss */
+header nav ul li a:hover {
+  text-decoration: none;
+}
+/* line 247, ../sass/ie.scss */
+header nav ul li ul.sub-menu {
+  position: absolute;
+  left: -999em;
+  top: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  background-image: url(../img/whitey.png);
+  background-repeat: repeat;
+  background-position: top left;
+  border: none;
+  height: 0;
+  overflow: hidden;
+  display: block;
+}
+/* line 264, ../sass/ie.scss */
+header nav ul li ul.sub-menu li {
+  display: block;
+  float: none;
+  border: none;
+  padding: 0;
+  border-bottom: inset thin gray;
+  height: auto;
+  padding: 4px 8px;
+}
+/* line 274, ../sass/ie.scss */
+header nav ul li ul.sub-menu li a {
+  white-space: nowrap;
+  border: none;
+  display: block;
+  line-height: 1.2em;
+  text-shadow: 0 1px #fff;
+  color: #636363;
+}
+/* line 286, ../sass/ie.scss */
+header nav ul li:hover ul.sub-menu {
+  left: 0;
+  height: auto;
+}

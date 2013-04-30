@@ -32,7 +32,7 @@
 		wp_register_script( 'flexslider', get_stylesheet_directory_uri().'/js/jquery.flexslider-min.js', array( 'jquery' ),'', true );
 		wp_enqueue_script( 'flexslider' );
 		
-		wp_register_script( 'modernizr', get_stylesheet_directory_uri().'/js/modernizr.custom.45125.js', array( 'jquery' ),'', true );
+		wp_register_script( 'modernizr', get_stylesheet_directory_uri().'/js/modernizr.custom.45125.js', array( 'jquery' ),'', false );
 		wp_enqueue_script( 'modernizr' );
 		
 //		wp_register_script( 'backgroundPosition', get_stylesheet_directory_uri().'/js/jquery.backgroundPosition.js', array( 'jquery' ),'', true );
