@@ -1,5 +1,5 @@
-	
-	</div>
+
+</div>
 </div>
 <footer>
 	<div class="container">
@@ -15,6 +15,13 @@
 				    'menu_class' =>'child-categories',
 				    'theme_location' => 'footer'
 				)); ?>
+				</div>
+			</div>
+		</div>
+		<div class="grid">
+			<div class="col-1">
+				<div class="module copyright-address">
+				&copy; <?php echo date("Y"); ?> <?php bloginfo( 'name' ); ?>. All rights reserved. <span class="address" style="float: right;">3189 Harms Avenue, Oroville, California 95966</span>
 				</div>
 			</div>
 		</div>

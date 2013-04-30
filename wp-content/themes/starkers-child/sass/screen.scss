@@ -187,10 +187,10 @@ header {
 						position: absolute;
 						left: -999em;
 						top: 100%;
-						background-color: rgba(black, 0.75);
-						background-image: url(../img/whitey.png);
-						background-repeat: repeat;
-						background-position: top left;
+						background-color: rgba(black, .9);
+//						background-image: url(../img/whitey.png);
+//						background-repeat: repeat;
+//						background-position: top left;
 						border: none;
 						height: 0;
 						overflow: hidden;
@@ -205,7 +205,8 @@ header {
 							float: none;
 							border: none;
 							padding: 0;
-							border-bottom: inset thin gray;
+							border-top: solid thin black;
+							border-bottom: inset thin #333;
 							height: auto;
 							padding: $pad/4 $pad/2;
 							
@@ -215,8 +216,21 @@ header {
 								border: none;
 								display: block;
 								line-height: 1.2em;
-								text-shadow: 0 1px #fff;
-								color: #636363;
+								text-shadow: 0 -1px black;
+								color: #eee;
+								font-family: "lato", sans-serif;
+								@include adjust-font-size-to(14px);
+								&:hover {
+									color: white;
+								}
+							}
+							
+							&:hover {
+								background: gray;
+							}
+							
+							&:last-of-type {
+								border-bottom: none;
 							}
 						}
 					}
@@ -368,21 +382,24 @@ footer {
 	z-index: 3;
 	
 		.grid {
-			padding: $pad 0;
+			padding: $pad 0 0;
 			margin-bottom: 0;
 			
-			h4 { 
-				margin-bottom: .5em;
+			.module {
 				
-				a, span {
-					color: #FEB200;
-					font-weight: 300;
-					font-size: 1.1em;
+				padding: $pad;
+				
+				h4 { 
+					margin-bottom: .5em;
+					
+					a, span {
+						color: #FEB200;
+						font-weight: 300;
+						font-size: 1.1em;
+					}
 				}
-			}
-			
+			}	
 		}
-		
 }
 
 ul.child-categories {
@@ -574,8 +591,9 @@ ul.child-categories {
 			    @include border-radius($pad);
 			}
 			
-			.facebook-feed {
+			.widget_facebookpagefeedwidget {
 				max-height: 500px;
+				overflow-y: auto;
 			}
 			
 			.recent-products {
@@ -863,4 +881,13 @@ ul.child-categories {
 	.next a:after {
 		content: ">";
 	}
+}
+
+.copyright-address {
+	background: rgba(gray, 0.2);
+}
+
+.alignleft {
+	float: left;
+	margin-right: $pad;
 }
