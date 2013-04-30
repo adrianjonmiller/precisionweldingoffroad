@@ -319,3 +319,8 @@ header nav ul li:hover ul.sub-menu {
   left: 0;
   height: auto;
 }
+
+/* line 297, ../sass/ie.scss */
+#mobile-menu-primary {
+  display: none;
+}
