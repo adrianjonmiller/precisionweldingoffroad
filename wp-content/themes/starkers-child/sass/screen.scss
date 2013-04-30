@@ -119,6 +119,16 @@ header {
 		}
 	}
 	
+	#mobile-menu-primary {
+		position: absolute;
+		bottom: $pad/2;
+		left: $pad;
+		
+		@media screen and (min-width: 480px) {
+			display: none;
+		}
+	}
+	
 	nav {
 			position: absolute;
 			bottom: 0;
@@ -441,8 +451,6 @@ ul.child-categories {
 }
 
 #sidebar-primary, #sidebar-secondary {
-//	padding: $pad;
-//	background: url(../img/aluminum-sheet-texture-dark.jpg);
 	padding: $pad;
 	background: black;
 	background-color: rgba(black, 0.3);
@@ -453,35 +461,23 @@ ul.child-categories {
 	
 	
 	.widget {
-//		background: rgba(0,0,0,.75);
-//		background: url(../img/gun_metal.png);
-//		background: rgba(black, 0.75);
-//		padding: $pad;
 		padding-top: 0;
-//		margin-bottom: $pad;
 		padding-bottom: $pad;
 		border-top: solid thin #333;
 		border-bottom: solid thin #000;
-		
-//		background: #111;
-//		border: 1px solid #000;
-//		border-right: 1px solid #353535;
-//		border-bottom: 1px solid #353535;
-//		@include border-radius(5px);
-//		@include box-shadow(0 0 5px rgba(black, 0.75));
 		
 		h3 {
 			font-weight: 100;
 			color: #FEB200;
  		}
-	}
-	
-	&:first-child {
-		border-top: none;
-	}
-	
-	&:last-child {
-		border-bottom: none;
+ 		
+ 		&:first-child {
+ 			border-top: none;
+ 		}
+ 		
+ 		&:last-child {
+ 			border-bottom: none;
+ 		}
 	}
 }
 
@@ -578,6 +574,10 @@ ul.child-categories {
 			    @include border-radius($pad);
 			}
 			
+			.facebook-feed {
+				max-height: 500px;
+			}
+			
 			.recent-products {
 //				margin-top: -$pad;
 				
@@ -610,6 +610,7 @@ ul.child-categories {
 					}
 				}
 			}
+			
 		}
 	
 	}

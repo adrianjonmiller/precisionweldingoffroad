@@ -31,6 +31,15 @@
 		    'menu_class' =>'',
 		    'theme_location' => 'primary'
 		)); ?>
+		
+		<?php 
+			wp_nav_menu_select(
+			    array(
+			        'theme_location' => 'primary',
+			        'menu_class' => 'select-menu'
+			    )
+			);
+		?>
 <!--	<?php bloginfo( 'description' ); ?>-->
 		<div id="search-form" style="right: <?php echo $search; ?>;">
 			<?php get_search_form(); ?>

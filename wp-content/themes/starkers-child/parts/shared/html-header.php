@@ -12,8 +12,11 @@
 		<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
 		<link rel="shortcut icon" href="<?php echo get_stylesheet_directory_uri(); ?>/img/favicon.ico"/>
 		
-				
-		
 		<?php wp_head(); ?>
+		
+		<!--[if lt IE 9]>
+		<link href="<?php echo get_stylesheet_directory_uri(); ?>/css/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
+		<![endif]-->
+		
 	</head>
 	<body <?php body_class(); ?>>

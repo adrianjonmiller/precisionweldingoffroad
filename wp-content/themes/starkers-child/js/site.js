@@ -43,6 +43,10 @@ jQuery(document).ready(function($) {
 //		$('.home-body').backgroundPosition();
 //	});
 
+jQuery( ".select-menu" ).change(function() { 
+        window.location = jQuery(this).find("option:selected").val();
+    });
+
 $('.flexslider').flexslider({
     animation: "fade"
   });
