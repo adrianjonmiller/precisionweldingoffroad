@@ -2,8 +2,8 @@ jQuery(document).ready(function($) {
 	$(window).scroll(function(){
 		var scrollTop = $(window).scrollTop(),
 		topOffset = $('header').height() - $('nav').height();
-		if(topOffset > 80) {
-			topOffset = 0;
+		if(topOffset != 80) {
+			topOffset = 80;
 		}
 			if(scrollTop >= topOffset) {
 //				$('header').addClass('scroll')

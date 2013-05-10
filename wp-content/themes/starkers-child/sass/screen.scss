@@ -187,7 +187,7 @@ header {
 						position: absolute;
 						left: -999em;
 						top: 100%;
-						background-color: rgba(black, .9);
+						background-color: #222;
 //						background-image: url(../img/whitey.png);
 //						background-repeat: repeat;
 //						background-position: top left;
@@ -205,8 +205,8 @@ header {
 							float: none;
 							border: none;
 							padding: 0;
-							border-top: solid thin black;
-							border-bottom: inset thin #333;
+//							border-top: solid thin black;
+//							border-bottom: inset thin #333;
 							height: auto;
 							padding: $pad/4 $pad/2;
 							
@@ -217,7 +217,7 @@ header {
 								display: block;
 								line-height: 1.2em;
 								text-shadow: 0 -1px black;
-								color: #eee;
+								color: #ccc;
 								font-family: "lato", sans-serif;
 								@include adjust-font-size-to(14px);
 								&:hover {
@@ -254,6 +254,10 @@ $border-radius: 12px;
 #search-form {
 	position: absolute;
 	bottom: 8px;
+	
+	@media screen and (max-width: 480px) {
+		display: none;
+	}
 		
 	label {
 		display: none;
@@ -419,7 +423,7 @@ footer {
 					}
 					
 					.contact-label {
-						color: #444;
+						color: #636363;
 						text-shadow: 0 -1px #111;
 					}
 				}
@@ -820,9 +824,16 @@ ul.child-categories {
 				@include clearfix();
 				
 				.col-1, .col-2 {
-					width: 50%;
-					float: left;
+					width: 100%;
 				}
+				
+				@media screen and (min-width: 480px) {
+					.col-1, .col-2 {
+						width: 50%;
+						float: left;
+					}
+				}
+
 				
 				.col-1 {
 					padding-right: $pad;
