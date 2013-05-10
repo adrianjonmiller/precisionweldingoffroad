@@ -482,12 +482,16 @@ ul.child-categories {
 .grid.products {
 	display: block;
 	margin: 0 0 $pad 0;
-	margin-right: -$pad;
-	
+	@media screen and (min-width: 480px) {
+		margin-right: -$pad;
+	}
 	.col-1-3 {
 		height: 250px;
-		.grid &:nth-of-type(3) {
-			padding-right: $pad;
+		
+		@media screen and (min-width: 480px) {
+			.grid &:nth-of-type(3) {
+				padding-right: $pad;
+			}
 		}
 		
 		.module {
@@ -563,15 +567,20 @@ ul.child-categories {
 
 .breadcrumbs {
 	font-weight: 300;
+	width: 100%;
 	margin-bottom: $pad;
+	@include clearfix();
+	
 	@include adjust-font-size-to(24px);
 	
 	.separator {
 		padding: 0 $pad;
+		float: left;
 	}
 	
 	a {
 		text-decoration: none;
+		float: left;
 		
 		&:hover {
 			text-decoration: underline;
@@ -583,6 +592,7 @@ ul.child-categories {
 	
 	.current-breadcrumb {
 		color: #FEB200;
+		float: left;
 	}
 
 }
