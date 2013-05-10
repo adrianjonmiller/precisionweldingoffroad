@@ -43,6 +43,37 @@ jQuery(document).ready(function($) {
 //		$('.home-body').backgroundPosition();
 //	});
 
+
+$(window).load(function(){
+	if($(window).width() > 480) {
+		fixedHeight();
+	}
+});
+
+$(window).resize(function(){
+	if($(window).width() > 720) {
+		$('.obj_sameHeights').children().outerHeight('auto');
+		fixedHeight();
+	} else {
+		$('.obj_sameHeights').children().outerHeight('auto');
+	}
+});
+
+function fixedHeight() {
+	var px = false;
+	
+	$('.obj_sameHeights').each(function(){
+		var currentTallest = 0;
+		$(this).children().each(function(i){
+			if ($(this).height() > currentTallest) { currentTallest = $(this).height(); }
+		});
+	if (!px && Number.prototype.pxToEm) currentTallest = currentTallest.pxToEm(); //use ems unless px is specified
+		// for ie6, set height since min-height isn't supported
+		if ($.browser.msie && $.browser.version == 6.0) { $(this).children().css({'height': currentTallest}); }
+		$(this).children().height(currentTallest); 
+	});
+}
+
 jQuery( ".select-menu" ).change(function() { 
         window.location = jQuery(this).find("option:selected").val();
     });

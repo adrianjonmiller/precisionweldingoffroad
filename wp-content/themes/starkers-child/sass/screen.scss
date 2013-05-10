@@ -375,31 +375,95 @@ $border-radius: 12px;
 }
 
 footer {
-	background: black;
+	background: #222;
 	width: 100%;
 	@include box-shadow(0 0 10px rgba(black, 0.75));
 	position: relative;
 	z-index: 3;
+	@include adjust-font-size-to(13px);
 	
 		.grid {
 			padding: $pad 0 0;
 			margin-bottom: 0;
-			
-			.module {
+			.col-1-3 {
+				border-right: solid thin #111;
+				border-left: solid thin #444;
 				
-				padding: $pad;
+				&:last-of-type {
+					border-right: none;
+				}
 				
-				h4 { 
-					margin-bottom: .5em;
+				&:first-of-type {
+					border-left: none;
+				}
+				
+				.module {
 					
-					a, span {
-						color: #FEB200;
-						font-weight: 300;
-						font-size: 1.1em;
+					.contact-info {
+						padding: 0 0 $pad;
+						
+						&:last-of-type {
+							padding-bottom: 0;
+						}
+					}
+					
+					padding: $pad;
+					
+					h4 { 
+						margin-bottom: .5em;
+						@include adjust-font-size-to(22px);
+						
+						a, span {
+							color: #FEB200;
+							font-weight: 300;
+						}
+					}
+					
+					.contact-label {
+						color: #444;
+						text-shadow: 0 -1px #111;
 					}
 				}
-			}	
+			}
 		}
+}
+
+#facebook-link, #twitter-link {
+	position: relative;
+	display: block;
+	text-indent: -9999em;
+	overflow: hidden;
+	float: left;
+	padding-right: $pad;
+	height: 40px;
+	
+	&:after {
+		display: block;
+		position: relative;
+		text-indent: 0;
+		top: 0;
+		left: 0;
+		font-family: 'socialicoregular', sans-serif;
+		line-height: 0;
+		content: 'F';
+		display: block;
+		font-size: 60px;
+		text-shadow: 0 -1px #111;
+		color: #444;
+	}
+	
+	&:hover {
+		text-decoration: none;
+		&:after {
+			color: #777;
+		}
+	}
+}
+
+#twitter-link {
+	&:after {
+		content: 'T';
+	}
 }
 
 ul.child-categories {
@@ -804,6 +868,7 @@ ul.child-categories {
 			border-bottom: solid thin gray;
 			padding: $pad 0;
 			
+			
 			img {
 				float: left;
 				margin-right: $pad;
@@ -815,6 +880,7 @@ ul.child-categories {
 			
 			&:last-of-type {
 				margin-bottom: $pad;
+				border-bottom: none;
 			}
 		}
 		
@@ -883,8 +949,9 @@ ul.child-categories {
 	}
 }
 
-.copyright-address {
+.module.copyright-address {
 	background: rgba(gray, 0.2);
+	padding: $pad;
 }
 
 .alignleft {

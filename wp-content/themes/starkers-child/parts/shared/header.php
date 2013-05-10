@@ -22,15 +22,12 @@
 		    'menu_class' =>'',
 		    'theme_location' => $menu
 		)); ?>
+
 		
-		<div class="logo-small"><a href="/" id="logo"><img src="/wp-content/themes/starkers-child/img/logo.png" alt="<?php bloginfo( 'name' ); ?>" /></a></div>
-		<?php wp_nav_menu(array(
-		    'container'=> 'nav',
-		    'container_class' => '',
-		    'menu_id' =>'dropmenu',
-		    'menu_class' =>'',
-		    'theme_location' => 'primary'
-		)); ?>
+		<nav>
+			<?php echo(render_view(array("title" => "Menu-Parent-Category"))); ?>
+		</nav>
+		
 		
 		<?php 
 			wp_nav_menu_select(

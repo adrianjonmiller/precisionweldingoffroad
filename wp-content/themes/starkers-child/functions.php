@@ -94,6 +94,18 @@
 				'after_title' => '</h3>'
 			)
 		);
+		
+		register_sidebar(
+			array(
+				'id' => 'footer',
+				'name' => __( 'Footer' ),
+				'description' => __( 'Footer Widget Area' ),
+				'before_widget' => '<div id="%1$s" class="widget %2$s">',
+				'after_widget' => '</div>',
+				'before_title' => '<h4><span>',
+				'after_title' => '</span></h4>'
+			)
+		);
 	
 		/* Repeat register_sidebar() code for additional sidebars. */
 	}
