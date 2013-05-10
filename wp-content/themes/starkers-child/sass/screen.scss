@@ -380,7 +380,6 @@ footer {
 	@include box-shadow(0 0 10px rgba(black, 0.75));
 	position: relative;
 	z-index: 3;
-	@include adjust-font-size-to(13px);
 	
 		.grid {
 			padding: $pad 0 0;
