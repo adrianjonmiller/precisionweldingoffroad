@@ -7,7 +7,7 @@
 			<div class="col-1-3">
 				<article class="module">
 					<h4><span>Connect with us:</span></h4>
-						<a href="#" id="facebook-link">facebook</a>
+						<a href="https://www.facebook.com/pages/Precision-Welding-Offroad/158777317510200" id="facebook-link" target="_blank">facebook</a>
 						<a href="#" id="twitter-link">twitter</a>
 				</article>
 			</div>
