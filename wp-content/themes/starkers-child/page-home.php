@@ -13,7 +13,7 @@ Template Name: Home
 </div>
 <div id="home">
 	<div class="container">
-		<div class="grid">
+		<div class="grid obj_sameHeights">
 		<?php if ( have_posts() ) while ( have_posts() ) : the_post(); ?>
 		<div class="col-1-2">
 		  <article class="module">
