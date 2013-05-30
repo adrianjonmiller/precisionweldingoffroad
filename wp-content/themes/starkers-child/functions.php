@@ -41,6 +41,9 @@
 //		wp_register_script( 'masonry', get_stylesheet_directory_uri().'/js/jquery.masonry.min.js', array( 'jquery' ),'' ,'', true );
 //		wp_enqueue_script( 'masonry' );
 		
+		wp_register_script( 'fittext', get_stylesheet_directory_uri().'/js/jquery.fittext.js', array( 'jquery' ), false, true );
+		wp_enqueue_script( 'fittext' );
+		
 		wp_register_style( 'flexslider', get_stylesheet_directory_uri().'/css/flexslider.css', '', '', 'screen' );
 		wp_enqueue_style( 'flexslider' );
 		
