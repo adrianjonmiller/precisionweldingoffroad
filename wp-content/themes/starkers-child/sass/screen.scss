@@ -653,6 +653,10 @@ ul.products {
 	}
 }
 
+.product {
+	padding-right: $pad;
+}
+
 //.single-product {
 //	
 //	.grid.product {
@@ -689,20 +693,6 @@ ul.products {
 
 input[name*='quantity'] {
 	width: 5em;
-}
-.product {
-	padding: $pad 0 !important;
-	@include clearfix();
-	border-bottom: solid thin #111;
-	border-top: solid thin #333;
-	
-	&:first-of-type {
-		border-top: none;
-	}
-	
-	&:last-of-type {
-		border-bottom: none;
-	}
 }
 
 
@@ -781,6 +771,23 @@ input[name*='quantity'] {
 //		border: solid thin black;
 //		border-bottom-color: #444;
 //		border-right-color: #444;
+		
+		.product {
+			padding: $pad 0 !important;
+			@include clearfix();
+			border-bottom: solid thin #111;
+			border-top: solid thin #333;
+			
+			&:first-of-type {
+				border-top: none;
+			}
+			
+			&:last-of-type {
+				border-bottom: none;
+			}
+		}
+		
+		
 		
 		.price {
 			margin-bottom: $pad;
