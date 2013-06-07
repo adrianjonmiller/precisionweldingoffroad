@@ -125,23 +125,28 @@ class View_layout_field {
         
         if (strpos($this->type, 'wpv-post-field - ') === 0) {
             $name = substr($this->type, strlen('wpv-post-field - '));
+            $orig_title = $name;
             $title = $name;
         } elseif ($this->type == 'types-field') {
             $name = $this->type;
+            $orig_title = 'Types - ' . $this->types_field_name;
             $title = 'Types - ' . $this->types_field_name;
         } elseif (strpos($this->type, 'types-field - ') === 0) {
             $name = substr($this->type, strlen('types-field - '));
+            $orig_title = $name;
             $title = $name;
         } elseif(strpos($this->type, 'wpvtax') === 0) {
         	// $name = substr($this->type, strlen('wpvtax-'));
         	$name = 'Taxonomy - '. $this->type;
-            $title = $name;
+        	$orig_title = $name;
+            $title = __('Taxonomy' , 'wpv-views') . ' - ' . $this->type;
         } elseif (strpos($this->type, 'wpv-post-body ') === 0) {
             $name = $wpv_shortcodes['wpv-post-body'][1];
             $parts = explode(' ', $this->type);
             if (isset($parts[1])) {
                 $view_template = $parts[1];
             }
+            $orig_title = $name;
             $title = $name;
         } elseif (strpos($this->type, WPV_TAXONOMY_VIEW . ' ') === 0) {
             $name = 'Taxonomy View';
@@ -150,7 +155,8 @@ class View_layout_field {
                 $view = $parts[1];
                 $view_type = 'taxonomy';
             }
-            $title = $name;
+            $orig_title = $name;
+            $title = __('Taxonomy View', 'wpv-views'); 
         } elseif (strpos($this->type, WPV_POST_VIEW . ' ') === 0) {
             $name = 'Post View';
             $parts = explode(' ', $this->type);
@@ -158,16 +164,18 @@ class View_layout_field {
                 $view = $parts[1];
                 $view_type = 'post';
             }
-            $title = $name;
+            $orig_title = $name;
+            $title = __('Post View', 'wpv-views');
         } else {
             $name = $wpv_shortcodes[$this->type][1];
+            $orig_title = $name;
             $title = $name;
         }
         
         ?>
         <td width="120px"><input class="wpv_field_prefix" id="wpv_field_prefix_<?php echo $index; ?>" type="text" value="<?php echo htmlspecialchars($this->prefix); ?>" name="_wpv_layout_settings[fields][prefix_<?php echo $index; ?>]" /></td>
         <td width="120px">
-            <span id="wpv_field_name_<?php echo $index; ?>"><?php echo $title; ?></span>
+            <span id="wpv_field_name_<?php echo $index; ?>" data-key="<?php echo $orig_title; ?>"><?php echo $title; ?></span>
             <?php
                 if ($view_template) {
                     $view_template_select_box = $WPV_templates->get_view_template_select_box($index, $view_template);
@@ -372,11 +380,22 @@ function view_layout_fields($post, $view_layout_settings) {
         <?php 
         }
         ?>
-        var wpv_view_template_text = "<?php echo __('View template', 'wpv-views'); ?>";
-        var wpv_taxonomy_view_text = "<?php echo __('Taxonomy View', 'wpv-views'); ?>";
-        var wpv_post_view_text = "<?php echo __('Post View', 'wpv-views'); ?>";
-        var wpv_add_field_text = "<?php echo __('Field', 'wpv-views'); ?>";
-        var wpv_add_taxonomy_text = "<?php echo __('Taxonomy', 'wpv-views'); ?>";
+        <?php 
+        if (defined('WPV_WOOCOMERCEBOX_VIEWS_SHORTCODE')) {
+        ?>
+        wpv_shortcodes[<?php echo $current_index++; ?>] = new Array('Add to cart box', '<?php echo WPV_WOOCOMERCEBOX_VIEWS_SHORTCODE; ?>');
+        <?php 
+        }
+        ?>
+        var wpv_view_template_text = "<?php echo esc_js('View template', 'wpv-views'); ?>";
+        var wpv_view_template_localized_text = "<?php echo esc_js(__('View template', 'wpv-views')); ?>";
+        var wpv_taxonomy_view_text = "<?php echo esc_js('Taxonomy View'); ?>";
+        var wpv_taxonomy_view_localized_text = "<?php echo esc_js(__('Taxonomy View', 'wpv-views')); ?>";
+        var wpv_post_view_text = "<?php echo esc_js('Post View'); ?>";
+        var wpv_post_view_localized_text = "<?php echo esc_js(__('Post View', 'wpv-views')); ?>";
+        var wpv_add_field_text = "<?php echo esc_js(__('Field', 'wpv-views')); ?>";
+        var wpv_add_taxonomy_text = "<?php echo esc_js('Taxonomy', 'wpv-views'); ?>";
+        var wpv_add_taxonomy_localized_text = "<?php echo esc_js(__('Taxonomy', 'wpv-views')); ?>";
     </script>
     <?php
         $show = $view_settings['query_type'][0] == 'taxonomy';
@@ -423,8 +442,8 @@ function view_layout_javascript() {
         };
     
         var wpv_url = '<?php echo WPV_URL; ?>';
-        var wpv_field_text = '<?php _e('Field', 'wpv-views'); ?> - ';
-        var wpv_confirm_layout_change = '<?php _e("Are you sure you want to change the layout?", 'wpv-views'); echo "\\n\\n"; _e("It appears that you made modifications to the layout.", 'wpv-views'); ?>';
+        var wpv_field_text = '<?php echo esc_js(__('Field', 'wpv-views')); ?> - ';
+        var wpv_confirm_layout_change = '<?php echo esc_js(__("Are you sure you want to change the layout?", 'wpv-views')); echo "\\n\\n"; echo esc_js(__("It appears that you made modifications to the layout.", 'wpv-views')); ?>';
         var no_post_results_text = "[wpv-no-posts-found][wpml-string context=\"wpv-views\"]<strong>No posts found</strong>[/wpml-string][/wpv-no-posts-found]";
         var no_taxonomy_results_text = "[wpv-no-taxonomy-found][wpml-string context=\"wpv-views\"]<strong>No taxonomy found</strong>[/wpml-string][/wpv-no-taxonomy-found]";
         
@@ -504,7 +523,7 @@ function short_code_taxonomy_menu_callback($index, $cf_key, $function_name, $men
     static $post_view_started = false;
     static $suffix = '';
     
-    if (!$taxonomy_view_started && $menu == __('Taxonomy View', 'wpv-views')) {
+    if (!$taxonomy_view_started && $menu == esc_js('Taxonomy View')) {
         echo '</tr><tr><td></td>';
         echo '</tr><tr><td></td></tr><tr>';
         echo '<td colspan="2"><strong>' . $menu . '</strong> ' . __(' - Use to layout child taxonomy terms', 'wpv-views') . '</td>';
@@ -514,7 +533,7 @@ function short_code_taxonomy_menu_callback($index, $cf_key, $function_name, $men
         $suffix = ' - ' . __('Taxonomy View', 'wpv-views');
     }
 
-    if (!$post_view_started && $menu == __('Post View', 'wpv-views')) {
+    if (!$post_view_started && $menu == esc_js('Post View')) {
         echo '</tr><tr><td></td>';
         echo '</tr><tr><td></td></tr><tr>';
         echo '<td colspan="2"><strong>' . $menu . '</strong> ' . __(' - Use to layout posts for the current taxonomy term', 'wpv-views') . '</td>';

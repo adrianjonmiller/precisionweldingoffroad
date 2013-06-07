@@ -5,11 +5,12 @@
   Description: Let's you display WooCommerce products in a table, a grid or with sliders. <a href="http://wp-types.com/documentation/views-inside/woocommerce-views/">Documentation</a>
   Author: ICanLocalize
   Author URI: http://www.wp-types.com/
-  Version: 1.2.1
+  Version: 1.2.2
  */
 
 add_action('plugins_loaded', 'wcviews_init', 2);
 define('WPV_WOOCOMERCE_VIEWS_SHORTCODE', 'wpv-wooaddcart');
+define('WPV_WOOCOMERCEBOX_VIEWS_SHORTCODE', 'wpv-wooaddcartbox');
 
 function wcviews_init(){
 
@@ -84,11 +85,9 @@ function add_media_button($output){
  * Adds CSS and Custom JS for Views
  */
 function additional_css_js() {
-	$stylesheet = plugins_url() . '/' . basename(dirname(__FILE__)) . '/res/css/wcviews-style.css';
-	$slideshow_js = plugins_url() . '/' . basename(dirname(__FILE__)) . '/res/js/script.js';
+	$stylesheet = plugins_url() . '/' . basename(dirname(__FILE__)) . '/res/css/wcviews-style.css';	
 	wp_enqueue_style('wcviews-style', $stylesheet);
-	wp_enqueue_script('jquery');
-	wp_enqueue_script('wcviews-js', $slideshow_js, array('jquery'));
+	wp_enqueue_script('jquery');	
 }
 
 //
@@ -123,6 +122,67 @@ function wpv_woo_add_to_cart($atts) {
 
 add_shortcode('wpv-wooaddcart', 'wpv_woo_add_to_cart');
 
+function wpv_woo_add_to_cart_box($atts) {
+
+	global $post, $wpdb, $woocommerce;
+	
+	if ( ! isset( $atts['style'] ) ) $atts['style'] = 'border:4px solid #ccc; padding: 12px;';
+	
+	if ( 'product' == $post->post_type ) {
+
+		$product = $woocommerce->setup_product_data( $post );
+
+		ob_start();
+		?>
+		<p class="product woocommerce" style="<?php echo $atts['style']; ?>">
+
+			<?php echo $product->get_price_html(); ?>
+
+			<?php woocommerce_template_loop_add_to_cart(); ?>
+
+		</p><?php
+
+		return ob_get_clean();
+
+	} elseif ( 'product_variation' == $post->post_type ) {
+
+		$product = get_product( $post->post_parent );
+
+		$GLOBALS['product'] = $product;
+
+		$variation = get_product( $post );
+
+		ob_start();
+		?>
+		<p class="product product-variation" style="<?php echo $atts['style']; ?>">
+
+			<?php echo $product->get_price_html(); ?>
+
+			<?php
+
+			$link 	= $product->add_to_cart_url();
+
+			$label 	= apply_filters('add_to_cart_text', __( 'Add to cart', 'woocommerce' ));
+
+			$link = add_query_arg( 'variation_id', $variation->variation_id, $link );
+
+			foreach ($variation->variation_data as $key => $data) {
+				if ($data) $link = add_query_arg( $key, $data, $link );
+			}
+
+			printf('<a href="%s" rel="nofollow" data-product_id="%s" class="button add_to_cart_button product_type_%s">%s</a>', esc_url( $link ), $product->id, $product->product_type, $label);
+
+			?>
+
+		</p><?php
+
+		return ob_get_clean();
+
+	}
+}
+
+add_shortcode('wpv-wooaddcartbox', 'wpv_woo_add_to_cart_box');
+
 function wpv_woo_remove_from_cart($atts) {
 	
 }
@@ -142,6 +202,12 @@ function wpv_woo_add_shortcode_in_views_popup($items){
 		'Add to cart button',
 		'wpv-wooaddcart',
 		'Basic',
+		''
+	);
+	$items['WooCommerce']['addcartbox'] = array(
+		__('Add to cart box', 'wpv-views'),
+		'wpv-wooaddcartbox',
+		__('Basic', 'wpv-views'),
 		''
 	);
 	return $items;

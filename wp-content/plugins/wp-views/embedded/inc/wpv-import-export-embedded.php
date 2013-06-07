@@ -264,6 +264,9 @@ function wpv_admin_import_view_templates($import_data, $items = array()) {
     $newitems = array();
     
     global $_wp_additional_image_sizes;
+    if (!isset($_wp_additional_image_sizes) || !is_array($_wp_additional_image_sizes)) {
+		$_wp_additional_image_sizes = array();
+    }
     $attached_images_sizes=array_merge(
 	// additional thumbnail sizes
 	array_keys($_wp_additional_image_sizes), 
@@ -538,6 +541,9 @@ function wpv_admin_import_views($import_data, $items = array()) {
     $newitems = array();
     
     global $_wp_additional_image_sizes;
+    if (!isset($_wp_additional_image_sizes) || !is_array($_wp_additional_image_sizes)) {
+		$_wp_additional_image_sizes = array();
+    }
     $attached_images_sizes=array_merge(
 	// additional thumbnail sizes
 	array_keys($_wp_additional_image_sizes), 

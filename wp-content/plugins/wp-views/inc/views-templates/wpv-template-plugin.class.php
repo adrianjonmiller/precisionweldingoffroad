@@ -5,63 +5,51 @@ require WPV_PATH_EMBEDDED . '/inc/views-templates/wpv-template.class.php';
 class WPV_template_plugin extends WPV_template {
 
 	function add_view_template_settings() {
-            wp_enqueue_script( 'views-pagination-script' , WPV_URL . '/res/js/views_codemirror_conf.js', array('jquery'), WPV_VERSION);
+          wp_enqueue_script( 'views-codemirror-script',
+                WPV_URL . '/res/js/views_codemirror_conf.js', array('jquery'),
+                WPV_VERSION );
+
         ?>
         <script type="text/javascript">                        
             
             function CodeMirror_fix_toolbar(){
-                            jQuery('#ed_toolbar').append('<input type="button" value="<?php _e("Syntax Highlight On", 'wpv-views'); ?>" title="<?php _e("Syntax Highlight On", 'wpv-views'); ?>" class="ed_button cred_qt_codemirror_on" id="qt_content_cred_syntax_highlight">');
-                            HTMLEditor["content"] = CodeMirror.fromTextArea(document.getElementById("content"), {mode: "myshortcodes", tabMode: "indent", lineWrapping: true, lineNumbers: true, autofocus:true});
-                            var HTMLCodeMirrorActive = true;
-                            jQuery('.ed_button').hide();
-                            jQuery('.insert-media.add_media').hide();
-                            
-                            jQuery('#qt_content_cred_syntax_highlight').show();
-                            
-                            jQuery('#content').bind('paste', function(e){
-                                if(HTMLCodeMirrorActive){
-                                    InsertAtCursor(this.value, 'content');
-                                }
-                            });
-                            
-                            jQuery('#qt_content_cred_syntax_highlight').click(function() {
-                                if (jQuery(this).hasClass('cred_qt_codemirror_on')){
-                                        jQuery('.ed_button').show(); 
-                                        jQuery('.insert-media.add_media').show();
-                                        jQuery(this).removeClass('cred_qt_codemirror_on').addClass('cred_qt_codemirror_off').attr('title','<?php _e("Syntax Highlight Off", 'wpv-views'); ?>').val('<?php _e("Syntax Highlight Off", 'wpv-views'); ?>');
-                                        var content_text = HTMLEditor["content"].getValue();
-                                        
-                                        jQuery('#content').val(content_text);
-                                        jQuery('.wp-editor-container .CodeMirror.CodeMirror-wrap').hide();
-                                        jQuery('#content').show();
-                                        jQuery('#publish').click(function() {
-                                            var content_text = jQuery('#content').val();
-                                            HTMLEditor["content"].setValue(content_text);
-                                        })
-                                        HTMLCodeMirrorActive = false;
-                                    }else{
-                                        
-                                        jQuery('.ed_button').hide();
-                                        jQuery('.insert-media.add_media').hide();
-                                        jQuery('#qt_content_cred_syntax_highlight').show();
-                                        jQuery(this).addClass('cred_qt_codemirror_on').removeClass('cred_qt_codemirror_off').attr('title','<?php _e("Syntax Highlight On", 'wpv-views'); ?>').val('<?php _e("Syntax Highlight On", 'wpv-views'); ?>');
-                                        var content_text = jQuery('#content').val();
-                                        HTMLEditor["content"].setValue(content_text);
-                                        jQuery('.wp-editor-container .CodeMirror.CodeMirror-wrap').show();
-                                        jQuery('#content').hide();
-                                        HTMLCodeMirrorActive = true;
-                                        HTMLEditor["content"].refresh();
-                                        HTMLEditor["content"].focus();
-                                    }
-                                });
-                        }
+
+                // Init CodeMirror
+                icl_editor.codemirror('content', true);
+
+                // Append button
+                jQuery('#ed_toolbar').append('<input type="button" value="<?php echo esc_js(__( "Syntax Highlight On", 'wpv-views' )); ?>" title="<?php echo esc_js(__(  "Syntax Highlight On", 'wpv-views' )); ?>" class="ed_button cred_qt_codemirror_on" id="qt_content_cred_syntax_highlight">');
+
+                // Show/hide elements
+                jQuery('.ed_button').hide();
+                jQuery('.insert-media.add_media').hide();
+                jQuery('#qt_content_cred_syntax_highlight').show();
+
+                // Bind toggle click
+                jQuery('#qt_content_cred_syntax_highlight').click(function() {
+                    // Toggle CodeMirror OFF
+                    if (jQuery(this).hasClass('cred_qt_codemirror_on')){
+                        jQuery('.ed_button').show(); 
+                        jQuery('.insert-media.add_media').show();
+                        jQuery(this).removeClass('cred_qt_codemirror_on').addClass('cred_qt_codemirror_off').attr('title','<?php echo esc_js(__(  "Syntax Highlight Off", 'wpv-views' )); ?>').val('<?php echo esc_js(__(  "Syntax Highlight Off", 'wpv-views' )); ?>');
+                        icl_editor.toggleCodeMirror('content', false);
+                    }else{
+                        // Toggle CodeMirror ON
+                        jQuery('.ed_button').hide();
+                        jQuery('.insert-media.add_media').hide();
+                        jQuery('#qt_content_cred_syntax_highlight').show();
+                        jQuery(this).addClass('cred_qt_codemirror_on').removeClass('cred_qt_codemirror_off').attr('title','<?php echo esc_js(__(  "Syntax Highlight On", 'wpv-views' )); ?>').val('<?php echo esc_js(__(  "Syntax Highlight On", 'wpv-views' )); ?>');
+                        icl_editor.toggleCodeMirror('content', true);
+                    }
+                });
+            }
             
 			jQuery(document).ready(function($){
 				
 				// remove the "Save Draft" and "Preview" buttons.
 				jQuery('#minor-publishing-actions').hide();
 				jQuery('#misc-publishing-actions').hide();
-				jQuery('#publishing-action input[name=publish]').val('<?php _e("Save", 'wpv-views'); ?>');
+				jQuery('#publishing-action input[name=publish]').val('<?php echo esc_js(__( "Save", 'wpv-views')); ?>');
 				if (jQuery('#views_template_html_extra').hasClass("closed")) {
 				    jQuery('#views_template_html_extra').removeClass("closed");
 				}

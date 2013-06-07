@@ -324,7 +324,8 @@ class WP_Views_plugin extends WP_Views {
 
         add_meta_box('wpv_views_help', '<img src="' . WPV_URL . '/res/img/icon16.png" />&nbsp;&nbsp;' . __('Views Help', 'wpv-views'), array($this, 'view_help_box'), 'view', 'side', 'high');
         
-        if (defined('MODMAN_PLUGIN_NAME'))
+        global $pagenow;
+        if (defined('MODMAN_PLUGIN_NAME') && 'post-new.php'!=$pagenow)
         {
             // module manager sidebar meta box
             add_meta_box('wpv_modulemanager_box',__('Module Manager','wpv-views'),array($this, 'modulemanager_views_box'),'view','side','high');
@@ -332,7 +333,6 @@ class WP_Views_plugin extends WP_Views {
         }
         //add_meta_box('wpv_css', '<img src="' . WPV_URL . '/res/img/icon16.png" />&nbsp;&nbsp;' . __('CSS for view', 'wpv-views'), array($this, 'css_box'), 'view', 'normal', 'high');    
         
-        global $pagenow;
         if ($pagenow == 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] == 'view') {
             $this->include_admin_css();
         }
@@ -429,14 +429,14 @@ class WP_Views_plugin extends WP_Views {
             ?>        
             <script type="text/javascript">
         
-                var wpv_confirm_filter_change = '<?php _e("Are you sure you want to change the filter?\\n\\nIt appears that you made modifications to the filter.", 'wpv-views'); ?>';
+                var wpv_confirm_filter_change = '<?php echo esc_js(__("Are you sure you want to change the filter?\\n\\nIt appears that you made modifications to the filter.", 'wpv-views')); ?>';
                 <?php if ($pagenow == 'post-new.php'): ?>
                     jQuery(document).ready(function($){
                        wpv_add_initial_filter_shortcode(); 
                     });
                 <?php endif; ?>
                 
-                var wpv_save_button_text = '<?php _e("Save View", 'wpv-views'); ?>';
+                var wpv_save_button_text = '<?php echo esc_js(__("Save View", 'wpv-views')); ?>';
             </script>
             
             <?php
@@ -505,7 +505,7 @@ class WP_Views_plugin extends WP_Views {
 				
                 ?>
                 <p>
-                    <span style="font-size:1.1em;font-weight:bold;"><?php _e('Pagination settings',
+                    <span style="font-size:1.1em;font-weight:bold;"><?php _e('Pagination and Sliders settings',
             'wpv-views') ?></span>&nbsp;&nbsp;&nbsp;<img src="<?php echo WPV_URL_EMBEDDED; ?>/common/res/images/question.png" style="position:relative;top:2px;" />&nbsp;<a href="http://wp-types.com/documentation/user-guides/views-pagination/" target="_blank"><?php _e('Everything about Views pagination &raquo;',
             'wpv-views'); ?></a>
                 </p>
@@ -769,7 +769,7 @@ class WP_Views_plugin extends WP_Views {
     }
     $last_saved = get_the_modified_time( 'dmYHi' );
     $last_modified = get_post_meta( $post->ID, '_wpv_last_modified', true );
-    $view_not_complete = '<div class="wpv_form_errors" style="width:98.7%;">' . sprintf(  __( 'This View was not saved correctly. You may need to increase the number of post variables allowed in PHP. <a href="%s">How to increase max_post_vars setting</a>.', 'wpv-views' ), 'http://wp-types.com/faq/why-do-i-get-a-500-server-error-when-editing-a-view/' ) . '</div>';
+    $view_not_complete = '<div class="wpv_form_errors" style="width:98.7%;">' . sprintf(  esc_js(__( 'This View was not saved correctly. You may need to increase the number of post variables allowed in PHP. <a href="%s">How to increase max_post_vars setting</a>.', 'wpv-views' )), 'http://wp-types.com/faq/why-do-i-get-a-500-server-error-when-editing-a-view/' ) . '</div>';
     ?>
 	<script type="text/javascript">
 	jQuery(document).ready(function(){
@@ -1213,13 +1213,13 @@ class WP_Views_plugin extends WP_Views {
 		global $post;
 		if (isset($post->post_type)) {
 			if ($post->post_type == 'view' || $post->post_type == 'view-template') {
-				wp_enqueue_script( 'views-layout-meta-html-codemirror-script' , WPV_URL . '/res/js/codemirror234/lib/codemirror.js', array(), WPV_VERSION);
-				wp_enqueue_script( 'views-layout-meta-html-codemirror-overlay-script' , WPV_URL . '/res/js/codemirror234/lib/util/overlay.js', array('views-layout-meta-html-codemirror-script'), WPV_VERSION);
-				wp_enqueue_script( 'views-layout-meta-html-codemirror-xml-script' , WPV_URL . '/res/js/codemirror234/mode/xml/xml.js', array('views-layout-meta-html-codemirror-overlay-script'), WPV_VERSION);
-				wp_enqueue_script( 'views-layout-meta-html-codemirror-css-script' , WPV_URL . '/res/js/codemirror234/mode/css/css.js', array('views-layout-meta-html-codemirror-overlay-script'), WPV_VERSION);
-				wp_enqueue_script( 'views-layout-meta-html-codemirror-js-script' , WPV_URL . '/res/js/codemirror234/mode/javascript/javascript.js', array('views-layout-meta-html-codemirror-overlay-script'), WPV_VERSION);
-                                wp_enqueue_script( 'views-codemirror-script' , WPV_URL . '/res/js/views_codemirror_conf.js', array('jquery'), WPV_VERSION);
-				wp_enqueue_style( 'views-layout-meta-html-codemirror-css' , WPV_URL . '/res/js/codemirror234/lib/codemirror.css', array(), WPV_VERSION);
+				wp_enqueue_script( 'views-layout-meta-html-codemirror-script' , WPV_URL . '/res/js/codemirror311/lib/codemirror.js', array(), WPV_VERSION);
+				wp_enqueue_script( 'views-layout-meta-html-codemirror-overlay-script' , WPV_URL . '/res/js/codemirror311/addon/mode/overlay.js', array('views-layout-meta-html-codemirror-script'), WPV_VERSION);
+				wp_enqueue_script( 'views-layout-meta-html-codemirror-xml-script' , WPV_URL . '/res/js/codemirror311/mode/xml/xml.js', array('views-layout-meta-html-codemirror-overlay-script'), WPV_VERSION);
+				wp_enqueue_script( 'views-layout-meta-html-codemirror-css-script' , WPV_URL . '/res/js/codemirror311/mode/css/css.js', array('views-layout-meta-html-codemirror-overlay-script'), WPV_VERSION);
+				wp_enqueue_script( 'views-layout-meta-html-codemirror-js-script' , WPV_URL . '/res/js/codemirror311/mode/javascript/javascript.js', array('views-layout-meta-html-codemirror-overlay-script'), WPV_VERSION);
+                                wp_enqueue_script( 'views-codemirror-script' , WPV_URL . '/res/js/views_codemirror_conf.js', array('jquery','views-layout-meta-html-codemirror-script'), WPV_VERSION);
+				wp_enqueue_style( 'views-layout-meta-html-codemirror-css' , WPV_URL . '/res/js/codemirror311/lib/codemirror.css', array(), WPV_VERSION);
 			}
 		}
 	}

@@ -13,21 +13,21 @@ function wpv_controls_js() {
 	?>
 	
     <script type="text/javascript">
-		var wpv_submit_text = '<?php echo __('Apply', 'wpv-views'); ?>';
-		var wpv_submit_button_text = '<?php echo __('Submit button', 'wpv-views'); ?>';
-        var wpv_ok = '<?php echo __('OK', 'wpv-views'); ?>';
-        var wpv_cancel = '<?php echo __('Cancel', 'wpv-views'); ?>';
-        var wpv_remove = '<?php echo __('Remove', 'wpv-views'); ?>';
-        var wpv_add_another_value = '<?php echo __('Add another value', 'wpv-views'); ?>';
+		var wpv_submit_text = '<?php echo esc_js(__('Apply', 'wpv-views')); ?>';
+		var wpv_submit_button_text = '<?php echo esc_js(__('Submit button', 'wpv-views')); ?>';
+        var wpv_ok = '<?php echo esc_js(__('OK', 'wpv-views')); ?>';
+        var wpv_cancel = '<?php echo esc_js(__('Cancel', 'wpv-views')); ?>';
+        var wpv_remove = '<?php echo esc_js(__('Remove', 'wpv-views')); ?>';
+        var wpv_add_another_value = '<?php echo esc_js(__('Add another value', 'wpv-views')); ?>';
         var wpv_edit_background = '<?php echo WPV_EDIT_BACKGROUND; ?>';
-        var wpv_no_values = '<?php echo __('There are no values', 'wpv-views'); ?>';
-        var wpv_values = '<?php echo __('Values', 'wpv-views'); ?>';
-        var wpv_display_values = '<?php echo __('Display values', 'wpv-views'); ?>';
-        var wpv_title = '<?php echo __('Title', 'wpv-views'); ?>';
-        var wpv_url_param_deleted_message = '<?php echo __('The filter for this is not found.', 'wpv-views'); ?>';
-        var wpv_auto_fill_on = '<?php echo __('Use existing custom field values when showing this control', 'wpv-views'); ?>';
-        var wpv_auto_fill_off = '<?php echo __('Use the manually entered values', 'wpv-views'); ?>';
-        var wpv_auto_fill_default = '<?php echo __('Use this as the default value', 'wpv-views'); ?>';
+        var wpv_no_values = '<?php echo esc_js(__('There are no values', 'wpv-views')); ?>';
+        var wpv_values = '<?php echo esc_js(__('Values', 'wpv-views')); ?>';
+        var wpv_display_values = '<?php echo esc_js(__('Display values', 'wpv-views')); ?>';
+        var wpv_title = '<?php echo esc_js(__('Title', 'wpv-views')); ?>';
+        var wpv_url_param_deleted_message = '<?php echo esc_js(__('The filter for this is not found.', 'wpv-views')); ?>';
+        var wpv_auto_fill_on = '<?php echo esc_js(__('Use existing custom field values when showing this control', 'wpv-views')); ?>';
+        var wpv_auto_fill_off = '<?php echo esc_js(__('Use the manually entered values', 'wpv-views')); ?>';
+        var wpv_auto_fill_default = '<?php echo esc_js(__('Use this as the default value', 'wpv-views')); ?>';
 	</script>
 	
     <script type="text/javascript">

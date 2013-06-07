@@ -2,7 +2,7 @@
 <header class="animate top">
 	<div class="container">
 	<div class="grid">
-		<h1><a href="/" id="logo"><img src="/wp-content/themes/starkers-child/img/logo.png" alt="<?php bloginfo( 'name' ); ?>" /></a></h1>
+		<h1><a href="/" id="logo"><img src="<?php echo get_stylesheet_directory_uri().'/img/logo.png'; ?>" alt="<?php bloginfo( 'name' ); ?>" /></a></h1>
 <!--		<div class="blog-description"><?php bloginfo( 'description' ); ?></div>-->
 		
 		
@@ -53,5 +53,6 @@
 </header>
 <div id="main" role="main">
 	<div class="container">
+		<div class="grid">
 
 	

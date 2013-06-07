@@ -40,6 +40,9 @@ $wpv_shortcodes['wpv-current-user'] = array('wpv-current-user', __('Current user
 if (defined('WPV_WOOCOMERCE_VIEWS_SHORTCODE')) {
 $wpv_shortcodes['wpv-wooaddcart'] = array('wpv-wooaddcart', __('Add to cart button', 'wpv-views'), 'wpv-wooaddcart');
 }
+if (defined('WPV_WOOCOMERCEBOX_VIEWS_SHORTCODE')) {
+$wpv_shortcodes['wpv-wooaddcartbox'] = array('wpv-wooaddcartbox', __('Add to cart box', 'wpv-views'), 'wpv-wooaddcartbox');
+}
 // register the short codes
 foreach ($wpv_shortcodes as $shortcode) {
     if (function_exists($shortcode[2])) {
@@ -1289,7 +1292,7 @@ function add_short_codes_to_js($types, $editor, $call_back = null){
 			if (isset($view_settings['query_type'][0]) && $view_settings['query_type'][0] == 'taxonomy') {
             
                 if ($call_back) {
-                    call_user_func($call_back, $index, $view->post_title, '', __('Taxonomy View', 'wpv-views'), 'wpv-view name="' . $view->post_title . '"');
+                    call_user_func($call_back, $index, $view->post_title, '', 'Taxonomy View', 'wpv-view name="' . $view->post_title . '"');
                 }
 
                 $index += 1;
@@ -1306,7 +1309,7 @@ function add_short_codes_to_js($types, $editor, $call_back = null){
 			if (isset($view_settings['query_type'][0]) && $view_settings['query_type'][0] == 'posts') {
             
                 if ($call_back) {
-                    call_user_func($call_back, $index, $view->post_title, '', __('Post View', 'wpv-views'), 'wpv-view name="' . $view->post_title . '"');
+                    call_user_func($call_back, $index, $view->post_title, '', 'Post View', 'wpv-view name="' . $view->post_title . '"');
                 }
 
                 $index += 1;

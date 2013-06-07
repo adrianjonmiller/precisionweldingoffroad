@@ -1,0 +1,9 @@
+.bundled_table_item .product-name, .cart_table_item .product-name dl {
+	font-size: 85%;
+}
+
+.bundled_table_item, .bundled_table_item td {
+	border-top: none !important;
+	border-bottom: none !important;
+}
+

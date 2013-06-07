@@ -1,4 +1,22 @@
 -------------------------------------------------------------------------------------------------------------------
+Version 1.2.2
+	- Fix If option to preload images before transition is checked, check for broken images and fix the broken pagination if there is any
+	- Fix Adding View to module creates blank elements in the Module Manager
+	- Fix Javascript error with French translation for WP-Types and WP-Vievs
+	- Fix Too many authors breaks the Views editor
+	- Fix Filtering by custom field and post relationship and sorting by other custom field does not work
+	- Fix Fatal Error when activating Views if Types was active
+	- Fix Typo in the search filter summary text and in the new pagination settings
+	- Change name of section "Pagination settings" to "Pagination and Sliders settings"
+	- New Add a control to set the number of pages to pre-fetch
+	- New Add numeric options to transition durations
+	- New Add support for new shortcode from WooCommerce Views
+	- New Add two shortcodes to allow Bootstrap structures in Views
+	- New AJAX search and auto-completion for the author filter
+	- New Admin notices for Types compatibility checks
+	- Update CodeMirror to 3.11
+
+-------------------------------------------------------------------------------------------------------------------
 Version 1.2.1
 	- Fixed wpv_control -- auto_fill_sort parameter is not working
 	- Fixed Not default sorting for AJAX pagination not working

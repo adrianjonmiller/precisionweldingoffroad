@@ -5,12 +5,12 @@ Plugin URI: http://wp-types.com/
 Description: When you need to create lists of items, Views is the solution. Views will query the content from the database, iterate through it and let you display it with flair. You can also enable pagination, search, filtering and sorting by site visitors.
 Author: ICanLocalize
 Author URI: http://wpml.org
-Version: 1.2.1
+Version: 1.2.2
 */
 
 if(defined('WPV_VERSION')) return;
 
-define('WPV_VERSION', '1.2.1');
+define('WPV_VERSION', '1.2.2');
 define('WPV_PATH', dirname(__FILE__));
 define('WPV_PATH_EMBEDDED', dirname(__FILE__) . '/embedded');
 define('WPV_FOLDER', basename(WPV_PATH));
@@ -27,7 +27,9 @@ if (!defined('EDITOR_ADDON_RELPATH')) {
 
 require WPV_PATH . '/inc/constants.php';
 require WPV_PATH . '/inc/functions-core.php';
-require_once(WPV_PATH_EMBEDDED) . '/common/wplogger.php';
+if ( !function_exists( 'wplogger' ) ) {
+	require_once(WPV_PATH_EMBEDDED) . '/common/wplogger.php';
+}
 require_once(WPV_PATH_EMBEDDED) . '/common/wp-pointer.php';
 
 $wpv_wp_pointer = new WPV_wp_pointer('views');
@@ -108,4 +110,33 @@ if( did_action( 'inline_doc_help_viewlayoutmetahtml' )== 0){
 }	
 if( did_action( 'inline_doc_help_viewtemplate' )== 0){
 	do_action('inline_doc_help_viewtemplate', 'admin_screen_view_template_init');
-}	
+}
+
+// compatibility notices 
+
+add_action('admin_notices', 'wpv_admin_notice');
+
+function wpv_admin_notice() {
+	global $current_user, $pagenow;
+	if ( current_user_can( 'activate_plugins' ) && ( defined( 'WPCF_VERSION' ) &&  version_compare( WPCF_VERSION, '1.3' )  < 0 ) ) {
+		$user_id = $current_user->ID;
+		/* Check that the user hasn't already clicked to ignore the message */
+		if ( ! get_user_meta($user_id, 'wpv_122_notice') ) {
+		parse_str($_SERVER['QUERY_STRING'], $params);
+		echo '<div class="updated"><p>'; 
+		printf(__('Views 1.2.2 is compatible with Types version 1.3 or greater. Please update Types. | <a href="%1$s">Dismiss</a>', 'wpv-views'), '?' . http_build_query(array_merge($params, array('wpv_122_ignore'=>'0'))));
+		echo "</p></div>";
+		}
+	}
+}
+
+add_action('admin_init', 'wpv_admin_notice_ignore');
+
+function wpv_admin_notice_ignore() {
+	global $current_user;
+        $user_id = $current_user->ID;
+        /* If user clicks to ignore the notice, add that to their user meta */
+        if ( isset($_GET['wpv_122_ignore']) && '0' == $_GET['wpv_122_ignore'] ) {
+             add_user_meta($user_id, 'wpv_122_notice', 'true', true);
+	}
+}

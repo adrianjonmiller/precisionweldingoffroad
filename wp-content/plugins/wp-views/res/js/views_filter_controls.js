@@ -18,7 +18,8 @@ function wpv_filter_controls_edit_ok() {
 
     //changed to work with CodeMirror
     // var c = jQuery('textarea#wpv_filter_meta_html_content').val();
-    var c = HTMLEditor['wpv_filter_meta_html_content'].getValue();
+    var codemirror_views = icl_editor.codemirrorGet('wpv_filter_meta_html_content');
+    var c = codemirror_views.getValue();
     
     if (!check_if_previous_filter_has_changed(c)) {
 		jQuery('#wpv_filter_control_meta_html_content_error').show();

@@ -111,7 +111,7 @@ class WP_Views{
 
             // Add pagination for the front end.
 
-            wp_enqueue_script( 'views-pagination-script' , WPV_URL_EMBEDDED . '/res/js/wpv-pagination-embedded.js', array('jquery'), WPV_VERSION);
+            wp_enqueue_script( 'views-pagination-script' , WPV_URL_EMBEDDED . '/res/js/wpv-pagination-embedded.js', array('jquery'), WPV_VERSION, true);
             wp_enqueue_style( 'views-pagination-style', WPV_URL_EMBEDDED . '/res/css/wpv-pagination.css', array(), WPV_VERSION);
             
 			wp_enqueue_script( 'jquery-ui-datepicker' , WPV_URL_EMBEDDED . '/res/js/jquery.ui.datepicker.min.js', array('jquery-ui-core', 'jquery'), WPV_VERSION);

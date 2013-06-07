@@ -6,7 +6,7 @@ Template Name: Home
 
 
 <?php Starkers_Utilities::get_template_parts( array( 'parts/shared/html-header', 'parts/shared/header' ) ); ?>
-	<div class="grid banner">
+	<div class="banner">
 	<?php echo(render_view(array("title" => "Rotating Banner"))); ?>
 	</div>
 </div> 

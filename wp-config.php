@@ -16,16 +16,16 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', 'wp_pwo');
+define( 'DB_NAME', 'wordpress' );
 
 /** MySQL database username */
-define('DB_USER', 'root');
+define( 'DB_USER', 'root' );
 
 /** MySQL database password */
-define('DB_PASSWORD', 'root');
+define( 'DB_PASSWORD', 'root' );
 
 /** MySQL hostname */
-define('DB_HOST', 'localhost');
+define( 'DB_HOST', 'localhost' );
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
@@ -59,7 +59,7 @@ define('NONCE_SALT',       '(}xL34E^)IllA{Z|-IA?()lgdB(0MYDKs1hr-x~_?rTRPrePkPSi
  * You can have multiple installations in one database if you give each a unique
  * prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = 'wp_';
+$table_prefix = 'wp_base_';
 
 /**
  * WordPress Localized Language, defaults to English.
@@ -79,6 +79,9 @@ define('WPLANG', '');
  * in their development environments.
  */
 define('WP_DEBUG', false);
+
+define( 'WP_HOME', 'http://precisionweldingoffroad.dev' );
+define( 'WP_SITEURL', 'http://precisionweldingoffroad.dev' );
 
 /* That's all, stop editing! Happy blogging. */
 

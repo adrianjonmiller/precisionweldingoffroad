@@ -11,6 +11,24 @@
 	}
 	add_action('init', 'modify_jquery');
 	
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10);
+	remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10);
+	
+	add_action('woocommerce_before_main_content', 'my_theme_wrapper_start', 10);
+	add_action('woocommerce_after_main_content', 'my_theme_wrapper_end', 10);
+	
+	
+	
+	function my_theme_wrapper_start() {
+	  echo '<div class="col-2-3">';
+	}
+	
+	function my_theme_wrapper_end() {
+	  echo '</div>';
+	}
+	
+	add_theme_support( 'woocommerce' );
+	
 	
 	function register_my_menus() {
 	  register_nav_menus(
@@ -40,9 +58,6 @@
 		
 //		wp_register_script( 'masonry', get_stylesheet_directory_uri().'/js/jquery.masonry.min.js', array( 'jquery' ),'' ,'', true );
 //		wp_enqueue_script( 'masonry' );
-		
-		wp_register_script( 'fittext', get_stylesheet_directory_uri().'/js/jquery.fittext.js', array( 'jquery' ), false, true );
-		wp_enqueue_script( 'fittext' );
 		
 		wp_register_style( 'flexslider', get_stylesheet_directory_uri().'/css/flexslider.css', '', '', 'screen' );
 		wp_enqueue_style( 'flexslider' );

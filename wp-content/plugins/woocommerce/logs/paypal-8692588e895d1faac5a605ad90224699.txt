@@ -1,0 +1,184 @@
+05-29-2013 @ 04:30:52 - Generating payment form for order #7896. Notify URL: http://precisionweldingoffroad.com/?wc-api=WC_Gateway_Paypal
+05-29-2013 @ 04:32:19 - Checking IPN response is valid...
+05-29-2013 @ 04:32:19 - IPN Request: Array
+(
+    [body] => Array
+        (
+            [cmd] => _notify-validate
+            [mc_gross] => 285.00
+            [invoice] => Precision Welding Store7896
+            [protection_eligibility] => Ineligible
+            [item_number1] => 
+            [payer_id] => A3QHGF9TFMVG6
+            [tax] => 0.00
+            [payment_date] => 21:32:18 May 28, 2013 PDT
+            [payment_status] => Completed
+            [charset] => windows-1252
+            [mc_shipping] => 0.00
+            [mc_handling] => 0.00
+            [first_name] => alexander
+            [mc_fee] => 8.57
+            [notify_version] => 3.7
+            [custom] => a:2:{i:0;i:7896;i:1;s:19:"order_51a5847cc47b9";}
+            [payer_status] => unverified
+            [business] => precision.welding@hotmail.com
+            [num_cart_items] => 1
+            [mc_handling1] => 0.00
+            [verify_sign] => A6oW-fNdUjG.J.U8xGA4uyySIe6uAQ1JEebuRLSP6u3M7qKKDvG.fz-n
+            [payer_email] => alexandet.gray@gmail.com
+            [mc_shipping1] => 0.00
+            [tax1] => 0.00
+            [txn_id] => 87T79664GF090311V
+            [payment_type] => instant
+            [last_name] => gray
+            [item_name1] => Dana 60 Behind The Axle springless Hi-steer Kit
+            [receiver_email] => precision.welding@hotmail.com
+            [payment_fee] => 8.57
+            [quantity1] => 1
+            [receiver_id] => D8V7WWKH6X3ML
+            [txn_type] => cart
+            [mc_gross_1] => 285.00
+            [mc_currency] => USD
+            [residence_country] => US
+            [receipt_id] => 2143-9072-1495-7102
+            [transaction_subject] => a:2:{i:0;i:7896;i:1;s:19:"order_51a5847cc47b9";}
+            [payment_gross] => 285.00
+            [ipn_track_id] => f004595d98e11
+        )
+
+    [sslverify] => 
+    [timeout] => 60
+    [user-agent] => WooCommerce/2.0.10
+)
+
+05-29-2013 @ 04:32:20 - IPN Response: Array
+(
+    [headers] => Array
+        (
+            [server] => Apache
+            [x-frame-options] => SAMEORIGIN
+            [strict-transport-security] => Array
+                (
+                    [0] => max-age=14400
+                    [1] => max-age=14400
+                )
+
+            [content-type] => text/html; charset=UTF-8
+            [vary] => Accept-Encoding
+            [date] => Wed, 29 May 2013 04:32:20 GMT
+            [content-length] => 8
+            [connection] => close
+            [set-cookie] => Array
+                (
+                    [0] => cwrClyrK4LoCV1fydGbAxiNL6iG=VPH0Dlv73zT5fbKPfnu7s-wsOXo7ZnSF0MMEGt2-WI5pV2ZlHhhOEecMsHsXT3uIEY7byEMnmnHwNsDmr2TUCRtgDivkPSYwAMb323AmUTdHo8oJfDUVDN4aTO-fyt21-yCJaG%7cOETy-C8eK5lDQAp0W8ZMfvP7FOlozqiHotCEXrZl-yYt0gywruvAAz2jafSFyZFDb3xCPG%7c2yEqIbY4uswmq0tOezDe2rRU-1bYU4ShrbegLmGEqYFSEwI2kP8fJHKbA0tzZ39mwmqVX0%7c1369801940; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [1] => cookie_check=yes; expires=Sat, 27-May-2023 04:32:20 GMT; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [2] => navcmd=_notify-validate; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [3] => navlns=0.0; expires=Tue, 24-May-2033 04:32:20 GMT; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [4] => Apache=10.74.8.134.1369801940356988; path=/; expires=Fri, 22-May-43 04:32:20 GMT
+                    [5] => X-PP-SILOVER=name%3DLIVE6.WEB.1%26silo_version%3D880%26app%3Dslingshot%26TIME%3D3565462865; domain=.paypal.com; path=/; Secure; HttpOnly
+                    [6] => Apache=10.74.8.39.1369801940350423; path=/; expires=Fri, 22-May-43 04:32:20 GMT
+                    [7] => aksession=1369802240~id=cookieBvxh1RA44bK2HScckUaKvccBE6leZsecPUhyVRtQSK70Q4p7P6bQGyb5m6DUTTTu6/2fp7gXFjAEI17pSbUumR3cEKAWREndMGxbcYAck2C5wbB5KR+5+2IynWmN3M0E; expires=Wed, 29-May-2013 04:37:20 GMT; path=/; domain=.paypal.com
+                )
+
+        )
+
+    [body] => VERIFIED
+    [response] => Array
+        (
+            [code] => 200
+            [message] => OK
+        )
+
+    [cookies] => Array
+        (
+            [0] => WP_Http_Cookie Object
+                (
+                    [name] => cwrClyrK4LoCV1fydGbAxiNL6iG
+                    [value] => VPH0Dlv73zT5fbKPfnu7s-wsOXo7ZnSF0MMEGt2-WI5pV2ZlHhhOEecMsHsXT3uIEY7byEMnmnHwNsDmr2TUCRtgDivkPSYwAMb323AmUTdHo8oJfDUVDN4aTO-fyt21-yCJaG|OETy-C8eK5lDQAp0W8ZMfvP7FOlozqiHotCEXrZl-yYt0gywruvAAz2jafSFyZFDb3xCPG|2yEqIbY4uswmq0tOezDe2rRU-1bYU4ShrbegLmGEqYFSEwI2kP8fJHKbA0tzZ39mwmqVX0|1369801940
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [1] => WP_Http_Cookie Object
+                (
+                    [name] => cookie_check
+                    [value] => yes
+                    [expires] => 1685161940
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [2] => WP_Http_Cookie Object
+                (
+                    [name] => navcmd
+                    [value] => _notify-validate
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [3] => WP_Http_Cookie Object
+                (
+                    [name] => navlns
+                    [value] => 0.0
+                    [expires] => 2000521940
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [4] => WP_Http_Cookie Object
+                (
+                    [name] => Apache
+                    [value] => 10.74.8.134.1369801940356988
+                    [expires] => 2315881940
+                    [path] => /
+                    [domain] => 
+                )
+
+            [5] => WP_Http_Cookie Object
+                (
+                    [name] => X-PP-SILOVER
+                    [value] => name=LIVE6.WEB.1&silo_version=880&app=slingshot&TIME=3565462865
+                    [expires] => 
+                    [path] => /
+                    [domain] => .paypal.com
+                    [secure] => 
+                    [httponly] => 
+                )
+
+            [6] => WP_Http_Cookie Object
+                (
+                    [name] => Apache
+                    [value] => 10.74.8.39.1369801940350423
+                    [expires] => 2315881940
+                    [path] => /
+                    [domain] => 
+                )
+
+            [7] => WP_Http_Cookie Object
+                (
+                    [name] => aksession
+                    [value] => 1369802240~id=cookieBvxh1RA44bK2HScckUaKvccBE6leZsecPUhyVRtQSK70Q4p7P6bQGyb5m6DUTTTu6/2fp7gXFjAEI17pSbUumR3cEKAWREndMGxbcYAck2C5wbB5KR 5 2IynWmN3M0E
+                    [expires] => 1369802240
+                    [path] => /
+                    [domain] => .paypal.com
+                )
+
+        )
+
+    [filename] => 
+)
+
+05-29-2013 @ 04:32:20 - Received valid response from PayPal
+05-29-2013 @ 04:32:20 - Found order #7896
+05-29-2013 @ 04:32:20 - Payment status: completed
+05-29-2013 @ 04:32:21 - Payment complete.

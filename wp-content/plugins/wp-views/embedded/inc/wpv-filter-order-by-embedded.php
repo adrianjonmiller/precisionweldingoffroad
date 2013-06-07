@@ -113,11 +113,11 @@ function wpv_filter_get_order_arg($query, $view_settings) {
 		endwhile;
 		// remove the fields filter from the original query and add the filtered IDs
 		unset($query['meta_query']);
-		if ( isset( $query['post__in'] ) ) {
-			$query['post__in'] = (array)$query['post__in'];
-			$query['post__in'] = array_merge($filtered_ids, $query['post__in']);
-		} else {
+		// we can replace the $query['post__in'] argument because it was applied on the auxiliar query before
+		if ( count( $filtered_ids ) ) {
 			$query['post__in'] = $filtered_ids;
+		} else {
+			$query['post__in'] = array(-1);
 		}
         }
         

@@ -86,6 +86,9 @@ function wpv_admin_export_data($download = true) {
     $views = get_posts('post_type=view&post_status=any&posts_per_page=-1');
     if (!empty($views)) {
 	global $_wp_additional_image_sizes;
+	if (!isset($_wp_additional_image_sizes) || !is_array($_wp_additional_image_sizes)) {
+		$_wp_additional_image_sizes = array();
+	}
 	$attached_images_sizes=array_merge(
 		// additional thumbnail sizes
 		array_keys($_wp_additional_image_sizes), 
@@ -280,6 +283,9 @@ function wpv_admin_export_data($download = true) {
     $view_templates = get_posts('post_type=view-template&post_status=any&posts_per_page=-1');
     if (!empty($view_templates)) {
 	global $_wp_additional_image_sizes;
+	if (!isset($_wp_additional_image_sizes) || !is_array($_wp_additional_image_sizes)) {
+		$_wp_additional_image_sizes = array();
+	}
 	$attached_images_sizes=array_merge(
 		// additional thumbnail sizes
 		array_keys($_wp_additional_image_sizes), 
@@ -507,6 +513,9 @@ function wpv_admin_export_selected_data($items, $type = 'view', $mode = 'xml' ) 
             $views = get_posts($args);
             if (!empty($views)) {
 		global $_wp_additional_image_sizes;
+		if (!isset($_wp_additional_image_sizes) || !is_array($_wp_additional_image_sizes)) {
+			$_wp_additional_image_sizes = array();
+		}
 		$attached_images_sizes=array_merge(
 			// additional thumbnail sizes
 			array_keys($_wp_additional_image_sizes), 
@@ -801,6 +810,9 @@ function wpv_admin_export_selected_data($items, $type = 'view', $mode = 'xml' ) 
             $view_templates = get_posts($args);
             if (!empty($view_templates)) {
 		global $_wp_additional_image_sizes;
+		if (!isset($_wp_additional_image_sizes) || !is_array($_wp_additional_image_sizes)) {
+			$_wp_additional_image_sizes = array();
+		}
 		$attached_images_sizes=array_merge(
 			// additional thumbnail sizes
 			array_keys($_wp_additional_image_sizes), 

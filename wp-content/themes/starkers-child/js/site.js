@@ -84,7 +84,5 @@ jQuery( ".select-menu" ).change(function() {
 $('.flexslider').flexslider({
     animation: "fade"
   });
-  
-  $('.banner-text h3').fitText(1);
 	
 });

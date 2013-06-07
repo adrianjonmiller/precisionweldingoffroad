@@ -85,6 +85,7 @@ function wpv_layout_start_shortcode($atts){
     $view_settings = $WP_Views->get_view_settings();
     $class = array();
     $style = array();
+    $speed = '';
     if (($view_settings['pagination'][0] == 'enable' && $view_settings['ajax_pagination'][0] == 'enable') || $view_settings['pagination']['mode'] == 'rollover') {
         $class[] = 'wpv-pagination';
         if (!isset($view_settings['pagination']['preload_images'])) {
@@ -103,6 +104,12 @@ function wpv_layout_start_shortcode($atts){
             || ($view_settings['pagination']['mode'] == 'rollover' && $view_settings['pagination']['preload_pages'])) {
             $class[] = 'wpv-pagination-preload-pages';
         }
+        if ($view_settings['pagination']['mode'] == 'paged' && isset($view_settings['ajax_pagination']['duration'])) {
+		$speed = $view_settings['ajax_pagination']['duration'];
+        }
+        if ($view_settings['pagination']['mode'] == 'rollover' && isset($view_settings['rollover']['duration'])) {
+		$speed = $view_settings['rollover']['duration'];
+        }
         
         $add = '';
         if (!empty($class)) {
@@ -110,6 +117,9 @@ function wpv_layout_start_shortcode($atts){
         }
         if (!empty($style)) {
             $add .= ' style="' . implode(' ', $style) . '"';
+        }
+        if (!empty($speed)) {
+	    $add .= ' data-duration="' . $speed .  '"';
         }
         
         return "<div id=\"wpv-view-layout-" . $WP_Views->get_view_count() . "\"$add>\n";
@@ -128,6 +138,47 @@ function wpv_layout_end_shortcode($atts){
     } else {
         return '';
     }
+}
+
+add_shortcode('wpv-layout-row', 'wpv_layout_row');
+function wpv_layout_row( $atts, $value ){
+	extract(
+		shortcode_atts( array(
+			'framework' => 'bootstrap',
+			'cols' => 12,
+			'col_options' => '',
+		), $atts )
+	);
+	if ( 'bootstrap' == $framework ) {
+		$elements = substr_count( $value, '[wpv-layout-cell-span]' );
+		$counter = 1;
+		$pattern = array();
+
+		// if we have col_options
+		preg_match_all('/\{([^}]*)\}/', $col_options, $pieces);
+		foreach($pieces[1] as $match) {
+			$piece = explode(',', $match);
+			if ( ( count( $piece ) == $elements ) && ( array_sum( $piece ) == $cols ) ) {
+				$pattern = $piece;
+			}
+		}
+		while(preg_match('#\\[wpv-layout-cell-span]#', $value, $matches)) {
+			$pos = strpos( $value, $matches[0] );
+			$len = strlen( $matches[0] );
+			if ( 0 < count( $pattern ) ) {
+				$value = substr_replace( $value, 'span' . $pattern[$counter - 1], $pos, $len );
+				$counter++;
+			} elseif ( $counter < $elements ) {
+				$counter++;
+				$value = substr_replace( $value, 'span' . floor( $cols/$elements ), $pos, $len );
+			} else {
+				$value = substr_replace( $value, 'span' . ( $cols - ( ( $elements -1 ) * ( floor( $cols/$elements ) ) ) ), $pos, $len );
+			}
+		}
+	}
+	
+	return wpv_do_shortcode( $value );
+        
 }
 
 add_shortcode('wpv-layout-meta-html', 'wpv_layout_meta_html');

@@ -105,6 +105,9 @@ function wpv_filter_shortcode_start($atts){
         
         $out .= '<input id="wpv_paged_max-' . $WP_Views->get_view_count() . '" type="hidden" name="wpv_paged_max" value="' . intval($WP_Views->get_max_pages()) . '" />' . "\n";
         
+        if ( isset( $view_settings['pagination']['pre_reach'] ) ) { $pre_reach = intval($view_settings['pagination']['pre_reach']); } else { $pre_reach = 1; }
+        $out .= '<input id="wpv_paged_preload_reach-' . $WP_Views->get_view_count() . '" type="hidden" name="wpv_paged_preload_reach" value="' . $pre_reach . '" />' . "\n";
+        
         $out .= '<input id="wpv_widget_view-' . $WP_Views->get_view_count() . '" type="hidden" name="wpv_widget_view_id" value="' . intval($WP_Views->get_widget_view_id()) . '" />' . "\n";
         $out .= '<input id="wpv_view_count-' . $WP_Views->get_view_count() . '" type="hidden" name="wpv_view_count" value="' . $WP_Views->get_view_count() . '" />' . "\n";
 
@@ -245,14 +248,15 @@ function wpv_filter_shortcode_submit($atts){
 /**
  * Views-Shortcode: wpv-post-count
  *
- * Description: The [wpv-post-count] shortcode will display the number of
- * posts that will be displayed on the page
+ * Description: The [wpv-post-count] shortcode displays the number of posts
+ * that will be displayed on the page. When using pagination, this value will
+ * be limited by the page size and the number of remaining results.
  *
  * Parameters:
  * This takes no parameters.
  *
  * Example usage:
- * Showing [wpv-post-count] posts
+ * Showing [wpv-post-count] posts of [wpv-found-count] posts found
  *
  * Link:
  *
@@ -281,14 +285,16 @@ function wpv_post_count($atts){
 /**
  * Views-Shortcode: wpv-found-count
  *
- * Description: The [wpv-found-count] shortcode will display the total number of
- * posts that have been found by the Views query
+ * Description: The [wpv-found-count] shortcode displays the total number of
+ * posts that have been found by the Views query. This value is calculated
+ * before pagination, so even if you are using pagination, it will return
+ * the total number of posts matching the query.
  *
  * Parameters:
  * This takes no parameters.
  *
  * Example usage:
- * [wpv-found-count] posts found
+ * Showing [wpv-post-count] posts of [wpv-found-count] posts found
  *
  * Link:
  *

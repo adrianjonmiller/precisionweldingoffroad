@@ -5,7 +5,15 @@ jQuery(document).ready(function(){
     jQuery('.wpv-pagination-preload-pages').each(function(){
         var view_number = jQuery(this).attr('id').substring(16);
         var max_pages = jQuery('#wpv_paged_max-'+view_number).val();
-        wpv_pagination_preload_pages(view_number, 1, max_pages, false, true);
+	var max_reach = 1;
+	if (jQuery('#wpv_paged_preload_reach-'+view_number).val()) {
+		max_reach = jQuery('#wpv_paged_preload_reach-'+view_number).val();
+	}
+	max_reach++;
+	if (max_reach > max_pages) {
+		max_reach = max_pages;
+	}
+	wpv_pagination_preload_pages(view_number, 1, max_pages, false, true, max_reach);
     });
 	
 	// Move the wpv_view_hash, wpv_paged_max and wpv_widget_view_id from the forms as it's only needed during ajax pagination
@@ -123,6 +131,11 @@ function utf8_encode(argString) {
 	return utftext;
 }
 
+/* Check for broken images is not working in Chrome for some reason.
+ * It seems images are not loaded soon enough to have their width so all of them are treated as broken.
+ * By now, the sum is the same,but this should be addressed. Maybe add this to window.load but it may be too late.
+ */
+
 function wpv_pagination_init_preload_images() {
     jQuery('.wpv-pagination-preload-images').each(function(){
         var preloadedImages = new Array();
@@ -130,18 +143,21 @@ function wpv_pagination_init_preload_images() {
         var images = element.find('img');
         if (images.length < 1) {
             element.css('visibility', 'visible');
-        } else {
-            images.one('load', function() {
-                preloadedImages.push(jQuery(this).attr('src'));
-                if (preloadedImages.length == images.length) {
-                    element.css('visibility', 'visible');
-                }
-            }).each(function() {
-                if(this.complete) {
-                    jQuery(this).load();
-                }
-            });
-        }
+	} else {
+		images.one('load', function() {
+			preloadedImages.push(jQuery(this).attr('src'));
+			if (preloadedImages.length == images.length) {
+				element.css('visibility', 'visible');
+			}
+		}).each(function() {
+			if(this.complete) {
+				jQuery(this).load();
+			}
+		});
+		setTimeout(function(){
+			element.css('visibility', 'visible');
+		},3000);
+	}
     });
 }
 
@@ -309,17 +325,30 @@ function wpv_pagination_replace_view(view_number, page, ajax, effect, max_pages,
     } else {
         var speed = 500;
     }
+    if (jQuery('#wpv-view-layout-'+view_number).data('duration')) {
+	    if (jQuery('#wpv-view-layout-'+view_number).data('duration') !== "" && jQuery.isNumeric(jQuery('#wpv-view-layout-'+view_number).data('duration'))) {
+		    speed = jQuery('#wpv-view-layout-'+view_number).data('duration');
+		    speed = parseFloat(speed);
+	    }
+    }
 
     if (view_number in this.historyP) {
         var next = this.historyP[view_number] < page ? true : false;
     } else {
         var next = true;
     }
+    var max_reach = 1;
+    if (jQuery('#wpv_paged_preload_reach-'+view_number).val()) {
+	    max_reach = jQuery('#wpv_paged_preload_reach-'+view_number).val();
+    }
+    max_reach++;
+    if (max_reach > max_pages) {
+	    max_reach = max_pages;
+    }
     if ((cache_pages || preload_pages) && page in window.wpvCachedPages[view_number]) {
         responseCached = window.wpvCachedPages[view_number][page];
         wpv_pagination_get_page(view_number, next, effect, speed, window.wpvCachedPages[view_number][page], wpvPaginatorLayout, wpvPaginatorFilter, callback_next);
-        wpv_pagination_load_next_page(view_number, page, max_pages);
-        wpv_pagination_load_previous_page(view_number, page, max_pages);
+	wpv_pagination_preload_pages(view_number, page, max_pages, cache_pages, preload_pages, max_reach);
     } else {
         // Set loading class
         if (spinner != 'no') {
@@ -336,83 +365,102 @@ function wpv_pagination_replace_view(view_number, page, ajax, effect, max_pages,
         if (typeof(icl_lang) != 'undefined') {
             data['lang'] = icl_lang;
         }
-        
-        jQuery.get(wpv_get_ajax_pagination_url(data), function(response) {
-            window.wpvCachedPages[view_number][page] = response;
+	jQuery.get(wpv_get_ajax_pagination_url(data), function(response) {
             wpv_pagination_get_page(view_number, next, effect, speed, response, wpvPaginatorLayout, wpvPaginatorFilter, callback_next);
         });
-  
-        wpv_pagination_preload_pages(view_number, page, max_pages, cache_pages, preload_pages);
+	wpv_pagination_preload_pages(view_number, page, max_pages, cache_pages, preload_pages, max_reach);
     }
     this.historyP[view_number] = page;
     return false;
 }
                 
-function wpv_pagination_preload_pages(view_number, page, max_pages, cache_pages, preload_pages) {
+function wpv_pagination_preload_pages(view_number, page, max_pages, cache_pages, preload_pages, reach_max) {
     if (preload_pages) {
-        wpv_pagination_load_next_page(view_number, page, max_pages);
-        wpv_pagination_load_previous_page(view_number, page, max_pages);
+	var reach = 1;
+	while (reach < reach_max) {
+        wpv_pagination_load_next_page(view_number, page, max_pages, reach);
+        wpv_pagination_load_previous_page(view_number, page, max_pages, reach);
+	reach++;
+	}
     }
     if (cache_pages) {
         wpv_pagination_cache_current_page(view_number, page, max_pages);
     }
 }
                 
-function wpv_pagination_load_next_page(view_number, page, max_pages) {
+function wpv_pagination_load_next_page(view_number, page, max_pages, reach) {
     if (typeof window.wpvCachedPages == 'undefined' ) {
         window.wpvCachedPages = new Array();
+    }
+    if (typeof window.wpvCachedImages == 'undefined' ) {
+	    window.wpvCachedImages = new Array();
     }
     if (typeof window.wpvCachedPages[view_number] == 'undefined' ) {
         window.wpvCachedPages[view_number] = new Array();
     }
-    var next_page = page+1;
+    var next_page = page+reach;
     if (next_page in window.wpvCachedPages[view_number]) {
-        return false;
-    }
+   //     return false;
+    } else {
     // LOAD NEXT
-    if (page < max_pages) {
-        var dataNext = {};
-        add_view_parameters(dataNext, next_page, view_number);
-        dataNext = add_url_query_parameters(dataNext);
-        if (typeof(icl_lang) != 'undefined') {
-            dataNext['lang'] = icl_lang;
-        }
-        
-        jQuery.get(wpv_get_ajax_pagination_url(dataNext), function(response) {
-            window.wpvCachedPages[view_number][next_page] = response;
-        });
+	if ((next_page - 1) < max_pages) {
+		var dataNext = {};
+		add_view_parameters(dataNext, next_page, view_number);
+		dataNext = add_url_query_parameters(dataNext);
+		if (typeof(icl_lang) != 'undefined') {
+		dataNext['lang'] = icl_lang;
+		}        
+		jQuery.get(wpv_get_ajax_pagination_url(dataNext), function(response) {
+		window.wpvCachedPages[view_number][next_page] = response;
+		var content = jQuery(response).find('img');
+		content.each(function() {
+			window.wpvCachedImages.push(this.src);
+		});
+		});
+	}
     }
 }
                 
-function wpv_pagination_load_previous_page(view_number, page, max_pages) {
+function wpv_pagination_load_previous_page(view_number, page, max_pages, reach) {
     if (typeof window.wpvCachedPages == 'undefined' ) {
         window.wpvCachedPages = new Array();
+    }
+    if (typeof window.wpvCachedImages == 'undefined' ) {
+	    window.wpvCachedImages = new Array();
     }
     if (typeof window.wpvCachedPages[view_number] == 'undefined' ) {
         window.wpvCachedPages[view_number] = new Array();
     }
-    var previous_page = page-1;
+    var previous_page = page - reach;
     if (previous_page in window.wpvCachedPages[view_number]) {
-        return false;
-    }
+//        return false;
+    } else {
     // LOAD PREVIOUS
-    if (page > 1) {
-        var dataPrevious = {};
-        
-        add_view_parameters(dataPrevious, previous_page, view_number);
-        dataPrevious = add_url_query_parameters(dataPrevious);
-        if (typeof(icl_lang) != 'undefined') {
-            dataPrevious['lang'] = icl_lang;
-        }
-        jQuery.get(wpv_get_ajax_pagination_url(dataPrevious), function(response) {
-            window.wpvCachedPages[view_number][previous_page] = response;
-        });
+	if ((previous_page + 1 ) > 1) {
+		var dataPrevious = {};
+		
+		add_view_parameters(dataPrevious, previous_page, view_number);
+		dataPrevious = add_url_query_parameters(dataPrevious);
+		if (typeof(icl_lang) != 'undefined') {
+		dataPrevious['lang'] = icl_lang;
+		}
+		jQuery.get(wpv_get_ajax_pagination_url(dataPrevious), function(response) {
+		window.wpvCachedPages[view_number][previous_page] = response;
+		var content = jQuery(response).find('img');
+		content.each(function() {
+			window.wpvCachedImages.push(this.src);
+		});
+		});
+	}
     }
 }
                 
 function wpv_pagination_cache_current_page(view_number, page, max_pages) {
     if (typeof window.wpvCachedPages == 'undefined' ) {
         window.wpvCachedPages = new Array();
+    }
+    if (typeof window.wpvCachedImages == 'undefined' ) {
+	    window.wpvCachedImages = new Array();
     }
     if (typeof window.wpvCachedPages[view_number] == 'undefined' ) {
         window.wpvCachedPages[view_number] = new Array();
@@ -431,6 +479,10 @@ function wpv_pagination_cache_current_page(view_number, page, max_pages) {
         
         jQuery.get(wpv_get_ajax_pagination_url(dataCurrent), function(response) {
             window.wpvCachedPages[view_number][page] = response;
+	    var content = jQuery(response).find('img');
+	    content.each(function() {
+		    window.wpvCachedImages.push(this.src);
+	    });
         });
     }
 }
@@ -453,18 +505,18 @@ function wpv_pagination_get_page(view_number, next, effect, speed, response, wpv
         var images = responseView.find('img');
         if (images.length < 1) {
             wpv_pagination_slide(view_number, width, height, next, effect, speed, responseView, wpvPaginatorLayout, wpvPaginatorFilter, callback_next);
-        } else {
-            images.one('load', function() {
-                preloadedImages.push(jQuery(this).attr('src'));
-                if (preloadedImages.length == images.length) {
-                    wpv_pagination_slide(view_number, width, height, next, effect, speed, responseView, wpvPaginatorLayout, wpvPaginatorFilter, callback_next);
-                }
-            }).each(function() {
-                if(this.complete) {
-                    jQuery(this).load();
-                }
-            });
-        }
+	} else {
+		images.one('load', function() {
+			preloadedImages.push(jQuery(this).attr('src'));
+			if (preloadedImages.length == images.length) {
+				wpv_pagination_slide(view_number, width, height, next, effect, speed, responseView, wpvPaginatorLayout, wpvPaginatorFilter, callback_next);
+			}
+		}).each(function() {
+		//	if(this.complete) {
+				jQuery(this).load();
+		//	}
+		});
+	}
     } else {
         wpv_pagination_slide(view_number, width, height, next, effect, speed, responseView, wpvPaginatorLayout, wpvPaginatorFilter, callback_next);
     }
@@ -494,8 +546,8 @@ function wpv_pagination_slide(view_number, width, height, next, effect, speed, r
             responseView.css('float', 'left').css('visibility', 'visible');
             wpvPaginatorLayout.after(responseView).parent().children().wrapAll('<div style="width:5000px;" />');
             jQuery('#wpv_slide_loading_img_'+view_number).fadeOut(function(){jQuery(this).remove();});
-            wpvPaginatorLayout.parent().delay(500).animate({marginLeft: '-'+width+'px'}, 1000, function(){
-                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, 500, function(){
+	    wpvPaginatorLayout.parent().animate({marginLeft: '-'+width+'px'}, speed+500, function(){
+                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, speed, function(){
                     responseView.css('position', 'static').css('float', 'none').css('height', wpvPaginatorLayout.parent().parent().height()+'px');
                     wpvPaginatorLayout.unwrap().unwrap().remove();
                     window.wpvPaginationAjaxLoaded[view_number] = true;
@@ -514,8 +566,8 @@ function wpv_pagination_slide(view_number, width, height, next, effect, speed, r
             responseView.css('float', 'right').css('visibility', 'visible');
             wpvPaginatorLayout.after(responseView).parent().children().wrapAll('<div style="width:' + (responseView.width()+wpvPaginatorLayout.width()) + 'px; margin-left:-' + (wpvPaginatorLayout.width()) + 'px;" />');
             jQuery('#wpv_slide_loading_img_'+view_number).fadeOut(function(){jQuery(this).remove();});
-            wpvPaginatorLayout.parent().delay(500).animate({marginLeft: '0px'}, 1000, function(){
-                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, 500, function(){
+	    wpvPaginatorLayout.parent().animate({marginLeft: '0px'}, speed+500, function(){
+                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, speed, function(){
                     responseView.css('position', 'static').css('margin', '0px').css('float', 'none').css('height', wpvPaginatorLayout.parent().parent().height()+'px');
                     wpvPaginatorLayout.unwrap().unwrap().remove();
                     window.wpvPaginationAjaxLoaded[view_number] = true;
@@ -539,8 +591,8 @@ function wpv_pagination_slide(view_number, width, height, next, effect, speed, r
             responseView.css('visibility', 'visible');
             wpvPaginatorLayout.after(responseView).parent().children().wrapAll('<div />');
             jQuery('#wpv_slide_loading_img_'+view_number).fadeOut(function(){jQuery(this).remove();});
-            wpvPaginatorLayout.parent().delay(500).animate({marginTop: '-'+height+'px'}, 1000, function(){
-                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, 500, function(){
+	    wpvPaginatorLayout.parent().animate({marginTop: '-'+height+'px'}, speed+500, function(){
+                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, speed, function(){
                     responseView.css('position', 'static').css('margin', '0px');
                     wpvPaginatorLayout.unwrap().unwrap().remove();
                     window.wpvPaginationAjaxLoaded[view_number] = true;
@@ -558,8 +610,8 @@ function wpv_pagination_slide(view_number, width, height, next, effect, speed, r
             wpvPaginatorLayout.before(responseView).parent().children().wrapAll('<div />');
             wpvPaginatorLayout.parent().css('position', 'relative').css('margin-top', '-'+responseView.height()+'px');
             jQuery('#wpv_slide_loading_img_'+view_number).fadeOut(function(){jQuery(this).remove();});
-            wpvPaginatorLayout.parent().delay(500).animate({marginTop: '0px'}, 1000, function(){
-                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, 500, function(){
+	    wpvPaginatorLayout.parent().animate({marginTop: '0px'}, speed+500, function(){
+                wpvPaginatorLayout.parent().parent().animate({height: responseView.height()+'px'}, speed, function(){
                     responseView.css('position', 'static').css('margin', '0px');
                     wpvPaginatorLayout.unwrap().unwrap().remove();
                     window.wpvPaginationAjaxLoaded[view_number] = true;
@@ -575,7 +627,7 @@ function wpv_pagination_slide(view_number, width, height, next, effect, speed, r
         }
     } else { // Fade
         jQuery('#wpv_slide_loading_img_'+view_number).fadeOut(function(){jQuery(this).remove();});
-        wpvPaginatorLayout.css('position', 'absolute').css('z-index', '5').after(responseView).next().css('position', 'static').prev().delay(500).fadeOut(speed+500, function(){
+        wpvPaginatorLayout.css('position', 'absolute').css('z-index', '5').after(responseView).next().css('position', 'static').prev().fadeOut(speed+500, function(){
             wpvPaginatorLayout.unwrap().remove();
             window.wpvPaginationAjaxLoaded[view_number] = true;
             window.wpvPaginationAnimationFinished[view_number] = true;
@@ -586,7 +638,7 @@ function wpv_pagination_slide(view_number, width, height, next, effect, speed, r
             }
             wpvPaginationQueueTrigger(view_number, next, wpvPaginatorFilter);
         });
-        responseView.hide().css('visibility', 'visible').delay(500).fadeIn(speed+500);
+        responseView.hide().css('visibility', 'visible').fadeIn(speed+500);
     }
 }
 
@@ -665,22 +717,18 @@ jQuery.fn.wpvRollover = function(){
 };
 
 function wpvPaginationQueueTrigger(view_number, next, wpvPaginatorFilter) {
-    if (view_number in window.wpvPaginationQueue && window.wpvPaginationQueue[view_number].length > 0) {
-        var page = wpvPaginatorFilter[0].find('#wpv_paged-'+view_number).val();
-        var max_pages = wpvPaginatorFilter[0].find('#wpv_paged_max-'+view_number).val();
-        if (next) {
-            page++;
-        } else {
-            page--;
-        }
-        if (page > max_pages) {
-            page = 1;
-        } else if (page < 1) {
-            page = max_pages;
-        }
+if (view_number in window.wpvPaginationQueue && window.wpvPaginationQueue[view_number].length > 0) {
+	// when double clicking,we have set window.wpvPaginationQueue[view_number][1] and maybe we could tweak it to change the page number. Maybe checkin historyP
         window.wpvPaginationQueue[view_number].sort();
         var args = window.wpvPaginationQueue[view_number][0];
         window.wpvPaginationQueue[view_number].splice(0, 1);
+	var page = args[1];
+	var max_pages = args[4];
+	if (page > max_pages) {
+		page = 1;
+	} else if (page < 1) {
+		page = max_pages;
+	}
         wpv_pagination_replace_view(view_number, page, args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[10]);
     }
 }

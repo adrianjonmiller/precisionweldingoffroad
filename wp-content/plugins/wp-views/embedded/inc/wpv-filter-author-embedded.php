@@ -4,7 +4,7 @@
  * Add a filter to add the query by author to the $query
  */
 
-add_filter('wpv_filter_query', 'wpv_filter_post_author', 10, 2);
+add_filter('wpv_filter_query', 'wpv_filter_post_author', 13, 2); // we need to set a higher priority than the limit filter has because we use $query['post__in'] = array('0') on failure
 function wpv_filter_post_author($query, $view_settings) {
 
 	global $WP_Views;
