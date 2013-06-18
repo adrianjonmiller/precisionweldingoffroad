@@ -29,7 +29,7 @@
 
 body {
 	color: #fff;
-	font-family: 'Lato', sans-serif;
+	font-family: $primary-font, sans-serif;
 	background-color: black;
 }
 
@@ -48,6 +48,7 @@ p {
 }
 
 h2, h3 {
+	font-family: $tertiary-font, sans-serif;
 	font-weight: 100;
 }
 
@@ -86,6 +87,7 @@ header {
 	
 	h1 {
 		padding-top: 20px;
+		font-family: $tertiary-font, sans-serif;
 		
 		img {
 			width: 325px;
@@ -93,7 +95,7 @@ header {
 	}
 	
 	.blog-description {
-		font-family: 'economica', sans-serif;
+		font-family: $secondary-font, sans-serif;
 		font-weight: 100;
 		font-size: 1.3em;
 		position: absolute;
@@ -176,7 +178,7 @@ header {
 						font-size: 1.1em;
 						font-weight: 300;
 						color: #ccc;
-						font-family: 'Economica', sans-serif;
+						font-family: $secondary-font, sans-serif;
 						
 						&:hover {
 							text-decoration: none;
@@ -311,7 +313,7 @@ $border-radius: 12px;
 	position: absolute;
 	bottom: 8px;
 	right: 0;
-	font-family: 'Economica', sans-serif;
+	font-family: $secondary-font, sans-serif;
 	
 	li {
 		float: left;
@@ -353,7 +355,7 @@ $border-radius: 12px;
 			
 			h3 {
 				padding-top: 60px;
-				font-family: 'lato', sans-serif;
+				font-family: $tertiary-font, sans-serif;
 				font-weight: 100;
 				text-shadow: 0 -1px #000;
 				white-space: normal;
@@ -517,7 +519,7 @@ ul.child-categories {
 //				margin-bottom: $pad;
 //				a {
 //					text-decoration: none;
-//					font-family: 'Economica', sans-serif;
+//					font-family: $secondary-font, sans-serif;
 //					font-size: 1.2em;
 //				}
 //			}
@@ -571,8 +573,8 @@ ul.products {
 			a {
 			
 				h3 {
-					font-family: 'Economica', sans-serif;
-					@include adjust-font-size-to(20px);
+					font-family: sans-serif;
+					@include adjust-font-size-to(16px);
 				}
 				
 				
@@ -631,7 +633,8 @@ ul.products {
 }
 
 .woocommerce-breadcrumb {
-	font-weight: 300;
+	font-family: $tertiary-font, sans-serif;
+	font-weight: 100;
 	@include adjust-font-size-to(20px);
 	
 	a {
