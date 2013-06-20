@@ -10,42 +10,73 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 get_header('shop'); ?>
 
-<?php Starkers_Utilities::get_template_parts( array( 'parts/shared/html-header', 'parts/shared/header' ) ); ?>
-<div class="grid">
-<div class="col-2-3">
-<div class="breadcrumbs">
-    <?php if(function_exists('bcn_display'))
-    {
-        bcn_display();
-    }?>
-</div>
-			
-<?php while ( have_posts() ) : the_post(); ?>
+	<?php
+		/**
+		 * woocommerce_before_main_content hook
+		 *
+		 * @hooked woocommerce_output_content_wrapper - 10 (outputs opening divs for the content)
+		 * @hooked woocommerce_breadcrumb - 20
+		 */
+		do_action('woocommerce_before_main_content');
+	?>
 
-	<?php woocommerce_get_template_part( 'content', 'product' ); ?>
 
-<?php endwhile; // end of the loop. ?>
+		<?php if ( have_posts() ) : ?>
 
-<?php
-global $wp_query;
+			<?php
+				/**
+				 * woocommerce_before_shop_loop hook
+				 *
+				 * @hooked woocommerce_result_count - 20
+				 * @hooked woocommerce_catalog_ordering - 30
+				 */
+				do_action( 'woocommerce_before_shop_loop' );
+			?>
 
-$big = 999999999; // need an unlikely integer
+			<?php woocommerce_product_loop_start(); ?>
 
-echo paginate_links( array(
-	'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
-	'format' => '?paged=%#%',
-	'current' => max( 1, get_query_var('paged') ),
-	'total' => $wp_query->max_num_pages
-) );
-?>
+				<?php while ( have_posts() ) : the_post(); ?>
 
-</div>
-<div id="sidebar-primary" class="col-1-3">
+					<?php woocommerce_get_template_part( 'content', 'product' ); ?>
 
-	<?php dynamic_sidebar( 'primary' ); ?>
+				<?php endwhile; // end of the loop. ?>
 
-</div>
-</div>
-<?php Starkers_Utilities::get_template_parts( array( 'parts/shared/footer','parts/shared/html-footer' ) ); ?>
+			<?php woocommerce_product_loop_end(); ?>
+
+			<?php
+				/**
+				 * woocommerce_after_shop_loop hook
+				 *
+				 * @hooked woocommerce_pagination - 10
+				 */
+				do_action( 'woocommerce_after_shop_loop' );
+			?>
+
+		<?php elseif ( ! woocommerce_product_subcategories( array( 'before' => woocommerce_product_loop_start( false ), 'after' => woocommerce_product_loop_end( false ) ) ) ) : ?>
+
+			<?php woocommerce_get_template( 'loop/no-products-found.php' ); ?>
+
+		<?php endif; ?>
+
+	<?php
+		/**
+		 * woocommerce_after_main_content hook
+		 *
+		 * @hooked woocommerce_output_content_wrapper_end - 10 (outputs closing divs for the content)
+		 */
+		do_action('woocommerce_after_main_content');
+	?>
+
+	<?php
+		/**
+		 * woocommerce_sidebar hook
+		 *
+		 * @hooked woocommerce_get_sidebar - 10
+		 */
+		do_action('woocommerce_sidebar');
+	?>
+
+<?php get_footer('shop'); ?>
