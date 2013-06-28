@@ -25,11 +25,11 @@
 		
 		if( is_user_logged_in() ) {
 		    $menu = 'logged-in';
-		    $search = '120px';
+		    $search = '150px';
 		    
 		} else {
 		    $menu = 'logged-out';
-		    $search = '60px';
+		    $search = '90px';
 		}
 		
 		?>		
