@@ -440,7 +440,7 @@ class pb_backupbuddy_ui {
 			$log_error = true;
 		}
 		if ( $error_code != '' ) {
-			$message .= '<a href="http://ithemes.com/codex/page/' . pb_backupbuddy::settings( 'name' ) . ':_Error_Codes#' . $error_code . '" target="_new"><i>' . pb_backupbuddy::settings( 'name' ) . ' Error Code ' . $error_code . ' - Click for more details.</i></a>';
+			$message .= ' <a href="http://ithemes.com/codex/page/' . pb_backupbuddy::settings( 'name' ) . ':_Error_Codes#' . $error_code . '" target="_new"><i>' . pb_backupbuddy::settings( 'name' ) . ' Error Code ' . $error_code . ' - Click for more details.</i></a>';
 			$log_error = true;
 		}
 		if ( $log_error === true ) {
@@ -663,10 +663,11 @@ class pb_backupbuddy_ui {
 	 *	
 	 *	Output HTML headers when using AJAX.
 	 *	
-	 *	@param		boolean		$js		Whether or not to load javascript. Default false.
+	 *	@param		boolean		$js			Whether or not to load javascript. Default false.
+	 *	@param		bool		$padding	Whether or not to padd wrapper div. Default has padding.
 	 *	@return		
 	 */
-	function ajax_header( $js = true ) {
+	function ajax_header( $js = true, $padding = true ) {
 		echo '<head>';
 		echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
 		echo '<title>PluginBuddy</title>';
@@ -687,7 +688,11 @@ class pb_backupbuddy_ui {
 		pb_backupbuddy::load_script( 'tooltip.js', true );
 		
 		echo '<body class="wp-core-ui">';
-		echo '<div style="padding: 8px; padding-left: 12px; padding-right: 12px;">';
+		if ( $padding === true ) {
+			echo '<div style="padding: 8px; padding-left: 12px; padding-right: 12px;">';
+		} else {
+			echo '<div>';
+		}
 	} // End ajax_header().
 	
 	

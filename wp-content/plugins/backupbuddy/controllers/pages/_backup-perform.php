@@ -292,6 +292,11 @@ if ( 'true' == pb_backupbuddy::_GET( 'quickstart_wizard' ) ) {
 											jQuery( '#pb_backupbuddy_archive_download' ).slideDown();
 											jQuery( '#pb_backupbuddy_stop' ).css( 'visibility', 'hidden' );
 										<?php } ?>
+									} else if ( action_line[0] == 'archive_deleted' ) {
+											jQuery( '#pb_backupbuddy_archive_url' ).addClass( 'button-disabled' );
+											jQuery( '#pb_backupbuddy_archive_url' ).attr( 'onClick', 'return false;' );
+											jQuery( '#pb_backupbuddy_archive_send' ).addClass( 'button-disabled' );
+											jQuery( '#pb_backupbuddy_archive_send' ).attr( 'onClick', 'var event = arguments[0] || window.event; event.stopPropagation(); return false;' );
 									} else if ( action_line[0] == 'halt_script' ) {
 										jQuery( '.pb_backupbuddy_blinkz' ).css( 'background-position', 'top' ); // turn off led
 										jQuery( '#pb_backupbuddy_slot1_led' ).removeClass( 'pb_backupbuddy_blinkz' ); // disable blinking
@@ -622,12 +627,60 @@ if ( 'true' == pb_backupbuddy::_GET( 'quickstart_wizard' ) ) {
 <?php
 pb_backupbuddy::flush();
 
-$export_plugins = array(); // Default of no exported plugins. Used by MS export.
-if ( pb_backupbuddy::_GET( 'backupbuddy_backup' ) == 'export' ) {
-	$export_plugins = pb_backupbuddy::_POST( 'items' );
+$requested_profile = pb_backupbuddy::_GET( 'backupbuddy_backup' );
+if ( 'db' == $requested_profile ) { // db profile is always index 1.
+	$requested_profile = '1';
+} elseif ( 'full' == $requested_profile ) { // full profile is always index 2.
+	$requested_profile = '2';
 }
 
-if ( pb_backupbuddy::$classes['backup']->start_backup_process( pb_backupbuddy::_GET( 'backupbuddy_backup' ), 'manual', array(), array(), '', $serial_override, $export_plugins ) !== true ) {
+$export_plugins = array(); // Default of no exported plugins. Used by MS export.
+if ( pb_backupbuddy::_GET( 'backupbuddy_backup' ) == 'export' ) { // EXPORT.
+	$export_plugins = pb_backupbuddy::_POST( 'items' );
+	$profile_array = pb_backupbuddy::$options['0']; // Run exports on default profile.
+	$profile_array['type'] = 'export'; // Pass array with export type set.
+} else { // NOT MULTISITE EXPORT.
+	if ( is_numeric( $requested_profile ) ) {
+		$profile_array = pb_backupbuddy::$options['profiles'][ $requested_profile ];
+	} else {
+		die( 'Error #85489548955. Invalid profile ID number: `' . htmlentities( $requested_profile ) . '`.' );
+	}
+}
+
+
+// Sending to remote destination after manual backup completes?
+$post_backup_steps = array();
+if ( ( pb_backupbuddy::_GET( 'after_destination' ) != '' ) && ( is_numeric( pb_backupbuddy::_GET( 'after_destination' ) ) ) ) {
+	$destination_id = (int) pb_backupbuddy::_GET( 'after_destination' );
+	if ( pb_backupbuddy::_GET( 'delete_after' ) == 'true' ) {
+		$delete_after = true;
+	} else {
+		$delete_after = false;
+	}
+	$post_backup_steps = array(
+		array(
+			'function'		=>		'send_remote_destination',
+			'args'			=>		array( $destination_id, $delete_after ),
+			'start_time'	=>		0,
+			'finish_time'	=>		0,
+			'attempts'		=>		0,
+		)
+	);
+	pb_backupbuddy::status( 'details', 'Manual backup set to send to remote destination `' . $destination_id . '`.  Delete after: `' . $delete_after . '`. Added to post backup function steps.' );
+}
+
+
+// Run the backup!
+if ( pb_backupbuddy::$classes['backup']->start_backup_process(
+		$profile_array,											// Profile array.
+		'manual',												// Backup trigger. manual, scheduled
+		array(),												// pre-backup array of steps.
+		$post_backup_steps,										// post-backup array of steps.
+		'',														// friendly title of schedule that ran this (if applicable).
+		$serial_override,										// if passed then this serial is used for the backup insteasd of generating one.
+		$export_plugins											// Multisite export only: array of plugins to export.
+	) !== true ) {
 	pb_backupbuddy::alert( __('Fatal Error #4344443: Backup failure', 'it-l10n-backupbuddy' ), true );
 }
-?>
+
+

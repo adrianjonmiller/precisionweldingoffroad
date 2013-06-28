@@ -52,6 +52,10 @@ function get_database_defaults() {
 	$response['wipe'] = pb_backupbuddy::$options['wipe_database']; // just tables matching prefix
 	$response['wipe_all'] = pb_backupbuddy::$options['wipe_database_all']; // all tables
 	
+	if ( count( pb_backupbuddy::$options['dat_file'] ) == 0 ) {
+		die( 'Error #854894. DAT file contents unexpectedly went missing. This usually means the import process was reset. Possible causes:The import process was restarted in another browser or tab, the backup ZIP file was renamed from its original filename, or permissions need reset recursively on all files from your webroot.' );
+	}
+	
 	// If in high security mode then no guesses or previous values will be given.
 	if ( isset( pb_backupbuddy::$options['dat_file']['high_security'] ) && ( pb_backupbuddy::$options['dat_file']['high_security'] === true ) ) { 
 		return $response;

@@ -1,4 +1,28 @@
 <?php
+// Tutorial
+pb_backupbuddy::load_script( 'jquery.joyride-2.0.3.js' );
+pb_backupbuddy::load_script( 'modernizr.mq.js' );
+pb_backupbuddy::load_style( 'joyride.css' );
+?>
+<a href="" class="pb_backupbuddy_begintour">Tour This Page</a>
+<ol id="pb_backupbuddy_tour" style="display: none;">
+	<li data-id="ui-id-1">View server configuration details, security information, server paths, etc.</li>
+	<li data-id="ui-id-2">View database information as well as tables excluded from backups.</li>
+	<li data-id="ui-id-3">View your site's files in either a graphical format or a listing. The listing also notes exclusions from backups.</li>
+	<li data-id="ui-id-4" data-button="Finish">Additional site tools for managing CRON schedules and database text search & replace.</li>
+</ol>
+<script>
+jQuery(window).load(function() {
+	jQuery( '.pb_backupbuddy_begintour' ).click( function() {
+		jQuery("#pb_backupbuddy_tour").joyride({
+			tipLocation: 'top',
+		});
+		return false;
+	});
+});
+</script>
+
+<?php
 if ( !defined( 'PB_IMPORTBUDDY' ) ) { // NOT IN IMPORTBUDDY:
 	pb_backupbuddy::load_script( 'admin.js' );
 	
@@ -7,6 +31,10 @@ if ( !defined( 'PB_IMPORTBUDDY' ) ) { // NOT IN IMPORTBUDDY:
 	pb_backupbuddy::$ui->title( __( 'Server Information', 'it-l10n-backupbuddy' ) . ' ' . pb_backupbuddy::video( '7NI7oePvxZg', __( 'Server information', 'it-l10n-backupbuddy' ), false ) );
 	pb_backupbuddy::$classes['core']->versions_confirm();
 	
+	$default_tab = 0;
+	if ( is_numeric( pb_backupbuddy::_GET( 'tab' ) ) ) {
+		$default_tab = pb_backupbuddy::_GET( 'tab' );
+	}
 	
 	echo '<br><br>';
 	pb_backupbuddy::$ui->start_tabs(
@@ -29,7 +57,9 @@ if ( !defined( 'PB_IMPORTBUDDY' ) ) { // NOT IN IMPORTBUDDY:
 				'slug'		=>		'tools',
 			),
 		),
-		'width: 100%;'
+		'width: 100%;',
+		true,
+		$default_tab
 	);
 	echo '<br>';
 	
@@ -63,6 +93,7 @@ if ( !defined( 'PB_IMPORTBUDDY' ) ) { // NOT IN IMPORTBUDDY:
 		}
 		$wp_settings[] = array( 'Site URL', site_url(), 'site_url()' );
 		$wp_settings[] = array( 'Home URL', home_url(), 'home_url()' );
+		$wp_settings[] = array( 'WordPress Root Path', ABSPATH, 'ABSPATH' );
 		
 		// Multisite extras:
 		$wp_settings_multisite = array();

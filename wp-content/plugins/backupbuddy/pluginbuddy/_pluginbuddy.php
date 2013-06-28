@@ -56,7 +56,7 @@ class pb_backupbuddy {
 	//private static $_callbacks;				// DISABLED. Using create_function() to bypass need for this. Currently only holding callback for the admin menu . @see pluginbuddy_callbacks class
 	public static $_dashboard_widgets;   		// Holds tag and title for unconstructed dashboard widgets temporarily.
 	public static $_updater;					// Contains updater object (if enabled) of the most up to date updater found. Populated on init hook.
-	
+	private static $_skiplog;					// if unable to write to log then skip all future attempts.
 	
 	
 	// ********** FUNCTIONS **********
@@ -91,7 +91,9 @@ class pb_backupbuddy {
 			}
 		}
 		if ( isset( $_GET['page'] ) ) { // If in an admin page then append page querystring.
-			self::$_self_link = array_shift( explode( '?', $_SERVER['REQUEST_URI'] ) ) . '?page=' . htmlentities( $_GET['page'] );
+			$arr = explode( '?', $_SERVER['REQUEST_URI'] ); // avoid reference error by setting here.
+			self::$_self_link = array_shift( $arr ) . '?page=' . htmlentities( $_GET['page'] );
+			unset( $arr );
 		}
 		
 		// Set the init file.
@@ -514,18 +516,35 @@ class pb_backupbuddy {
 	 *	@param		bool		$deny_all		When true also enforce denying ALL web-based access to directory. default false
 	 *	@return		boolean						True on success securing directory, false otherwise.
 	 */
-	public static function anti_directory_browsing( $directory = '', $die_on_fail = true, $deny_all = false ) {
-		// Create directory.
+	public static function anti_directory_browsing( $directory = '', $die_on_fail = true, $deny_all = false, $suppress_alert = false ) {
+		
+		// Check directory exists & create if it doesn't.
 		if ( !file_exists( $directory ) ) {
 			if ( self::$filesystem->mkdir( $directory ) === false ) {
-				self::alert( 'Error #9002: Unable to create directory `' . $directory . '`. Please verify write permissions for this directory and/or manually create it.' );
+				$error = 'Error #9002: BackupBuddy unable to create directory `' . $directory . '`. Please verify write permissions for the parent directory `' . dirname( $directory ) . '` or manually create the specified directory & set permissions.';
+				if ( $suppress_alert !== true ) {
+					self::alert( $error, true, '9002' );
+				}
 				if ( $die_on_fail === true ) {
-					die( 'Script halted for security. Please verify permissions on directory `' . $directory . '` allow writing & reading and try again.' );
+					die( $error );
 				}
 				return false;
 			}
 		}
 		
+		// Check writable.
+		if ( ! is_writable( $directory ) ) {
+			$error = 'Error #9002d: BackupBuddy directory `' . $directory . '` is indicated as NOT being writable. Please verify write permissions for it and parent directories as applicable.';
+			if ( $suppress_alert !== true ) {
+				self::alert( $error, true, '9002' );
+			}
+			if ( $die_on_fail === true ) {
+				die( $error );
+			}
+			return false;
+		}
+		
+		// .htaccess contents for denying.
 		if ( true === $deny_all ) {
 			$deny_all = "\ndeny from all";
 		} else {
@@ -533,21 +552,39 @@ class pb_backupbuddy {
 		}
 		
 		$error = '';
-		if ( false === @file_put_contents( $directory . '/index.php', '<html></html>' ) ) {
-			$error .= 'Unable to write index.php file. ';
+		
+		// index.php
+		if ( ! file_exists( $directory . '/index.php' ) ) {
+			if ( false === @file_put_contents( $directory . '/index.php', '<html></html>' ) ) {
+				$error .= 'Unable to write index.php file. ';
+			}
 		}
-		if ( false === @file_put_contents( $directory . '/index.htm', '<html></html>' ) ) {
-			$error .= 'Unable to write index.htm file. ';
+		
+		// index.htm
+		if ( ! file_exists( $directory . '/index.htm' ) ) {
+			if ( false === @file_put_contents( $directory . '/index.htm', '<html></html>' ) ) {
+				$error .= 'Unable to write index.htm file. ';
+			}
 		}
-		if ( false === @file_put_contents( $directory . '/index.html', '<html></html>' ) ) {
-			$error .= 'Unable to write index.html file. ';
+		
+		// index.html
+		if ( ! file_exists( $directory . '/index.html' ) ) {
+			if ( false === @file_put_contents( $directory . '/index.html', '<html></html>' ) ) {
+				$error .= 'Unable to write index.html file. ';
+			}
 		}
-		if ( false === @file_put_contents( $directory . '/.htaccess', 'Options -Indexes' . $deny_all ) ) {
-			$error .= 'Unable to write .htaccess file. ';
+		
+		// .htaccess
+		if ( ! file_exists( $directory . '/.htaccess' ) ) {
+			if ( false === @file_put_contents( $directory . '/.htaccess', 'Options -Indexes' . $deny_all ) ) {
+				$error .= 'Unable to write .htaccess file. ';
+			}
 		}
 		
 		if ( $error != '' ) { // Failure.
-			self::alert( 'Error creating anti directory browsing security files in director `' . $directory . '`. Please verify this directory\'s permissions allow writing & reading. Errors: `' . $error . '`.' );
+			if ( true !== $suppress_alert ) {
+				self::alert( 'Error creating anti directory browsing security files in directory `' . $directory . '`. Please verify this directory\'s permissions allow writing & reading. Errors: `' . $error . '`.' );
+			}
 			if ( $die_on_fail === true ) {
 				die( 'Script halted for security. Please verify permissions and try again.' );
 			}
@@ -674,9 +711,15 @@ class pb_backupbuddy {
 		}
 		
 		// Prepare directory for log files. Return if unable to do so.
-		if ( true !== self::anti_directory_browsing( $log_directory ) ) { // Unable to secure directory. Fail.
-			self::alert( 'Unable to create / verify anti directory browsing measures for status file `' . $status_file . '`. Log not written for security.' );
+		if ( true === self::$_skiplog ) { // bool true so skip.
 			return;
+		} elseif( false !== self::$_skiplog ) { // something other than bool false so check directory before proceeding.
+			if ( true !== self::anti_directory_browsing( $log_directory, $die_on_fail = false, $deny_all = false, $suppress_alert = true ) ) { // Unable to secure directory. Fail.
+				self::$_skiplog = true;
+				return;
+			} else {
+				self::$_skiplog = false;
+			}
 		}
 		
 		// Function for writing actual log CSV data. Used later.

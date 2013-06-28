@@ -10,15 +10,46 @@ if ( defined( 'pluginbuddy_importbuddy' ) ) {
 
 
 
+$profile_id = 0;
+if ( is_numeric( pb_backupbuddy::_GET( 'profile' ) ) ) {
+	if ( isset( pb_backupbuddy::$options['profiles'][ pb_backupbuddy::_GET( 'profile' ) ] ) ) {
+		$profile_id = pb_backupbuddy::_GET( 'profile' );
+		pb_backupbuddy::$options['profiles'][ pb_backupbuddy::_GET( 'profile' ) ] = array_merge( pb_backupbuddy::settings( 'profile_defaults' ), pb_backupbuddy::$options['profiles'][ pb_backupbuddy::_GET( 'profile' ) ] ); // Set defaults if not set.
+	} else {
+		pb_backupbuddy::alert( 'Error #45849458: Invalid profile ID number `' . htmlentities( pb_backupbuddy::_GET( 'profile' ) ) . '`. Displaying with default profile.', true );
+	}
+}
+
+
+// Get profile array.
+$profile = array_merge( pb_backupbuddy::settings( 'profile_defaults' ), pb_backupbuddy::$options['profiles'][$profile_id] );
+foreach( $profile as $profile_item_name => &$profile_item ) { // replace non-overridden defaults with actual default value.
+	if ( '-1' == $profile_item ) { // Set to use default so go grab default.
+		$profile_item = pb_backupbuddy::$options['profiles'][0][ $profile_item_name ]; // Grab value from defaults profile and replace with it.
+	}
+}
 
 
 
+
+echo '<div style="float: right; margin-bottom: 4px;">Backup profile for calculating exclusions: ';
+echo '<select id="pb_backupbuddy_databaseprofile" onChange="window.location.href = \'' . pb_backupbuddy::page_url() . '&tab=1&profile=\' + jQuery(this).val();">';
+foreach( pb_backupbuddy::$options['profiles'] as $this_profile_id => $this_profile ) {
+	?>
+	<option value="<?php echo $this_profile_id; ?>" <?php if ( $profile_id == $this_profile_id ) { echo 'selected'; } ?>><?php echo htmlentities( $this_profile['title'] ); ?>  (<?php echo $this_profile['type']; ?>)</a>
+	<?php
+}
+echo '</select>';
+echo '</div>';
 
 
 
 
 //$table_list = array();
 ?>
+
+
+
 
 <table class="widefat">
 	<thead>
@@ -53,11 +84,10 @@ if ( defined( 'pluginbuddy_importbuddy' ) ) {
 		$prefix = $wpdb->prefix;
 		$prefix_length = strlen( $wpdb->prefix );
 		
-		$additional_includes = explode( "\n", pb_backupbuddy::$options['mysqldump_additional_includes'] );
+		$additional_includes = explode( "\n", $profile['mysqldump_additional_includes'] );
 		array_walk( $additional_includes, create_function('&$val', '$val = trim($val);')); 
-		$additional_excludes = explode( "\n", pb_backupbuddy::$options['mysqldump_additional_excludes'] );
+		$additional_excludes = explode( "\n", $profile['mysqldump_additional_excludes'] );
 		array_walk( $additional_excludes, create_function('&$val', '$val = trim($val);')); 
-
 		
 		$total_size = 0;
 		$total_size_with_exclusions = 0;
@@ -101,9 +131,8 @@ if ( defined( 'pluginbuddy_importbuddy' ) ) {
 			$size = ( $rs['Data_length'] + $rs['Index_length'] );
 			$total_size += $size;
 			
-			
 			// HANDLE EXCLUSIONS.
-			if ( pb_backupbuddy::$options['backup_nonwp_tables'] == 0 ) { // Only matching prefix.
+			if ( $profile['backup_nonwp_tables'] == 0 ) { // Only matching prefix.
 				if ( ( substr( $rs['Name'], 0, $prefix_length ) == $prefix ) OR ( in_array( $rs['Name'], $additional_includes ) ) ) {
 					if ( !in_array( $rs['Name'], $additional_excludes ) ) {
 						$total_size_with_exclusions += $size;

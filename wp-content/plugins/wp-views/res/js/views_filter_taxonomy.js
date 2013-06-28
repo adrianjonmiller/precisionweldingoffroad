@@ -124,7 +124,23 @@ function wpv_validate_taxonomy_data(in_popup) {
             } else {
                 jQuery(this).parent().find('.wpv_taxonomy_param_missing').hide();
             }
-        }    
+        }
+        
+        if (relationship == "FROM URL") {
+		var param = jQuery(this).parent().find('.wpv_taxonomy_param').val();
+		if (jQuery.inArray(param, wpv_forbidden_parameters.wordpress) > -1) {
+			jQuery(this).parent().find('.wpv_taxonomy_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
+			wpv_filter_taxonomy_edit_is_ok = false;
+		} else if (jQuery.inArray(param, wpv_forbidden_parameters.post_type) > -1) {
+			jQuery(this).parent().find('.wpv_taxonomy_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
+			wpv_filter_taxonomy_edit_is_ok = false;
+		} else if (jQuery.inArray(param, wpv_forbidden_parameters.taxonomy) > -1) {
+			jQuery(this).parent().find('.wpv_taxonomy_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
+			wpv_filter_taxonomy_edit_is_ok = false;
+		} else {
+			jQuery(this).parent().find('.wpv_taxonomy_param_forbidden').hide();
+		}
+	}
         
     });
     

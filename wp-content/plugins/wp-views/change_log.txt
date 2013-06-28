@@ -1,4 +1,36 @@
 -------------------------------------------------------------------------------------------------------------------
+Version 1.2.3
+	- Fix Checkboxes filter controls and strange w option
+	- Fix Taxonomies filter controls were not using the name/slug setting when in a widget
+	- Fix In filter control, using commas in manually entered values breaks them
+	- Fix Too many hidden inputs for sliders
+	- Fix Add filter popup broken in Chrome
+	- Fix Taxonomy filters not hidden in filters popup after save
+	- Fix No need to update to add a filter by author when deleting one already added
+	- Fix Updating parent post overwrite child view templates
+	- Fix Conflict with Vimeography plugin
+	- Fix Bug with 2 views with Ajax and a numeric order
+	- Fix Exclude Views and View Templates from target select in Views Filter Widget
+	- Fix Add Views Archive code to the embedded version
+	- Fix Switching an Archive View into a Normal View breaks the archives
+	- Fix Some settings for Views filtering taxonomies were not correctly exported and imported
+	- Fix Improved export/import flow for View Settings stored as arrays
+	- Fix issue with filter controls using checkbox fields storing 0 as value not working after import
+	- Fix Problem with ajax pagination and child views
+	- Fix Complete rewrite of the pagination function to addres some problems with slides
+	- Fix wpv-if condition error when field exists in some posts but not in current and when variable is not a shortcode attribute
+	- Fix Not able to add Fields in Arabic
+	- Fix Escaped characters were not handled in localized date filter controls
+	- New Add attribute for the wpv-filter-controls shortcode: hide="true" will hide the filter controls while showing the pagination controls
+	- New Add sorting options to taxonomy filter controls
+	- New Add option to show posts count on taxonomy filter controls
+	- New Changes references to "View filter controls" to "Parametric search"
+	- New Filter controls localization using WPML
+	- New Add URL parameter checking for filters: author, ID, custom fields and taxonomies
+	- New Add month and year select to datepicker popup in date filter controls
+	- New Add option to search filter: search in post titles and contents or just in post titles
+
+-------------------------------------------------------------------------------------------------------------------
 Version 1.2.2
 	- Fix If option to preload images before transition is checked, check for broken images and fix the broken pagination if there is any
 	- Fix Adding View to module creates blank elements in the Module Manager

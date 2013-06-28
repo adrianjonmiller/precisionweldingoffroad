@@ -49,6 +49,7 @@ require WPV_PATH_EMBEDDED . '/inc/wpv-layout-embedded.php';
 require WPV_PATH_EMBEDDED . '/inc/wpv-filter-meta-html-embedded.php';
 require WPV_PATH_EMBEDDED . '/inc/wpv-filter-embedded.php';
 require WPV_PATH_EMBEDDED . '/inc/wpv-pagination-embedded.php';
+require WPV_PATH_EMBEDDED . '/inc/wpv-archive-loop.php';
 require WPV_PATH_EMBEDDED . '/inc/wpv-filter-category-embedded.php';
 require WPV_PATH_EMBEDDED . '/inc/wpv-filter-custom-field-embedded.php';
 require WPV_PATH_EMBEDDED . '/inc/wpv-filter-order-by-embedded.php';

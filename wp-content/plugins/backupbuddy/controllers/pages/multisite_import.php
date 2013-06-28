@@ -1,6 +1,6 @@
 <?php
 
-pb_backupbuddy::$ui->title( 'Multisite Import Site (BETA)' . ' ' . pb_backupbuddy::video( '4RmC5nLmabE', __('Multisite import', 'it-l10n-backupbuddy' ), false ) );
+pb_backupbuddy::$ui->title( 'Multisite Import Site (EXPERIMENTAL)' . ' ' . pb_backupbuddy::video( '4RmC5nLmabE', __('Multisite import', 'it-l10n-backupbuddy' ), false ) );
 
 pb_backupbuddy::$classes['core']->versions_confirm();
 
@@ -203,24 +203,6 @@ class pluginbuddy_ms_import {
 				pb_backupbuddy::flush();
 			}
 		}
-		
-		
-		
-		/*
-		$message = htmlentities( addslashes( $message ) );
-		$status = date( $this->_parent->_parent->_timestamp, time() ) . ': ' . $message;
-		
-		echo '<script type="text/javascript">jQuery( "#importbuddy_status" ).append( "\n' . $status . '");	textareaelem = document.getElementById( "importbuddy_status" );	textareaelem.scrollTop = textareaelem.scrollHeight;	</script>';
-		pb_backupbuddy::flush();
-		
-		if ( $type == 'error' ) {
-			$this->log( $message, 'error' );
-		} elseif ( $type == 'warning' ) {
-			$this->log( $message, 'warning' );
-		} else {
-			$this->log( '[' . $type . ']' . $message, 'all' );
-		}
-		*/
 	}
 	
 	

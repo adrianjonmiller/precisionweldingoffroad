@@ -4,7 +4,7 @@
  *	Plugin Name: BackupBuddy
  *	Plugin URI: http://ithemes.com/purchase/backupbuddy/
  *	Description: The most complete WordPress solution for Backup, Restoration, and Migration. Backs up a customizable selection of files, settings, and content for the complete snapshot of your site. Restore and/or migrate your site to a new host or new domain with complete ease-of-mind.
- *	Version: 3.4.0.7
+ *	Version: 4.0.1
  *	Author: Dustin Bolton
  *	Author URI: http://dustinbolton.com/
  *	Author URL: http://pluginbuddy.com/
@@ -30,28 +30,20 @@ $pluginbuddy_settings = array(
 				'slug'				=>		'backupbuddy',
 				'series'			=>		'',
 				'default_options'	=>		array(
-												'data_version'						=>		'5',				// Data structure version. Added BB 2.0 to ease updating.												
+												'data_version'						=>		'7',				// Data structure version. Added BB 2.0 to ease updating.												
 												'importbuddy_pass_hash'				=>		'',					// ImportBuddy password hash.
 												'importbuddy_pass_length'			=>		0,					// Length of the ImportBuddy password before it was hashed.
-												'repairbuddy_pass_hash'				=>		'',					// ImportBuddy password hash.
-												'repairbuddy_pass_length'			=>		0,					// Length of the ImportBuddy password before it was hashed.
 												
 												'backup_reminders'					=>		1,					// Remind to backup after post, pre-upgrade, etc.
 												//'dashboard_stats'					=>		1,					// Stats box in dashboard.
 												'edits_since_last'					=>		0,					// Number of post/page edits since the last backup began.
-												'last_backup'						=>		0,					// Timestamp of when last backup started.
+												'last_backup_start'					=>		0,					// Timestamp of when last backup started.
+												'last_backup_finish'				=>		0,					// Timestamp of when the last backup finished.
 												'last_backup_serial'				=>		'',					// Serial of last backup zip.
-												'compression'						=>		1,					// Zip compression.
 												'force_compatibility'				=>		0,					// Force compatibility mode even if normal is detected.
 												'force_mysqldump_compatibility'		=>		0,					// Force compatibility mode for mysql db dumping. Uses PHP-based rather than command line mysqldump.
-												'skip_database_dump'				=>		0,					// When enabled the database dump step will be skipped.
-												'backup_nonwp_tables'				=>		0,					// Backup tables not prefixed with the WP prefix.
-												'include_tables'					=>		array(),			// Additional tables to include.
-												'exclude_tables'					=>		array(),			// Tables to exclude.
-												'integrity_check'					=>		1,					// Zip file integrity check on the backup listing.
 												'schedules'							=>		array(),			// Array of scheduled schedules.
 												'log_level'							=>		'1',				// Valid options: 0 = none, 1 = errors only, 2 = errors + warnings, 3 = debugging (all kinds of actions)
-												'excludes'							=>		'',					// Newline deliminated list of directories to exclude from the backup.
 												'backup_reminders'					=>		1,					// Whether or not to show reminders to backup on post/page edits & on the WP upgrade page.
 												'high_security'						=>		0,					// TODO: Future feature. Strip mysql password & admin user password. Prompt on import.
 												'next_schedule_index'				=>		100,				// Next schedule index. Prevent any risk of hanging scheduled crons from having the same ID as a new schedule.
@@ -70,6 +62,7 @@ $pluginbuddy_settings = array(
 												'email_notify_error'                       => '',					// Email address(es) to send to when an error is encountered.
 												'email_notify_error_subject'               => 'BackupBuddy Error - {site_url}',
 												'email_notify_error_body'                  => "An error occurred with BackupBuddy v{backupbuddy_version} on {current_datetime} for the site {site_url}. Error details:\r\n\r\n{message}",
+												'email_return'								=> '',				// Return email address for emails sent. Defaults to admin email if none specified.
 												
 												'remote_sends'						=>		array(),			// Keep a record of several remote sends.
 												'remote_destinations'				=>		array(),			// Array of remote destinations (S3, Rackspace, email, ftp, etc)
@@ -82,9 +75,6 @@ $pluginbuddy_settings = array(
 												'log_directory'						=>		'',					// Log directory. Also holds fileoptions.
 												'log_serial'						=>		'',					// Current log serial to send all output to. Used during backups.
 												'notifications'						=>		array(),			// TODO: currently not used.
-												'mysqldump_mode'					=>		'prefix',			// prefix, all, or none
-												'mysqldump_additional_includes'		=>		'',					// Additional db tables to backup in addition to those calculated by mysql_dumpmode.
-												'mysqldump_additional_excludes'		=>		'',					// Additional db tables to EXCLUDE. This is taken into account last, after tables are calculated by mysql_dumpmode AND additional includes calculated.
 												'zip_method_strategy'				=>		'0',				// 0 = Not Set, 1 = Best Available, 2 = All Available, 3 = Force Compatibility.
 												'alternative_zip_2'					=>		'0',				// Alternative zip system (Jeremy).
 												'ignore_zip_warnings'				=>		'0',				// Ignore non-fatal zip warnings during the zip process (ie symlink, cant read file, etc).
@@ -94,18 +84,54 @@ $pluginbuddy_settings = array(
 												'disable_https_local_ssl_verify'	=>		'0',				// When enabled (1) disabled WordPress from verifying SSL certificates for loopbacks, etc.
 												'save_comment_meta'					=>		'1',				// When enabled (1) meta data will not be stored in backups during creation.
 												'stats'								=>		array(
-																							'site_size'				=>		0,
-																							'site_size_excluded'	=>		0,
-																							'site_size_updated'		=>		0,
-																							'db_size'				=>		0,
-																							'db_size_excluded'		=>		0,
-																							'db_size_updated'		=>		0,
-																					),
+																								'site_size'				=>		0,
+																								'site_size_excluded'	=>		0,
+																								'site_size_updated'		=>		0,
+																								'db_size'				=>		0,
+																								'db_size_excluded'		=>		0,
+																								'db_size_updated'		=>		0,
+																							),
 												'disalerts'							=>		array(),			// Array of alerts that have been dismissed/hidden.
-												'breakout_tables'			=>		'0',						// Whether or not to breakout some tables into individual steps (for sites with larger dbs).
-												'include_importbuddy'		=>		'1',						// Whether or not to include importbuddy.php script inside backup ZIP file.
-												'max_site_log_size'			=>		'10',						// Size in MB to clear the log file if it is exceeded.
+												'breakout_tables'					=>		'0',						// Whether or not to breakout some tables into individual steps (for sites with larger dbs).
+												'include_importbuddy'				=>		'1',						// Whether or not to include importbuddy.php script inside backup ZIP file.
+												'max_site_log_size'					=>		'10',						// Size in MB to clear the log file if it is exceeded.
+												'compression'						=>		'1',						// Zip compression.
+												'no_new_backups_error_days'			=>		'45',						// Send an error email notification if no new backups have been created in X number of days.
+												'profiles'							=>		array(
+																								0 => array(
+																													'type'							=>		'defaults',
+																													'title'							=>		'Global Defaults',
+																													'skip_database_dump'			=>		'0',						// When enabled the database dump step will be skipped.
+																													'backup_nonwp_tables'			=>		'0',						// Backup tables not prefixed with the WP prefix.
+																													'integrity_check'				=>		'1',						// Zip file integrity check on the backup listing.
+																													'mysqldump_additional_includes'	=>		'',
+																													'mysqldump_additional_excludes'	=>		'',
+																													'excludes'						=>		''
+																												),
+																								1 => array(
+																													'type'		=>	'db',
+																													'title'		=>	'Database Only',
+																													'tip'		=>	'Just your database. I like your minimalist style.',
+																												),
+																								2	   => array(
+																													'type'		=>	'full',
+																													'title'		=>	'Complete Backup',
+																												),
+																							),
 											),
+				'profile_defaults'			=>	array(
+													'type'							=>		'',						// defaults, db, or full
+													'title'							=>		'',						// Friendly title/name.
+													'skip_database_dump'			=>		'-1',					// When enabled the database dump step will be skipped.
+													'mysqldump_additional_includes'	=>		'-1',					// Additional db tables to backup in addition to those calculated by mysql_dumpmode.
+													'mysqldump_additional_excludes'	=>		'-1',					// Additional db tables to EXCLUDE. This is taken into account last, after tables are calculated by mysql_dumpmode AND additional includes calculated.
+													'backup_nonwp_tables'			=>		'-1',					// Backup tables not prefixed with the WP prefix.
+													//'compression'					=>		'-1',					// Zip compression.
+													'excludes'						=>		'-1',					// Newline deliminated list of directories to exclude from the backup.
+													'integrity_check'				=>		'-1',					// Zip file integrity check on the backup listing.
+													'profile_globaltables'			=>		'1',					// Whether or not custom table inclusions/exclusions enabled for this profile.
+													'profile_globalexcludes'		=>		'1',					// Whether or not custom file excludes enabled for this profile.
+												),
 				'migration_defaults'		=>	array(
 													'web_address'			=>		'',
 													'ftp_server'			=>		'',
@@ -115,9 +141,10 @@ $pluginbuddy_settings = array(
 													'ftps'					=>		'0',
 												),
 				'backups_integrity_defaults'=>	array( // key is serial
-													'status'				=>		'',
-													'status_details'		=>		'',
+													'is_ok'					=>		false,
+													'tests'					=>		array(),
 													'scan_time'				=>		0,
+													'scan_log'				=>		array(),
 													'size'					=>		0,
 													'modified'				=>		0,
 													'detected_type'			=>		'',
@@ -125,7 +152,7 @@ $pluginbuddy_settings = array(
 												),
 				'schedule_defaults'	=>		array(
 												'title'						=>		'',
-												'type'						=>		'db',
+												'profile'					=>		'',
 												'interval'					=>		'monthly',
 												'first_run'					=>		'',
 												'delete_after'				=>		'0',

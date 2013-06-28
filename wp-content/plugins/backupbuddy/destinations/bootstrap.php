@@ -99,7 +99,7 @@ class pb_backupbuddy_destinations {
 		$destination_info = array_merge( self::$_destination_info_defaults, $default_info ); // Merge in defaults.
 		
 		
-		$settings_form = new pb_backupbuddy_settings( 'settings', $destination_settings, '' );
+		$settings_form = new pb_backupbuddy_settings( 'settings', $destination_settings, 'sending=' . pb_backupbuddy::_GET( 'sending' ) );
 		$settings_form->add_setting( array(
 			'type'		=>		'hidden',
 			'name'		=>		'type',

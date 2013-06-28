@@ -392,6 +392,7 @@ hr {
 .modal_header {
 	background: whiteSmoke;
 	padding: 20px;
+	//padding-bottom: 15px;
 	border-bottom: 1px solid #D6D6D6;
 }
 .modal_header h2 {
@@ -403,12 +404,13 @@ hr {
 }
 .modal_close {
 	float: right;
-	color: #000000;
+	color: #8f8f8f;
+	font-size: 18px;
 	cursor: pointer;
 	
 	position: absolute;
-	right: 10px;
-	top: 10px;
+	right: 15px;
+	top: 15px;
 }
 .modal_content {
 	padding: 20px;
@@ -487,4 +489,10 @@ hr {
 	background-position: left center;
 	background-repeat: no-repeat;
 	background-image: url(../images/expanded.gif);
+}
+
+
+.pb_backupbuddy_begintour {
+	margin-top: 6px !important;
+	font-size: 14px !important;
 }

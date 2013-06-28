@@ -1159,6 +1159,106 @@ if ( !class_exists( "pluginbuddy_zipbuddy" ) ) {
 		}
 		
 		/**
+		 *	extract()
+		 *
+		 *	Extracts the specified contents of a zip file to the specified destination using the best unzip methods possible.
+		 *	The destination directory _must_ already exist and be writable - this function does not create it
+		 *	The items are an array of mapping of what => where, e.g.
+		 *	array( "dir/myfile.txt" => "", "dir/myfile.txt" => "tmpfilename", "dir/myfile.txt" => "dir/myfile.txt" )
+		 *	In the first case the file is extracted to $destination_directory/myfile.txt
+		 *	In the second case the file is extracted to $destination_directory/tmpfilename
+		 *	In the third case the file is extracted to $destination_directory/dir/myfile.txt
+		 *	Note: in the second case the file is initially extrcated as myfile.txt and then rename to tmpfilename
+		 *	Another example is for directory extraction:
+		 *	array( "dir/*" => "dir/*" )
+		 *	Whereby the directory dir and all it's content (recursively) is extracted to $destination/dir
+		 *	Note: the * is required otherwise you just get an empty directory
+		 *
+		 *	@param	string	$zip_file				Full path & filename of ZIP file to extract from.
+		 *	@param	string	$destination_directory	Full directory path to extract to
+		 *	@param	array	$items					Mapping of what to extract and to what
+		 *
+		 *	@return	bool							true on success (all extractions successful), false otherwise
+		 */
+		public function extract( $zip_file, $destination_directory, $items ) {
+
+			$zip_methods = array();
+			
+			// The following is just to match current functionality for importbuddy - ideally would rather
+			// do it by selecting available compatibility methods based on method attributes - may do that later
+			// (would also need get_compatibility_zip_methods() to be updated to take parameter to check
+			// whether compatibility method for that particular function.
+						
+			$zip_methods = $this->_zip_methods;
+						
+			// Better make sure we have some available methods
+			if ( empty( $zip_methods ) ) {
+			
+				// Hmm, we don't seem to have any available methods, oops, best go no further
+				pb_backupbuddy::status( 'details', sprintf( __('Unable to extract from backup file (%1$s to %2$s): No available unzip methods found.','it-l10n-backupbuddy' ), $zip_file, $destination ) );
+				
+				return false;
+				
+			}
+			
+			if ( !( file_exists( $destination_directory ) && is_dir( $destination_directory ) && is_writable( $destination_directory ) ) ) {
+			
+				pb_backupbuddy::status( 'details', sprintf( __('Unable to extract from backup file (%1$s to %2$s): %2$s does not exist, is not a directory or is not writeable','it-l10n-backupbuddy' ), $zip_file, $destination_directory ) );
+			
+				return false;
+				
+			}
+			
+			// Make sure we have a normalized directory separator suffix	
+			$destination_directory = rtrim( $destination_directory, self::DIRECTORY_SEPARATORS ) . self::NORM_DIRECTORY_SEPARATOR;		
+
+			// Iterate over the methods - once we succeed just return directly otherwise drop through
+			foreach ( $zip_methods as $method_tag ) {
+			
+				// First make sure we can check file existence with this method (ignore silently if not)
+				// Note: has to be able to unzip as well but if that functionality wasn't available in
+				// the method the is_checker attribute will have been set false
+				if ( $this->_zip_methods_details[ $method_tag ][ 'attr' ][ 'is_extractor' ] === true ) {
+
+					$class_name = 'pluginbuddy_zbzip' . $method_tag;
+		
+					$zipper = new $class_name( $this );
+					$zipper->set_status_callback( array( &$this, 'status' ) );
+					
+					// We need to tell the method what details belong to it
+					$zipper->set_method_details( $this->_zip_methods_details[ $method_tag ] );
+										
+					// Now we are ready to try and extract from the backup
+					$result = $zipper->extract( $zip_file, $destination_directory, $items );
+					
+					// Will be false if we couldn't extract from the backup
+					if ( $result === true ) {
+					
+						// Must assume that we extracted ok
+						unset( $zipper );
+						
+						// We have to return here because we cannot break out of foreach
+						return true;
+	
+					} else {
+					
+						// The zipper encountered an error so we need to drop through and loop round to try another
+						// We'll not process the result here, just drop through silently (the method will have logged it)			
+						unset( $zipper );
+						
+					}
+				
+				}
+				
+			}
+			
+			// If we got this far then no method to extract from backup content was available or worked
+			pb_backupbuddy::status( 'details', sprintf( __('Unable to extract from backup file (%1$s to %2$s): No compatible zip method found.','it-l10n-backupbuddy' ), $zip_file, $destination_directory ) );
+			return false;
+			
+		}
+		
+		/**
 		 *	file_exists()
 		 *	
 		 *	Tests whether a file (with path) exists in the given zip file

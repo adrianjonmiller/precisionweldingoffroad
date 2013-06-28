@@ -108,10 +108,17 @@ function ini_get_bool( $a ) {
 		} else {
 			$suggestion_text .= ' (latest)';
 		}
+		$version_string = pb_backupbuddy::settings( 'version' );
+		// If on DEV system (.git dir exists) then append some details on current.
+		if ( @file_exists( pb_backupbuddy::plugin_path() . '/.git/logs/HEAD' ) ) {
+			$commit_log = escapeshellarg( pb_backupbuddy::plugin_path() . '/.git/logs/HEAD' );
+			$commit_line = exec( "tail -n 1 {$commit_log}" );
+			$version_string .= ' <span style="display: inline-block; max-width: 250px; font-size: 8px;">[DEV: ' . $commit_line . ']</span>';
+		}
 		$parent_class_test = array(
 						'title'			=>		'BackupBuddy Version',
 						'suggestion'	=>		$suggestion_text,
-						'value'			=>		pb_backupbuddy::settings( 'version' ),
+						'value'			=>		$version_string,
 						'tip'			=>		__('Version of BackupBuddy currently running on this site.', 'it-l10n-backupbuddy' ),
 					);
 		if ( version_compare( pb_backupbuddy::settings( 'version' ), $latest_backupbuddy_nonminor_version, '<' ) ) {
@@ -344,10 +351,43 @@ function ini_get_bool( $a ) {
 			$site_size_excluded = '<i>Unknown</i>';
 		}
 		$parent_class_test = array(
-						'title'			=>		'Site Size with Exclusions',
+						'title'			=>		'Site Size (Default Exclusions applied)',
 						'suggestion'	=>		'n/a',
 						'value'			=>		'<span id="pb_stats_refresh_site_size_excluded">' . $site_size_excluded . '</span> <a class="pb_backupbuddy_refresh_stats" rel="refresh_site_size_excluded" alt="' . pb_backupbuddy::ajax_url( 'refresh_site_size_excluded' ) . '" title="' . __('Refresh', 'it-l10n-backupbuddy' ) . '"><img src="' . pb_backupbuddy::plugin_url() . '/images/refresh_gray.gif" style="vertical-align: -1px;"> <span class="pb_backupbuddy_loading" style="display: none; margin-left: 10px;"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading.gif" alt="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" title="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" width="16" height="16" style="vertical-align: -3px;" /></span></a>',
 						'tip'			=>		__('Total size of your site (starting in your WordPress main directory) EXCLUDING any directories / files you have marked for exclusion.', 'it-l10n-backupbuddy' ),
+					);
+		$parent_class_test['status'] = __('OK', 'it-l10n-backupbuddy' );
+		array_push( $tests, $parent_class_test );
+		
+		
+		// Site Objects
+		if ( isset( pb_backupbuddy::$options['stats']['site_objects'] ) && ( pb_backupbuddy::$options['stats']['site_objects'] > 0 ) ) {
+			$site_objects = pb_backupbuddy::$options['stats']['site_objects'];
+		} else {
+			$site_objects = '<i>Unknown</i>';
+		}
+		$parent_class_test = array(
+						'title'			=>		'Site number of files',
+						'suggestion'	=>		'n/a',
+						'value'			=>		'<span id="pb_stats_refresh_objects">' . $site_objects . '</span> <a class="pb_backupbuddy_refresh_stats" rel="refresh_objects" alt="' . pb_backupbuddy::ajax_url( 'refresh_site_objects' ) . '" title="' . __('Refresh', 'it-l10n-backupbuddy' ) . '"><img src="' . pb_backupbuddy::plugin_url() . '/images/refresh_gray.gif" style="vertical-align: -1px;"> <span class="pb_backupbuddy_loading" style="display: none; margin-left: 10px;"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading.gif" alt="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" title="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" width="16" height="16" style="vertical-align: -3px;" /></span></a>',
+						'tip'			=>		__('Total number of files/folders in your site (starting in your WordPress main directory) INCLUDING any excluded directories / files.', 'it-l10n-backupbuddy' ),
+					);
+		$parent_class_test['status'] = __('OK', 'it-l10n-backupbuddy' );
+		array_push( $tests, $parent_class_test );
+		
+		
+		
+		// Site objects WITH EXCLUSIONS accounted for.
+		if ( isset( pb_backupbuddy::$options['stats']['site_objects_excluded'] ) && ( pb_backupbuddy::$options['stats']['site_objects_excluded'] > 0 ) ) {
+			$site_objects_excluded = pb_backupbuddy::$options['stats']['site_objects_excluded'];
+		} else {
+			$site_objects_excluded = '<i>Unknown</i>';
+		}
+		$parent_class_test = array(
+						'title'			=>		'Site number of files (Default Exclusions applied)',
+						'suggestion'	=>		'n/a',
+						'value'			=>		'<span id="pb_stats_refresh_objects_excluded">' . $site_objects_excluded . '</span> <a class="pb_backupbuddy_refresh_stats" rel="refresh_objects_excluded" alt="' . pb_backupbuddy::ajax_url( 'refresh_site_objects_excluded' ) . '" title="' . __('Refresh', 'it-l10n-backupbuddy' ) . '"><img src="' . pb_backupbuddy::plugin_url() . '/images/refresh_gray.gif" style="vertical-align: -1px;"> <span class="pb_backupbuddy_loading" style="display: none; margin-left: 10px;"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading.gif" alt="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" title="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" width="16" height="16" style="vertical-align: -3px;" /></span></a>',
+						'tip'			=>		__('Total number of files/folders site (starting in your WordPress main directory) EXCLUDING any directories / files you have marked for exclusion.', 'it-l10n-backupbuddy' ),
 					);
 		$parent_class_test['status'] = __('OK', 'it-l10n-backupbuddy' );
 		array_push( $tests, $parent_class_test );
@@ -368,7 +408,7 @@ function ini_get_bool( $a ) {
 		
 		// Database size WITH EXCLUSIONS accounted for.
 		$parent_class_test = array(
-						'title'			=>		'Database Size with Exclusions',
+						'title'			=>		'Database Size (Default Exclusions applied)',
 						'suggestion'	=>		'n/a',
 						'value'			=>		'<span id="pb_stats_refresh_database_size_excluded">' . pb_backupbuddy::$format->file_size( pb_backupbuddy::$options['stats']['db_size_excluded'] ) . '</span> <a class="pb_backupbuddy_refresh_stats" rel="refresh_database_size_excluded" alt="' . pb_backupbuddy::ajax_url( 'refresh_database_size_excluded' ) . '" title="' . __('Refresh', 'it-l10n-backupbuddy' ) . '"><img src="' . pb_backupbuddy::plugin_url() . '/images/refresh_gray.gif" style="vertical-align: -1px;"> <span class="pb_backupbuddy_loading" style="display: none; margin-left: 10px;"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading.gif" alt="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" title="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" width="16" height="16" style="vertical-align: -3px;" /></span></a>',
 						'tip'			=>		__('Total size of your database EXCLUDING any tables you have marked for exclusion.', 'it-l10n-backupbuddy' ),
@@ -631,6 +671,28 @@ function ini_get_bool( $a ) {
 	
 	
 	
+	// SFTP support?
+	if ( !defined( 'PB_IMPORTBUDDY' ) ) {
+		$connect = 'no';
+		$sftp = 'no';
+		if ( is_callable( 'ssh2_connect' ) && ( false === in_array( 'ssh2_connect', $disabled_functions_array ) ) ) {
+			$connect = 'yes';
+		}
+		if ( is_callable( 'ssh2_ftp' ) && ( false === in_array( 'ssh2_ftp', $disabled_functions_array ) ) ) {
+			$connect = 'yes';
+		}
+		$parent_class_test = array(
+						'title'			=>		'PHP SSH2, SFTP Support',
+						'suggestion'	=>		'n/a',
+						'value'			=>		$connect . ', ' . $sftp,
+						'tip'			=>		__( 'Whether or not your server is configured to allow SSH2 connections over PHP or SFTP connections or PHP. Most hosts do not currently provide this feature. Information only; BackupBuddy cannot make use of this functionality at this time.', 'it-l10n-backupbuddy' ),
+					);
+		$parent_class_test['status'] = __('OK', 'it-l10n-backupbuddy' );
+		array_push( $tests, $parent_class_test );
+	}
+	
+	
+	
 	// ABSPATH
 	$parent_class_test = array(
 					'title'			=>		'WordPress ABSPATH',
@@ -667,6 +729,7 @@ function ini_get_bool( $a ) {
 	
 	
 	
+	// Active plugins list.
 	if ( !defined( 'PB_IMPORTBUDDY' ) ) {
 		// Active Plugins
 		$success = true;
@@ -691,6 +754,42 @@ function ini_get_bool( $a ) {
 		}
 		array_push( $tests, $parent_class_test );
 	}
+	
+	
+	
+	// PHP Process user/group.
+	if ( !defined( 'PB_IMPORTBUDDY' ) ) {
+		$success = true;
+		$php_user = '<i>' . __( 'Unknown', 'it-l10n-backupbuddy' ) . '</i>';
+		$php_uid = '<i>' . __( 'Unknown', 'it-l10n-backupbuddy' ) . '</i>';
+		$php_gid = '<i>' . __( 'Unknown', 'it-l10n-backupbuddy' ) . '</i>';
+		
+		if ( is_callable( 'posix_geteuid' ) && ( false === in_array( 'posix_geteuid', $disabled_functions_array ) ) ) {
+			$php_uid = @posix_geteuid();
+			if ( is_callable( 'posix_getpwuid' ) && ( false === in_array( 'posix_getpwuid', $disabled_functions_array ) ) ) {
+				$php_user = @posix_getpwuid( $php_uid );
+				$php_user = $php_user['name'];
+			}
+		}
+		if ( is_callable( 'posix_getegid' ) && ( false === in_array( 'posix_getegid', $disabled_functions_array ) ) ) {
+			$php_gid = @posix_getegid();
+		}
+		$parent_class_test = array(
+						'title'			=>		'PHP Process User (UID:GID)',
+						'suggestion'	=>		'n/a',
+						'value'			=>		$php_user . ' (' . $php_uid . ':' . $php_gid . ')',
+						'tip'			=>		__( 'Current user, user ID, and group ID under which this PHP process is running. This user must have proper access to your files and directories. If the PHP user is not your own then setting up a system such as suphp is encouraged to ensure proper access and security.', 'it-l10n-backupbuddy' ),
+					);
+		if ( false === $success ) {
+			$parent_class_test['status'] = __('WARNING', 'it-l10n-backupbuddy' );
+		} else {
+			$parent_class_test['status'] = __('OK', 'it-l10n-backupbuddy' );
+		}
+		array_push( $tests, $parent_class_test );
+	}
+	
+	
+	
 ?>
 
 

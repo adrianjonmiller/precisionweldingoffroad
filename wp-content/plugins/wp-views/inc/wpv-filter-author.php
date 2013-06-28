@@ -286,6 +286,7 @@ if(is_admin()){
 		    <input type='text' name="<?php echo $name; ?>" value="<?php echo $view_settings['author_url']; ?>" size="10" />
 		    <span class="wpv_author_url_param_missing" style="color:red;"><?php echo __('<- Please enter a value here', 'wpv-views'); ?></span>
 		    <span class="wpv_author_url_param_ilegal" style="color:red;"><?php echo __('<- Only lowercase letters, numbers, hyphens and underscores allowed', 'wpv-views'); ?></span>
+		    <span class="wpv_author_url_param_forbidden" style="color:red;"></span>
 		</li>
 		<li>
 		    <?php $checked = $view_settings['author_mode'] == 'shortcode' ? 'checked="checked"' : ''; ?>

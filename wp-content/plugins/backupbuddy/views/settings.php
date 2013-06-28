@@ -1,51 +1,116 @@
 <?php
-//pb_backupbuddy::$ui->start_metabox( 'BackupBuddy Settings', true, 'width: 100%; max-width: 1200px;' );
-$settings_form->display_settings( 'Save Settings' );
+if ( !is_admin() ) { die( 'Access Denied.' ); }
 ?>
 
 
 
-<div style="float: right; margin-top: -20px;">
-	<div style="float: right;">
-		<form method="post" action="<?php echo pb_backupbuddy::page_url(); ?>">
-			<input type="hidden" name="reset_defaults" value="<?php echo pb_backupbuddy::settings( 'slug' ); ?>" />
-			<input type="submit" name="submit" value="Reset Settings to Defaults" id="reset_defaults" class="button secondary-button" onclick="if ( !confirm('WARNING: This will reset all settings associated with this plugin to their defaults. Are you sure you want to do this?') ) { return false; }" />
-		</form>
-	</div>
-	<div style="float: right; margin-right: 8px;">
-		<a href="<?php echo pb_backupbuddy::ajax_url( 'importexport_settings' ); ?>&#038;TB_iframe=1&#038;width=640&#038;height=600" class="thickbox button secondary-button">Import/Export Settings</a>
-	</div>
-</div>
+<style type="text/css">
+	.pb_backupbuddy_customize_email_error_row, .pb_backupbuddy_customize_email_scheduled_start_row, .pb_backupbuddy_customize_email_scheduled_complete_row {
+		display: none;
+	}
+</style>
+<script type="text/javascript">
+	var pb_settings_changed = false;
+	
+	jQuery(document).ready(function() {
+		
+		
+		jQuery( 'a' ) .click( function(e) {
+			if ( jQuery(this).attr( 'class' ) == 'ui-tabs-anchor' ) {
+				if ( true == pb_settings_changed ) {
+					
+					if ( confirm( 'You have made changes that you have not saved by selecting the "Save Settings" button at the bottom of the page. Abandon changes without saving?' ) ) {
+						// Abandon!
+						pb_settings_changed = false;
+						return true;
+					} else {
+						e.stopPropagation();
+						e.stopImmediatePropagation();
+						return false;
+					}
+				}
+			}
+		});
+		jQuery( '.pb_form' ).change( function() {
+			pb_settings_changed = true;
+		});
+		
+		
+		
+		
+	});
+	
+	function pb_backupbuddy_selectdestination( destination_id, destination_title, callback_data ) {
+		window.location.href = '<?php echo pb_backupbuddy::page_url(); ?>&custom=remoteclient&destination_id=' + destination_id;
+	}
+</script>
 
 
-<br style="clear: both;"><br>
+
+<br><br>
+
 
 
 <?php
-//pb_backupbuddy::$ui->end_metabox();
+if ( is_numeric( pb_backupbuddy::_GET( 'tab' ) ) ) {
+	$active_tab = pb_backupbuddy::_GET( 'tab' );
+} else {
+	$active_tab = 0;
+}
+pb_backupbuddy::$ui->start_tabs(
+	'settings',
+	array(
+		array(
+			'title'		=>		__( 'General', 'it-l10n-backupbuddy' ),
+			'slug'		=>		'general',
+			'css'		=>		'margin-top: -12px;',
+		),
+		array(
+			'title'		=>		__( 'Backup Profiles', 'it-l10n-backupbuddy' ),
+			'slug'		=>		'profiles',
+			'css'		=>		'margin-top: -12px;',
+		),
+		array(
+			'title'		=>		__( 'Advanced & Troubleshooting', 'it-l10n-backupbuddy' ),
+			'slug'		=>		'advanced',
+			'css'		=>		'margin-top: -12px;',
+		),
+	),
+	'width: 100%;',
+	true,
+	$active_tab
+);
 
 
 
+pb_backupbuddy::$ui->start_tab( 'general' );
+require_once( 'settings/_general.php' );
+pb_backupbuddy::$ui->end_tab();
 
-/*
 
-REMOVED v3.1.
 
-pb_backupbuddy::$ui->start_metabox( __('Remote Offsite Storage / Destinations', 'it-l10n-backupbuddy' ) . ' ' . pb_backupbuddy::video( 'PmXLw_tS42Q#177', __( 'Remote Offsite Management / Remote Clients Tutorial', 'it-l10n-backupbuddy' ), false ), true, 'width: 100%; max-width: 1200px;' );
-//echo '<h3>' . __('Remote Offsite Storage / Destinations', 'it-l10n-backupbuddy' ) . ' ' . pb_backupbuddy::video( 'PmXLw_tS42Q#177', __( 'Remote Offsite Management / Remote Clients Tutorial', 'it-l10n-backupbuddy' ), false ) . '</h3>';
-//echo '<br>';
-echo '<a href="' . pb_backupbuddy::ajax_url( 'destination_picker' ) . '&action_verb=to%20manage%20files&#038;TB_iframe=1&#038;width=640&#038;height=600" class="thickbox button secondary-button" style="margin-top: 3px;" title="' . __( 'Manage Destinations & Archives', 'it-l10n-backupbuddy' ) . '">' . __('Manage Destinations & Archives', 'it-l10n-backupbuddy' ) . '</a>';
-echo '&nbsp;&nbsp;&nbsp;';
-_e( 'Add & configure destinations or select a destination to browse & manage its files.', 'it-l10n-backupbuddy' );
-echo '<br><br>';
-pb_backupbuddy::$ui->end_metabox();
-*/
+pb_backupbuddy::$ui->start_tab( 'profiles' );
+require_once( 'settings/_profiles.php' );
+pb_backupbuddy::$ui->end_tab();
 
+
+
+pb_backupbuddy::$ui->start_tab( 'advanced' );
+require_once( 'settings/_advanced.php' );
+pb_backupbuddy::$ui->end_tab();
 
 
 
 ?>
+
+
+
+
+
 <script type="text/javascript">
+	
+	
+	
 	function pb_backupbuddy_selectdestination( destination_id, destination_title, callback_data ) {
 		window.location.href = '<?php
 			if ( is_network_admin() ) {
@@ -65,3 +130,14 @@ if ( !wp_script_is( 'media-upload' ) ) {
 	wp_print_scripts( 'media-upload' );
 }
 ?>
+
+
+
+
+
+
+
+</div>
+
+
+

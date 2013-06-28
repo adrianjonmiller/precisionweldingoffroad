@@ -84,7 +84,7 @@ if ( ( $mode == 'edit' ) || ( $mode == 'add' ) ) {
 			//echo 'Access Denied. Did you authenticate via the URL?<br><br>';
 			if ( isset( $_GET['dropbox_auth'] ) && ( $_GET['dropbox_auth'] == 'true' ) ) {
 				// do nothing
-				echo 'Error #89485954. You indicated you authenicated but access was denied. Please go back and try again.';
+				echo 'Error #89485954. You indicated you authenticated but access was denied. Please go back and try again.';
 			} else { // First step to user adding a Dropbox account.
 				
 				if ( $mode != 'edit' ) {

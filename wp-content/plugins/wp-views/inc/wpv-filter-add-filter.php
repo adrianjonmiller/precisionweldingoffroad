@@ -18,9 +18,16 @@ function wpv_filter_add_filter_admin($view_settings, $filters = null, $id = 'pop
 
     foreach($filters as $type => $filter) {
         // Skip ones that are already there
+        $tax_relationship = '';
+        if ($type == 'post_category') $tax_relationship = 'tax_category_relationship';
+        if (substr_count($type, 'tax_input[') > 0 ) {
+		$tax_relationship = str_replace('tax_input[', '', $type);
+		$tax_relationship = str_replace(']', '', $tax_relationship);
+		$tax_relationship = 'tax_' . $tax_relationship . '_relationship';
+	}
         if (isset($view_settings[$type])
                 || isset($view_settings[$type . '_type']) // custom field
-                || isset($view_settings[str_replace('[', '_', trim($type, ']'))]) // tax
+                || ($tax_relationship != '' && isset($view_settings[$tax_relationship])) // tax
                         ) {
             $filters[$type]['hide'] = ' style="display:none"';
         } else {

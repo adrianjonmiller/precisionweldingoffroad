@@ -185,7 +185,7 @@ function wpv_insert_filter_control(selector) {
                     
                     if (values['auto_fill'] == '1') {
                         control += ' auto_fill="' + field_name + '" ';
-                        control += ' auto_fill_default="' + values['auto_fill_default'] + '" ';
+			control += ' auto_fill_default="' + values['auto_fill_default'].replace(",", "\\\\,") + '" ';
                     } else {
                         control += ' values="';
                         
@@ -195,7 +195,7 @@ function wpv_insert_filter_control(selector) {
                             if (!first) {
                                 data += ',';
                             }
-                            data += values['values'][i][0];
+                            data += values['values'][i][0].replace(",", "\\\\,");
                             first = false;
                         }
                         control += data;
@@ -208,7 +208,7 @@ function wpv_insert_filter_control(selector) {
                             if (!first) {
                                 data += ',';
                             }
-                            data += values['values'][i][1];
+                            data += values['values'][i][1].replace(",", "\\\\,");
                             first = false;
                         }
                         control += data;

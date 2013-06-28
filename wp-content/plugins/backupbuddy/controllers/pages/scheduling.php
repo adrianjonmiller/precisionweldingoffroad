@@ -95,15 +95,28 @@ $schedule_form->add_setting( array(
 	'tip'		=>		__('This is a name for your reference only.', 'it-l10n-backupbuddy' ),
 	'rules'		=>		'required',
 ) );
+
+$profile_list = array();
+foreach( pb_backupbuddy::$options['profiles'] as $profile_id => $profile ) {
+	if ( $profile_id == 0 ) { continue; } // default profile.
+	if ( $profile['type'] == 'full' ) {
+		$pretty_type = 'Full';
+	} elseif ( $profile['type'] == 'db' ) {
+		$pretty_type = 'Database';
+	} else {
+		$pretty_type = 'Unknown';
+	}
+	$profile_list[ $profile_id ] = htmlentities( $profile['title'] ) . ' (' . $pretty_type . ')';
+}
 $schedule_form->add_setting( array(
-	'type'		=>		'radio',
-	'name'		=>		'type',
-	'title'		=>		'Backup type',
-	'options'	=>		array( 'db' => 'Database only', 'full' => 'Full backup' ),
-	//'default'	=>		'db',
+	'type'		=>		'select',
+	'name'		=>		'profile',
+	'title'		=>		'Backup profile',
+	'options'	=>		$profile_list,
 	'tip'		=>		__( 'Full backups contain all files (except exclusions) and your database. Database only backups consist of an export of your mysql database; no WordPress files or media. Database backups are typically much smaller and faster to perform and are typically the most quickly changing part of a site.', 'it-l10n-backupbuddy' ),
 	'rules'		=>		'required',
 ) );
+
 $schedule_form->add_setting( array(
 	'type'		=>		'select',
 	'name'		=>		'interval',
@@ -195,7 +208,7 @@ if ( ( $submitted_schedule != '' ) && ( count ( $submitted_schedule['errors'] ) 
 			
 			$add_response = pb_backupbuddy::$classes['core']->add_backup_schedule(
 				$title = $submitted_schedule['data']['title'],
-				$type = $submitted_schedule['data']['type'],
+				$profile = $submitted_schedule['data']['profile'],
 				$interval = $submitted_schedule['data']['interval'],
 				$first_run = pb_backupbuddy::$format->unlocalize_time( strtotime( $submitted_schedule['data']['first_run'] ) ),
 				$remote_destinations,
@@ -252,14 +265,17 @@ $data['schedule_form'] = $schedule_form;
 $schedules = array();
 foreach ( pb_backupbuddy::$options['schedules'] as $schedule_id => $schedule ) {
 	
+	$profile = pb_backupbuddy::$options['profiles'][ (int)$schedule['profile'] ];
+	
 	$title = $schedule['title'];
-	if ( $schedule['type'] == 'full' ) {
+	if (  $profile['type'] == 'full' ) {
 		$type = 'Full';
-	} elseif ( $schedule['type'] == 'db' ) {
+	} elseif ( $profile['type'] == 'db' ) {
 		$type = 'Database';
 	} else {
 		$type = 'Unknown (' . $schedule['type'] . ')';
 	}
+	$type = $profile['title'] . ' (' . $type . ')';
 	$interval = $schedule['interval'];
 	
 	if ( isset( $schedule['on_off'] ) && ( $schedule['on_off'] == '0' ) ) {
@@ -270,17 +286,22 @@ foreach ( pb_backupbuddy::$options['schedules'] as $schedule_id => $schedule ) {
 	
 	$destinations = explode( '|', $schedule['remote_destinations'] );
 	$destination_array = array();
-	foreach( $destinations as $destination ) {
+	foreach( $destinations as &$destination ) {
 		if ( isset( $destination ) && ( $destination != '' ) ) {
 			$destination_array[] = pb_backupbuddy::$options['remote_destinations'][$destination]['title'] . ' (' . pb_backupbuddy::$classes['core']->pretty_destination_type( pb_backupbuddy::$options['remote_destinations'][$destination]['type'] ) . ')';
 		}
 	}
+	
 	$destinations = implode( ', ', $destination_array );
 	
-	if ( $schedule['delete_after'] == '1' ) {
-		$destinations .= '<br>' . '<span class="description">Delete local backup file after send</span>';
+	if ( count( $destination_array ) > 0 ) {
+		if ( $schedule['delete_after'] == '1' ) {
+			$destinations .= '<br>' . '<span class="description">Delete local backup file after send</span>';
+		} else {
+			$destinations .= '<br>' . '<span class="description">Do not delete local backup file after send</span>';
+		}
 	} else {
-		$destinations .= '<br>' . '<span class="description">Do not delete local backup file after send</span>';
+		$destinations = '<span class="description">None</span>';
 	}
 	
 	// Determine first run.

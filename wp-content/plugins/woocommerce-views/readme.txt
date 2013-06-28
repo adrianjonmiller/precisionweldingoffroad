@@ -2,9 +2,9 @@
 Contributors: dominykasgel, AmirHelzer
 Donate link: http://wp-types.com
 Tags: CMS, woocommerce, commerce, ecommerce, e-commerce, products, slider, table, display
-Requires at least: 3.0
+Requires at least: 3.4.2
 Tested up to: 3.5.1
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 
 Display WooCommerce products in a sortable table, a grid or sliders on any WordPress page and using any theme.
 
@@ -88,3 +88,6 @@ There's a lot that you can achieve with CSS. You can style the fonts and sizes o
 = 1.2.2 =
 * Sync with Views 1.2.2
 * Remove script.js because it is not part of the plugin functionality
+
+= 1.2.3 =
+* Sync with Views 1.2.3

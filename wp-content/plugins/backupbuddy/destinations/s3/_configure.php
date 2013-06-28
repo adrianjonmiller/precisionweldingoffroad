@@ -36,7 +36,7 @@ $settings_form->add_setting( array(
 	'name'		=>		'secretkey',
 	'title'		=>		__( 'AWS secret key', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: GHOIDDWE56SDSAZXMOPR] - Log in to your Amazon S3 AWS Account and navigate to Account: Access Credentials: Security Credentials.', 'it-l10n-backupbuddy' ),
-	'after'		=>		' <a href="https://aws-portal.amazon.com/gp/aws/developer/account/index.html?ie=UTF8&action=access-key" target="_blank" title="' . __('Opens a new tab where you can get your Amazon S3 key', 'it-l10n-backupbuddy' ) . '"><small>' . __('Get Key', 'it-l10n-backupbuddy' ) . '</small></a> ' . pb_backupbuddy::video( 'Tp_VkLoBEpw', __('Find your Amazon S3 key', 'it-l10n-backupbuddy' ), false ),
+	'after'		=>		' <a href="https://aws-portal.amazon.com/gp/aws/developer/account/index.html?ie=UTF8&action=access-key" target="_blank" title="' . __('Opens a new tab where you can get your Amazon S3 key', 'it-l10n-backupbuddy' ) . '"><small>' . __('Get Key', 'it-l10n-backupbuddy' ) . '</small></a>',
 	'css'		=>		'width: 212px;',
 	'rules'		=>		'required|string[1-45]',
 ) );
@@ -47,7 +47,7 @@ $settings_form->add_setting( array(
 	'name'		=>		'bucket',
 	'title'		=>		__( 'Bucket name', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: wordpress_backups] - This bucket will be created for you automatically if it does not already exist. Bucket names must be globally unique amongst all Amazon S3 users.', 'it-l10n-backupbuddy' ),
-	'after'		=>		' ' . pb_backupbuddy::video( 'njT1ExMgUrk#20', __('Create an Amazon S3 bucket', 'it-l10n-backupbuddy' ), false ),
+	'after'		=>		'',
 	'css'		=>		'width: 255px;',
 	'rules'		=>		'required|string[1-45]',
 ) );

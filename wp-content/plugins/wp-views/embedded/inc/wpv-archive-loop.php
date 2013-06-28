@@ -730,16 +730,18 @@ class WP_Views_archive_loops{
 				}
 			}				
             
-            foreach($_POST as $key => $value) {
-                if (strpos($key, 'wpv-view-loop-') === 0) {
-                    $options['view_' . substr($key, 14)] = $post_id;
-                    $found = true;
-                }
-    
-                if (strpos($key, 'wpv-view-taxonomy-loop-') === 0) {
-                    $options['view_taxonomy_loop_' . substr($key, 23)] = $post_id;
-                    $found = true;
-                }
+            if ( isset($_POST['_wpv_settings']) && 'archive' == $_POST['_wpv_settings']['view-query-mode'] ) { // only add the new one if this is an Archive View
+		foreach($_POST as $key => $value) {
+			if (strpos($key, 'wpv-view-loop-') === 0) {
+			$options['view_' . substr($key, 14)] = $post_id;
+			$found = true;
+			}
+	
+			if (strpos($key, 'wpv-view-taxonomy-loop-') === 0) {
+			$options['view_taxonomy_loop_' . substr($key, 23)] = $post_id;
+			$found = true;
+			}
+		}
             }
             
             if ($found) {
@@ -751,5 +753,6 @@ class WP_Views_archive_loops{
 
 }
 
+global $WPV_view_archive_loop;
 $WPV_view_archive_loop = new WP_Views_archive_loops;
 

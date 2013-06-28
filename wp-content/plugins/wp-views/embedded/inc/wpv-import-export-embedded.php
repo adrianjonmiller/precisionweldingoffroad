@@ -613,9 +613,35 @@ function wpv_admin_import_views($import_data, $items = array()) {
 		$meta['_wpv_settings']['author_mode'][0] = $meta['_wpv_settings']['author_mode']['type'];
 		unset($meta['_wpv_settings']['author_mode']['type']);
 	    }
+	    if (isset($meta['_wpv_settings']['taxonomy_parent_mode'])) {
+		$meta['_wpv_settings']['taxonomy_parent_mode'][0] = $meta['_wpv_settings']['taxonomy_parent_mode']['state'];
+		unset($meta['_wpv_settings']['taxonomy_parent_mode']['state']);
+	    }
+	    if (isset($meta['_wpv_settings']['taxonomy_search_mode'])) {
+		$meta['_wpv_settings']['taxonomy_search_mode'][0] = $meta['_wpv_settings']['taxonomy_search_mode']['state'];
+		unset($meta['_wpv_settings']['taxonomy_search_mode']['state']);
+	    }
+	    if (isset($meta['_wpv_settings']['search_mode'])) {
+		$meta['_wpv_settings']['search_mode'][0] = $meta['_wpv_settings']['search_mode']['state'];
+		unset($meta['_wpv_settings']['search_mode']['state']);
+	    }
+	    if (isset($meta['_wpv_settings']['id_mode'])) {
+		$meta['_wpv_settings']['id_mode'][0] = $meta['_wpv_settings']['id_mode']['state'];
+		unset($meta['_wpv_settings']['id_mode']['state']);
+	    }
 
             if (isset($meta['_wpv_settings'])) {
                 $meta['_wpv_settings'] = $WP_Views->convert_names_to_ids_in_settings($meta['_wpv_settings']);
+            }
+            if (isset($meta['_wpv_settings']['post_id_ids_list']) && !empty($meta['_wpv_settings']['post_id_ids_list'])) {
+		$conversion = $WP_Views->convert_names_to_ids_in_filters($meta['_wpv_settings']['post_id_ids_list']);
+		if (!empty($conversion['ids_lost']) && 'by_ids' == $meta['_wpv_settings']['id_mode'][0]) {
+			$not_found_names[$view['post_title']] = implode(', ', $conversion['ids_lost']);
+		}
+		$meta['_wpv_settings']['post_id_ids_list'] = $conversion['ids_list'];
+            }
+            if (isset($meta['_wpv_settings']['id_mode']) && isset($meta['_wpv_settings']['id_mode'][0]) && 'shortcode' == $meta['_wpv_settings']['id_mode'][0]) {
+		$views_with_id_shortcodes[$view['post_title']] = $view['post_title'];
             }
             if (isset($meta['_wpv_layout_settings'])) {
                 $meta['_wpv_layout_settings'] = $WP_Views->convert_names_to_ids_in_layout_settings($meta['_wpv_layout_settings']);
@@ -662,6 +688,9 @@ function wpv_admin_import_views($import_data, $items = array()) {
                     
                     do_action('wpv_view_imported', $old_view_id, $id);
                     }
+                } else {
+			if (isset($not_found_names) && isset($not_found_names[$view['post_title']])) unset($not_found_names[$view['post_title']]);
+			if (isset($views_with_id_shortcodes) && isset($views_with_id_shortcodes[$view['post_title']])) unset($views_with_id_shortcodes[$view['post_title']]);
                 }
             } elseif ( empty( $import_items ) || ( !empty( $import_items ) && in_array( $view['ID'], $import_items) ) ) {
                 // it's a new view: create it
@@ -885,6 +914,15 @@ function wpv_admin_import_views($import_data, $items = array()) {
     if ($deleted_count) {
         $import_messages[] = sprintf(__('%d existing Views were deleted.',
                         'wpv-views'), $deleted_count);
+    }
+    
+    if (isset($not_found_names) && !empty($not_found_names)) {
+	$view_names = implode(', ', array_keys($not_found_names));
+	$import_messages[] = __('This Views have filters by IDs that were not correctly imported because they filter by posts that do not exist. Please review them: ', 'wpv-views') . '<strong>' . $view_names . '</strong>';
+    }
+    if (isset($views_with_id_shortcodes) && !empty($views_with_id_shortcodes)) {
+	$view_names = implode(', ', array_keys($views_with_id_shortcodes));
+	$import_messages[] = __('This Views filter by post IDs using a shortcode attribute. You may need to modify the Views shortcodes if post IDs have changed during import: ', 'wpv-views') . '<strong>' . $view_names . '</strong>';
     }
     
     $results['updated'] = $overwrite_count;

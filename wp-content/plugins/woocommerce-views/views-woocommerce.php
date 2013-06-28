@@ -5,7 +5,7 @@
   Description: Let's you display WooCommerce products in a table, a grid or with sliders. <a href="http://wp-types.com/documentation/views-inside/woocommerce-views/">Documentation</a>
   Author: ICanLocalize
   Author URI: http://www.wp-types.com/
-  Version: 1.2.2
+  Version: 1.2.3
  */
 
 add_action('plugins_loaded', 'wcviews_init', 2);

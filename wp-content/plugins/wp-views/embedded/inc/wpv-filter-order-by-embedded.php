@@ -16,8 +16,9 @@ function wpv_order_by_default_settings($view_settings) {
 $orderby_meta = '';
 add_filter('wpv_filter_query', 'wpv_filter_get_order_arg', 100, 2); // Make this happens after custom fields
 function wpv_filter_get_order_arg($query, $view_settings) {
+	global $WP_Views;
     $orderby = $view_settings['orderby'];
-    if (isset($_GET['wpv_column_sort_id']) && esc_attr($_GET['wpv_column_sort_id']) != 'undefined' && esc_attr($_GET['wpv_column_sort_id']) != '') {
+    if (isset($_GET['wpv_column_sort_id']) && esc_attr($_GET['wpv_column_sort_id']) != 'undefined' && esc_attr($_GET['wpv_column_sort_id']) != '' && esc_attr($_GET['wpv_view_count']) == $WP_Views->get_view_count() ) {
         $orderby = esc_attr($_GET['wpv_column_sort_id']);
     }
     
@@ -43,7 +44,7 @@ function wpv_filter_get_order_arg($query, $view_settings) {
     
     // check for column sorting GET parameters.
     
-    if (!$orderby_set && isset($_GET['wpv_column_sort_id']) && esc_attr($_GET['wpv_column_sort_id']) != 'undefined' && esc_attr($_GET['wpv_column_sort_id']) != '') {
+    if (!$orderby_set && isset($_GET['wpv_column_sort_id']) && esc_attr($_GET['wpv_column_sort_id']) != 'undefined' && esc_attr($_GET['wpv_column_sort_id']) != '' && esc_attr($_GET['wpv_view_count']) == $WP_Views->get_view_count()) {
         $field = esc_attr($_GET['wpv_column_sort_id']);
         if (strpos($field, 'post-field') === 0) {
             $query['meta_key'] = substr($field, 11);
@@ -63,7 +64,7 @@ function wpv_filter_get_order_arg($query, $view_settings) {
         }
     }
     
-    if (isset($_GET['wpv_column_sort_dir']) && esc_attr($_GET['wpv_column_sort_dir']) != 'undefined' && esc_attr($_GET['wpv_column_sort_dir']) != '') {
+    if (isset($_GET['wpv_column_sort_dir']) && esc_attr($_GET['wpv_column_sort_dir']) != 'undefined' && esc_attr($_GET['wpv_column_sort_dir']) != '' && esc_attr($_GET['wpv_view_count']) == $WP_Views->get_view_count()) {
         $query['order'] = strtoupper(esc_attr($_GET['wpv_column_sort_dir']));
     }    
 

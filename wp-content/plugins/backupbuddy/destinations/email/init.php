@@ -29,8 +29,14 @@ class pb_backupbuddy_destination_email {
 				
 		$email = $settings['address'];
 		
+		if ( pb_backupbuddy::$options['email_return'] != '' ) {
+			$email_return = pb_backupbuddy::$options['email_return'];
+		} else {
+			$email_return = get_option('admin_email');
+		}
+		
 		pb_backupbuddy::status( 'details',  'Sending remote email.' );
-		$headers = 'From: BackupBuddy <' . get_option('admin_email') . '>' . "\r\n\\";
+		$headers = 'From: BackupBuddy <' . $email_return . '>' . "\r\n";
 		$wp_mail_result = wp_mail( $email, 'BackupBuddy Backup', 'BackupBuddy backup for ' . site_url(), $headers, $files );
 		pb_backupbuddy::status( 'details',  'Sent remote email.' );
 		
@@ -61,8 +67,13 @@ class pb_backupbuddy_destination_email {
 		
 		$files = array( $importbuddy_temp );
 		
+		if ( pb_backupbuddy::$options['email_return'] != '' ) {
+			$email_return = pb_backupbuddy::$options['email_return'];
+		} else {
+			$email_return = get_option('admin_email');
+		}
 		
-		$headers = 'From: BackupBuddy <' . get_option('admin_email') . '>' . "\r\n\\";
+		$headers = 'From: BackupBuddy <' . $email_return . '>' . "\r\n";
 		$wp_mail_result = wp_mail( $email, 'BackupBuddy Test', 'BackupBuddy destination test for ' . site_url(), $headers, $files );
 		pb_backupbuddy::status( 'details',  'Sent test email.' );
 		

@@ -334,6 +334,7 @@ function wpv_add_meta_key($args, $view_settings = null) {
 					
 					?>
 					<span class="wpv_custom_field_param_missing"><?php echo __('<- Please enter a value here', 'wpv-views'); ?></span>
+					<span class="wpv_custom_field_param_forbidden" style="color:red;"></span>
 					<?php
 					
 					// Add controls for entering the date.

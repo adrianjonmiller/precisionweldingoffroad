@@ -1,4 +1,30 @@
 <?php
+// Tutorial
+pb_backupbuddy::load_script( 'jquery.joyride-2.0.3.js' );
+pb_backupbuddy::load_script( 'modernizr.mq.js' );
+pb_backupbuddy::load_style( 'joyride.css' );
+?>
+<a href="" class="pb_backupbuddy_begintour">Tour This Page</a>
+<ol id="pb_backupbuddy_tour" style="display: none;">
+	<li data-id="pb_backupbuddy_downloadimportbuddy">Download the ImportBuddy tool (importbuddy.php) to restore or migrate your site.</li>
+	<li data-id="pb_backupbuddy_sendimportbuddy">Send the ImportBuddy tool (importbuddy.php) to a remote destination for restoring or migrating on another server.</li>
+	<li data-id="pb_backupbuddy_restoremigratelisttitle" data-button="Finish">Hover over a backup below for additional options including viewing a list of files within, viewing the contents of text-based files, restoring files, and more.</li>
+</ol>
+<script>
+jQuery(window).load(function() {
+	jQuery( '.pb_backupbuddy_begintour' ).click( function() {
+		jQuery("#pb_backupbuddy_tour").joyride({
+			tipLocation: 'top',
+		});
+		return false;
+	});
+});
+</script>
+<?php
+// END TOUR.
+
+
+
 // Check if performing an actual migration now. If so then load file and skip the rest of this page.
 if ( ( pb_backupbuddy::_GET( 'callback_data' ) != '' ) && ( pb_backupbuddy::_GET( 'callback_data' ) != 'importbuddy.php' ) ) {
 	require_once( '_migrate.php' );

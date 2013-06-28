@@ -125,15 +125,19 @@ if ( !class_exists( "pluginbuddy_zbzipcore" ) ) {
 		const OS_TYPE_WIN		=	2;
 		const OS_TYPE_MAX		=	2;
 
-		const ZIP_WARNING_UNKNOWN  = 0;
-		const ZIP_WARNING_GENERIC  = 1;
-		const ZIP_WARNING_SKIPPED  = 2;
-		const ZIP_WARNING_FILTERED = 3;
-		const ZIP_WARNING_LONGPATH = 4;
+		const ZIP_WARNING_UNKNOWN  			= 0;
+		const ZIP_WARNING_GENERIC  			= 1;
+		const ZIP_WARNING_SKIPPED  			= 2;
+		const ZIP_WARNING_FILTERED 			= 3;
+		const ZIP_WARNING_LONGPATH 			= 4;
+		const ZIP_WARNING_IGNORED_SYMLINK 	= 5;
 		
 		const ZIP_OTHER_UNKNOWN         = 0;
 		const ZIP_OTHER_GENERIC         = 1;
-		const ZIP_OTHER_IGNORED_SYMLINK = 2;
+		const ZIP_OTHER_SKIPPED  		= 2;
+		const ZIP_OTHER_FILTERED 		= 3;
+		const ZIP_OTHER_LONGPATH 		= 4;
+		const ZIP_OTHER_IGNORED_SYMLINK	= 5;
 		
 		const COMMAND_UNKNOWN_PATH	= 0;
 		const COMMAND_ZIP_PATH		= 1;
@@ -238,16 +242,20 @@ if ( !class_exists( "pluginbuddy_zbzipcore" ) ) {
          * 
          * @var array
          */
-		public static $_warning_desc = array( self::ZIP_WARNING_UNKNOWN  => 'warning reason unknown',
-											  self::ZIP_WARNING_GENERIC  => 'general problem as indicated',
-											  self::ZIP_WARNING_SKIPPED  => 'file unreadable or does not exist',
-											  self::ZIP_WARNING_FILTERED => 'file filtered',
-											  self::ZIP_WARNING_LONGPATH => 'filename path too long'
+		public static $_warning_desc = array( self::ZIP_WARNING_UNKNOWN  			=> 'warning reason unknown',
+											  self::ZIP_WARNING_GENERIC  			=> 'general problem as indicated',
+											  self::ZIP_WARNING_SKIPPED  			=> 'file unreadable or does not exist',
+											  self::ZIP_WARNING_FILTERED 			=> 'file filtered',
+											  self::ZIP_WARNING_LONGPATH 			=> 'filename path too long',
+											  self::ZIP_WARNING_IGNORED_SYMLINK  	=> 'file is a symlink and is ignored based on settings',
 											 );
 
-		public static $_other_desc   = array( self::ZIP_OTHER_UNKNOWN  => 'other reason unknown',
-											  self::ZIP_OTHER_GENERIC  => 'other problem as indicated',
-											  self::ZIP_OTHER_IGNORED_SYMLINK  => 'file is a symlink and is ignored based on settings',
+		public static $_other_desc   = array( self::ZIP_OTHER_UNKNOWN 			=> 'other reason unknown',
+											  self::ZIP_OTHER_GENERIC 			=> 'other problem as indicated',
+											  self::ZIP_OTHER_SKIPPED 			=> 'file unreadable or does not exist',
+											  self::ZIP_OTHER_FILTERED			=> 'file filtered',
+											  self::ZIP_OTHER_LONGPATH 			=> 'filename path too long',
+											  self::ZIP_OTHER_IGNORED_SYMLINK	=> 'file is a symlink and is ignored based on settings',
 											 );
 
         /**
@@ -288,7 +296,8 @@ if ( !class_exists( "pluginbuddy_zbzipcore" ) ) {
 													  'is_unarchiver' => false,
 													  'is_commenter' => false,
 													  'is_zipper' => false,
-													  'is_unzipper' => false
+													  'is_unzipper' => false,
+													  'is_extractor' => false
 													 );
 
 			// Must _not_ default 'path' values because we test whether set or not to decide whether to use
@@ -926,6 +935,74 @@ if ( !class_exists( "pluginbuddy_zbzipcore" ) ) {
 		 }
 		
 		/**
+		 *	log_zip_reports()
+		 *
+		 *	A function to process reports parsed from the zip process output and log them and optionally
+		 *	send to a file if there are a lot of reports. If the number of reports is such that they require
+		 *	to be written to a file then all the reports will be written to the file, not just the overflow.
+.		 *
+		 *	@param	array	$reports_log			array containing the type of reports to log
+		 *	@param	array	$reports_desc			array containing text description of report reason
+		 *	@param	string	$report_prefix			a prefix string to go before the report text
+		 *	@param	integer	$report_lines_to_show	the number of reports to show in log before overflowing to a file
+		 *	@param	string	$report_file			overflow file if too many reports to show directly in log
+		 *	@return	N/A								Currently no return parameter
+		 *
+		 */
+		 
+		protected function log_zip_reports( $reports_log, $report_desc, $report_prefix, $report_lines_to_show, $reports_file ) {
+
+			$reports = array();
+			$reports_count = 0;
+			$result = false;
+
+			// Make sure we clear up ant previous reports file that may still be present
+			if ( @file_exists( $reports_file ) ) {
+	
+				@unlink( $reports_file );
+		
+			}
+
+			// Parse the reports array into an ordered array based on id (log line number) as sort key
+			foreach ( $reports_log as $reason => $report ) {
+	
+				foreach ( $report as $id => $filename ) {
+
+					$reports[ $id ] = sprintf( __( '%1$s: (%2$s): %3$s' . PHP_EOL,'it-l10n-backupbuddy' ), $report_prefix, $report_desc[ $reason ], $filename );
+
+				}
+	
+			}
+	
+			// Make sure array is now ordered by the numeric log line number key
+			$result = ksort( $reports, SORT_NUMERIC );
+
+			// Always show the first number of lines in the log
+			$show_lines = array_slice( $reports, 0, $report_lines_to_show, true );
+
+			foreach ( $show_lines as $line ) {
+
+				pb_backupbuddy::status( 'details', __( 'Zip process reported: ','it-l10n-backupbuddy' ) . $line );
+
+			}
+		
+			// If there were more lines then output the whole to the report file
+			$reports_count = sizeof( $reports );
+			if ( $reports_count  > $report_lines_to_show ) {
+	
+				@file_put_contents( $reports_file, $reports );
+		
+				if ( @file_exists( $reports_file ) ) {
+		
+					pb_backupbuddy::status( 'details', sprintf( __( 'Zip process reported %1$s more %2$s report%3$s - please review in: %4$s','it-l10n-backupbuddy' ), ( $reports_count - $report_lines_to_show ), $report_prefix, ( ( 1 == $reports_count ) ? '' : 's' ), $reports_file ) );
+			
+				}
+		
+			}
+			
+		}
+		
+		/**
 		 *	is_available()
 		 *	
 		 *	A function that tests for the availability of the specific method and its available modes. Will test for
@@ -963,9 +1040,10 @@ if ( !class_exists( "pluginbuddy_zbzipcore" ) ) {
 		 *
 		 *	@param	string		$zip_file					Full path & filename of ZIP file to extract from.
 		 *	@param	string		$destination_directory		Full directory path to extract into.
-		 *	@return	bool									true on success, false otherwise
+		 *	@param	array		$items						Mapping of what to extract and to what
+		 *	@return	bool									true on success (all extractions successful), false otherwise
 		 */
-		abstract public function extract( $zip_file, $destination_directory = '' );
+		abstract public function extract( $zip_file, $destination_directory = '', $items = array() );
 
 		/**
 		 *	file_exists()

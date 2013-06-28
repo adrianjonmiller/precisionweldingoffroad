@@ -13,7 +13,8 @@ if ( ! defined( 'PB_IMPORTBUDDY' ) || ( true !== PB_IMPORTBUDDY ) ) {
 	<head>
 		<title>ImportBuddy v<?php echo pb_backupbuddy::$options['bb_version']; ?> Restore / Migration Tool - Powered by BackupBuddy</title>
 		<meta name="robots" content="noindex">
-			<?php
+		
+		<?php
 		pb_backupbuddy::load_style( 'style.css' );
 		
 		pb_backupbuddy::load_script( 'jquery.js' );
@@ -22,9 +23,26 @@ if ( ! defined( 'PB_IMPORTBUDDY' ) || ( true !== PB_IMPORTBUDDY ) ) {
 		pb_backupbuddy::load_script( 'ui.tabs.js' );
 		pb_backupbuddy::load_script( 'tooltip.js' );
 		pb_backupbuddy::load_script( 'importbuddy.js' );
+		
+		// Tutorial
+		pb_backupbuddy::load_script( 'jquery.joyride-2.0.3.js' );
+		pb_backupbuddy::load_script( 'modernizr.mq.js' );
+		pb_backupbuddy::load_style( 'joyride.css' );
 		?>
+		
 		<link rel="icon" type="image/png" href="importbuddy/images/favicon.png">
 		<script type="text/javascript">
+			
+			jQuery(window).load(function() {
+				// Tour system.
+				jQuery( '.pb_backupbuddy_begintour' ).click( function() {
+					jQuery("#pb_backupbuddy_tour").joyride({
+						tipLocation: 'top',
+					});
+					return false;
+				});
+			});
+			
 			function pb_status_append( status_string ) {
 				target_id = 'importbuddy_status'; // importbuddy_status or pb_backupbuddy_status
 				if( jQuery( '#' + target_id ).length == 0 ) { // No status box yet so suppress.
@@ -34,6 +52,7 @@ if ( ! defined( 'PB_IMPORTBUDDY' ) || ( true !== PB_IMPORTBUDDY ) ) {
 				textareaelem = document.getElementById( target_id );
 				textareaelem.scrollTop = textareaelem.scrollHeight;
 			}
+			
 		</script>
 	</head>
 		<?php
@@ -44,7 +63,8 @@ if ( ! defined( 'PB_IMPORTBUDDY' ) || ( true !== PB_IMPORTBUDDY ) ) {
 			echo '<body onLoad="window.parent.scroll(0,0);">'; // Auto scroll to top of parent while in iframe.
 		}
 		
-		//<a href="http://ithemes.com/codex/page/BackupBuddy" style="text-decoration: none;">Need help? See the <b>Knowledge Base</b> for tutorials & more.</a><br> ?>
+		//<a href="http://ithemes.com/codex/page/BackupBuddy" style="text-decoration: none;">Need help? See the <b>Knowledge Base</b> for tutorials & more.</a><br>
+		?>
 		
 		<center>
 		<?php

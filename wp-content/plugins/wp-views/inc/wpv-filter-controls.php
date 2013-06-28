@@ -35,7 +35,7 @@ function wpv_controls_js() {
         function wpv_insert_view_form_popup(view_id) {
 
             var url = "<?php echo admin_url('admin-ajax.php'); ?>?action=wpv_view_form_popup&_wpnonce=<?php echo wp_create_nonce('wpv_editor_callback'); ?>&view_id="+view_id+"&keepThis=true&TB_iframe=true&height=400&width=400";
-            tb_show("<?php _e('Insert View Form', 'wpcf');    ?>", url);
+            tb_show("<?php _e('Insert search form', 'wpcf');    ?>", url);
         }
         
         var wpcfFieldsEditorCallback_redirect = null;
@@ -81,7 +81,7 @@ function wpv_filter_controls_admin($view_settings){
     ?>
     
     <div id="wpv_filter_controls_admin_summary" <?php echo ($view_settings['query_type'][0] == 'posts' && count($view_settings['filter_controls_param'])) > 0 ? '' : 'style="display:none"'; ?>>
-        <strong><?php _e('Filter controls: ', 'wpv-views') ?></strong>
+        <strong><?php _e('Parametric search controls: ', 'wpv-views') ?></strong>
         <input class="button-secondary" type="button" value="<?php echo __('Edit', 'wpv-views'); ?>" name="<?php echo __('Edit', 'wpv-views'); ?>" onclick="wpv_filter_controls_edit()"/>
     </div>
 
@@ -89,8 +89,8 @@ function wpv_filter_controls_admin($view_settings){
         <div style="margin:20px;">
             <br />
             <p>
-                <strong><?php _e('Filter controls settings', 'wpv-views') ?></strong>
-                <?php echo '&nbsp;<a class="wpv-help-link" href="' . WPV_ADD_FILTER_CONTROLS_LINK . '" target="_blank">' . sprintf(__('Learn more about filter controls', 'wpv-views')) . ' &raquo;</a>'; ?>
+                <strong><?php _e('Search controls settings', 'wpv-views') ?></strong>
+                <?php echo '&nbsp;<a class="wpv-help-link" href="' . WPV_ADD_FILTER_CONTROLS_LINK . '" target="_blank">' . sprintf(__('Learn more about parametric search', 'wpv-views')) . ' &raquo;</a>'; ?>
             </p>
             <table id="view_filter_controls_table" class="widefat fixed">
                 <thead>
@@ -365,7 +365,7 @@ function wpv_ajax_wpv_view_form_popup() {
             <body style="padding: 20px;">
                 <?php
 
-                echo sprintf(__('Insert the filter section from View - %s', 'wpv-views'), '<strong>' . $title . '</strong>');
+                echo sprintf(__('Insert search form from View - %s', 'wpv-views'), '<strong>' . $title . '</strong>');
 
                 ?>
                 <input type="hidden" value="<?php echo $view_id; ?>" id="wpv_view_id" />
@@ -373,7 +373,7 @@ function wpv_ajax_wpv_view_form_popup() {
                 
                 <br />
                 
-                <?php echo __('When the form is submitted, go to this post:', 'wpv-views'); ?>
+                <?php echo __('When the form is submitted, go to the results page:', 'wpv-views'); ?>
                 <select id="wpv_filter_form_target" />
                     
                     <option value="0">None</option>

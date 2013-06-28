@@ -200,8 +200,8 @@ class pb_backupbuddy_filesystem {
 	/*	function_name()
 	 *	
 	 *	function description
-	 *	@param		array/boolean		Array of directory paths to exclude.  If true then this directory is excluded so no need to check with exclusion directory.
-	 *	@return		array		array( TOTAL_DIRECTORY_SIZE, TOTAL_SIZE_WITH_EXCLUSIONS_TAKEN_INTO_ACCOUNT )
+	 *	@param		array/bool		Array of directory paths to exclude.  If true then this directory is excluded so no need to check with exclusion directory.
+	 *	@return		array			array( TOTAL_DIRECTORY_SIZE, TOTAL_SIZE_WITH_EXCLUSIONS_TAKEN_INTO_ACCOUNT, OBJECTS_FOUND, OBJECTS_FOUND_WITH_EXCLUSIONS )
 	 */
 	function dir_size_map( $dir, $base, $exclusions, &$dir_array ) {
 		$dir = rtrim( $dir, '/\\' ); // Force no trailing slash.
@@ -212,6 +212,8 @@ class pb_backupbuddy_filesystem {
 		
 		$ret = 0;
 		$ret_with_exclusions = 0;
+		$ret_objects = 0;
+		$ret_objects_with_exclusions = 0;
 		$exclusions_result = $exclusions;
 		$sub = @opendir( $dir );
 		if ( false === $sub ) { // Cannot access.
@@ -224,34 +226,43 @@ class pb_backupbuddy_filesystem {
 				$dir_path = '/' . str_replace( $base, '', $dir . '/' . $file ); //str_replace( $base, '', $dir . $file . '/' );
 				
 				if ( ( $file == '.' ) || ( $file == '..' ) ) {
+					
 					// Do nothing.
 					
 				} elseif ( is_dir( $dir . '/' . $file ) ) { // DIRECTORY.
+					
 					if ( ( $exclusions === true ) || self::in_array_substr( $exclusions, $dir_path, '/' ) ) {
 						$exclusions_result = true;
 					}
 					$result = $this->dir_size_map( $dir . '/' . $file . '/', $base, $exclusions, $dir_array );
 					$this_size = $result[0];
+					$this_objects = $result[2];
 					
 					if ( $exclusions_result === true ) { // If excluding then wipe excluded value.
 						$this_size_with_exclusions = false;
+						$this_objects_with_exclusions = 0;
 					} else {
 						$this_size_with_exclusions = $result[1]; // / 1048576 );
+						$this_objects_with_exclusions = $result[3]; // / 1048576 );
 					}
 					
-					$dir_array[ $dir_path ] = array( $this_size, $this_size_with_exclusions ); // $dir_array[ DIRECTORY_PATH ] = DIRECTORY_SIZE;
+					$dir_array[ $dir_path ] = array( $this_size, $this_size_with_exclusions, $this_objects, $this_objects_with_exclusions ); // $dir_array[ DIRECTORY_PATH ] = DIRECTORY_SIZE;
 					
 					$ret += $this_size;
+					$ret_objects += $this_objects;
 					$ret_with_exclusions += $this_size_with_exclusions;
+					$ret_objects_with_exclusions += $this_objects_with_exclusions;
 					
 					unset( $file );
 					
 				} else { // FILE.
+					
 					$stats = stat( $dir . '/' . $file );
 					$ret += $stats['size'];
-					//if ( ( $exclusions !== true ) && !self::in_array_substr( $exclusions, $dir_path ) ) { // Not excluding.
+					$ret_objects++;
 					if ( ( $exclusions !== true ) && !in_array( $dir_path, $exclusions ) ) { // Not excluding.
 						$ret_with_exclusions += $stats['size'];
+						$ret_objects_with_exclusions++;
 					}
 					unset( $file );
 					
@@ -259,7 +270,7 @@ class pb_backupbuddy_filesystem {
 			}
 			closedir( $sub );
 			unset( $sub );
-			return array( $ret, $ret_with_exclusions );
+			return array( $ret, $ret_with_exclusions, $ret_objects, $ret_objects_with_exclusions );
 		}
 	} // End dir_size_map().
 	

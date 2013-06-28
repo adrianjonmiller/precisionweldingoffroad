@@ -6,11 +6,45 @@
 class pb_backupbuddy_actions extends pb_backupbuddy_actionscore {
 	
 	
+	
+	/* admin_notices()
+	 *
+	 * Run anything in the admin that may output a notice / error. Runs at proper time to not gunk up HTML.
+	 *
+	 */
+	function admin_notices() {
+		
+		// Load core if it has not been instantiated yet.
+		if ( !isset( pb_backupbuddy::$classes['core'] ) ) {
+			require_once( pb_backupbuddy::plugin_path() . '/classes/core.php' );
+			pb_backupbuddy::$classes['core'] = new pb_backupbuddy_core();
+		}
+		
+		pb_backupbuddy::$classes['core']->verify_directories();
+		
+	} // End admin_notices().
+	
+	
+	
 	function process_scheduled_backup( $cron_id ) {
+		
 		if ( !isset( pb_backupbuddy::$options ) ) {
 			$this->load();
 		}
+		
+		
+		// Load core if it has not been instantiated yet.
+		if ( !isset( pb_backupbuddy::$classes['core'] ) ) {
+			require_once( pb_backupbuddy::plugin_path() . '/classes/core.php' );
+			pb_backupbuddy::$classes['core'] = new pb_backupbuddy_core();
+		}
+		
+		// Verify directories.
+		pb_backupbuddy::$classes['core']->verify_directories();
+		
+		
 		pb_backupbuddy::status( 'details', 'cron_process_scheduled_backup: ' . $cron_id );
+		
 		
 		if ( !isset( pb_backupbuddy::$classes['core'] ) ) {
 			require_once( pb_backupbuddy::plugin_path() . '/classes/core.php' );
@@ -90,7 +124,9 @@ class pb_backupbuddy_actions extends pb_backupbuddy_actionscore {
 						pb_backupbuddy::status( 'details', 'Found valid destination.' );
 			}
 			
-			if ( pb_backupbuddy::$classes['backup']->start_backup_process( pb_backupbuddy::$options['schedules'][$cron_id]['type'], 'scheduled', array(), $post_backup_steps, pb_backupbuddy::$options['schedules'][$cron_id]['title'] ) !== true ) {
+			$profile_array = pb_backupbuddy::$options['profiles'][ pb_backupbuddy::$options['schedules'][$cron_id]['profile'] ];
+			
+			if ( pb_backupbuddy::$classes['backup']->start_backup_process( $profile_array, 'scheduled', array(), $post_backup_steps, pb_backupbuddy::$options['schedules'][$cron_id]['title'] ) !== true ) {
 				error_log( 'FAILURE #4455484589 IN BACKUPBUDDY.' );
 				echo __('Error #4564658344443: Backup failure', 'it-l10n-backupbuddy' );
 				echo pb_backupbuddy::$classes['backup']->get_errors();

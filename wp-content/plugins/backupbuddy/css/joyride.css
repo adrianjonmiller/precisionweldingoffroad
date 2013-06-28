@@ -1,6 +1,7 @@
 /* Artfully masterminded by ZURB */
-body {
-  position: relative;
+.pb_backupbuddy_begintour {
+  float: right;
+  margin-top: 10px;
 }
 
 #joyRideTipContent { display: none; }
@@ -26,7 +27,7 @@ body {
 }
 
 .joyride-content-wrapper {
-  padding: 12px 10px 15px 15px;
+  padding: 12px 18px 15px 15px;
   text-shadow: 3px 0 0 #000, 0 -1px 0 #000, 0 3px 0 #000, -1px 0 0 #000;
 }
 

@@ -6,6 +6,7 @@ if ( $mode == 'migration' ) {
 } else {
 	$picker_url = pb_backupbuddy::ajax_url( 'destination_picker' );
 }
+//$picker_url .= '&sending=' . pb_backupbuddy::_GET( 'sending' );
 
 if ( pb_backupbuddy::_GET( 'action_verb' ) != '' ) {
 	$action_verb = ' ' . htmlentities( pb_backupbuddy::_GET( 'action_verb' ) );
@@ -73,17 +74,23 @@ require_once( pb_backupbuddy::plugin_path() . '/destinations/bootstrap.php' );
 			dest_id = jQuery(this).parent('.bb-dest-option').attr( 'rel' );
 			<?php
 			if ( pb_backupbuddy::_GET( 'quickstart' ) != '' ) {
-			?>
-			var win = window.dialogArguments || opener || parent || top;
-			win.pb_backupbuddy_quickstart_destinationselected( dest_id );
-			win.tb_remove();
-			return false;
-			<?php
+				?>
+				var win = window.dialogArguments || opener || parent || top;
+				win.pb_backupbuddy_quickstart_destinationselected( dest_id );
+				win.tb_remove();
+				return false;
+				<?php
 			}
 			?>
 			
+			if ( jQuery( '#pb_backupbuddy_remote_delete' ).is( ':checked' ) ) {
+				delete_after = true;
+			} else {
+				delete_after = false;
+			}
+			
 			var win = window.dialogArguments || opener || parent || top;
-			win.pb_backupbuddy_selectdestination( dest_id, jQuery(this).children('.bb-dest-name').html(), '<?php if ( !empty( $_GET['callback_data'] ) ) { echo $_GET['callback_data']; } ?>' );
+			win.pb_backupbuddy_selectdestination( dest_id, jQuery(this).children('.bb-dest-name').html(), '<?php if ( !empty( $_GET['callback_data'] ) ) { echo $_GET['callback_data']; } ?>', delete_after );
 			win.tb_remove();
 			return false;
 		});
@@ -173,7 +180,7 @@ require_once( pb_backupbuddy::plugin_path() . '/destinations/bootstrap.php' );
 						}
 						?>
 						alert( data + "\n\nNow returning to destination list..." );
-						window.location = '<?php echo $picker_url . '&callback_data=' . pb_backupbuddy::_GET( 'callback_data' ); ?>';
+						window.location.href = '<?php echo $picker_url . '&callback_data=' . pb_backupbuddy::_GET( 'callback_data' ); ?>&sending=<?php echo pb_backupbuddy::_GET( 'sending' ); ?>';
 					} else if ( data == 'Settings saved.' ) {
 						jQuery( '#pb_backupbuddy_destpicker_title_' + pb_remote_id ).html( '<img src="<?php echo pb_backupbuddy::plugin_url(); ?>/images/updated.png" title="Settings recently updated."> ' + new_title );
 						//alert( data );
@@ -368,7 +375,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dbdbdb', end
 if ( $mode == 'migration' ) {
 	pb_backupbuddy::alert( '
 		<b>' . __( 'Tip', 'it-l10n-backupbuddy' ) . ':</b>
-		' . __( 'Verify the destination URL by entering the "Migration URL", and clicking "Test Settings" before proceeding.', 'it-l10n-backupbuddy' ) .
+		' . __( 'If you encounter difficulty try the ImportBuddy tool. Verify the destination URL by entering the "Migration URL", and clicking "Test Settings" before proceeding.', 'it-l10n-backupbuddy' ) .
 		' ' . __( 'Only Local & FTP destinations may be used for automated migrations.', 'it-l10n-backupbuddy' ) . '
 	' );
 	echo '<br>';
@@ -430,6 +437,8 @@ if ( $mode == 'migration' ) {
 
 $i = 0;
 if ( ( pb_backupbuddy::_GET( 'show_add' ) != 'true' ) && ( $destination_list_count > 0 ) ) {
+	
+	
 	?>
 	<div class="destination">
 		<h3 class="pb_backupbuddy_selectexistingtext">Select existing destination<?php echo $action_verb; ?>:</h3>
@@ -437,6 +446,12 @@ if ( ( pb_backupbuddy::_GET( 'show_add' ) != 'true' ) && ( $destination_list_cou
 	
 	
 		<?php
+		
+		// Offer post-send delete for manual sends.
+		if ( ( pb_backupbuddy::_GET( 'sending' ) == '1' ) && ( count( pb_backupbuddy::$options['remote_destinations'] ) > 0 ) ) {
+			echo '<div style="margin-bottom: 9px;"><label><input type="checkbox" name="delete_after" id="pb_backupbuddy_remote_delete" value="1"> <b>Delete local backup</b> after successful send?</label></div>';
+		}
+		
 		foreach( pb_backupbuddy::$options['remote_destinations'] as $destination_id => $destination ) {
 			
 			if ( $mode == 'migration' ) {
@@ -515,7 +530,7 @@ if ( ( pb_backupbuddy::_GET( 'show_add' ) != 'true' ) && ( $destination_list_cou
 						} else {
 							echo pb_backupbuddy::ajax_url( 'destination_picker' );
 						}
-					?>&show_add=true" class="info add-new open">
+					?>&show_add=true&sending=<?php echo pb_backupbuddy::_GET( 'sending' ); ?>" class="info add-new open">
 					<span class="icon plus" style="background-image: url('<?php echo pb_backupbuddy::plugin_url(); ?>/images/dest_plus.png');"></span>
 					<span class="type">Add new</span>
 					<span class="bb-dest-name">FTP, Stash, S3, etc.</span>
@@ -554,7 +569,7 @@ if ( ( pb_backupbuddy::_GET( 'show_add' ) != 'true' ) && ( $destination_list_cou
 			?>
 			<div class="pb_backupbuddy_destpicker_newdest" style="background: #FFFFFF; border-bottom: 2px dotted #DFDFDF; padding-bottom: 25px;">
 				<div class="pb_backupbuddy_destpicker_newdest_select">
-					<a href="<?php echo $picker_url; ?>&add=<?php echo $destination_name; ?>&callback_data=<?php echo pb_backupbuddy::_GET( 'callback_data' ); ?>" class="button button-primary" id="pb_backupbuddy_addnewdest_launch">+ Add New</a>
+					<a href="<?php echo $picker_url; ?>&add=<?php echo $destination_name; ?>&callback_data=<?php echo pb_backupbuddy::_GET( 'callback_data' ); ?>&sending=<?php echo pb_backupbuddy::_GET( 'sending' ); ?>" class="button button-primary" id="pb_backupbuddy_addnewdest_launch">+ Add New</a>
 				</div>
 				<h1><?php
 				

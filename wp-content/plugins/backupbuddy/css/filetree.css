@@ -1,5 +1,6 @@
 .pb_backupbuddy_treeselect_control {
 	visibility: hidden;
+	z-index: 9999999;
 	background: #F9F9F9;
 }
 
@@ -29,9 +30,11 @@
 	width: 300px;
 	overflow: auto;
 	border: 1px solid #DFDFDF;
-	background-color: #F1F1F1;
+	background-color: #F9F9F9;
 	padding: 3px;
-	-moz-border-radius:4px 4px 4px 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
 }
 
 
@@ -47,7 +50,7 @@
 }
 
 .expanded .jqueryFileTree {
-	margin-left: 20px;
+	margin-left: 28px;
 }
 
 
@@ -82,12 +85,50 @@ UL.jqueryFileTree a {
 }
 
 
-UL.jqueryFileTree LI a:hover {
+/* UL.jqueryFileTree LI a:hover { */
+.hoverable:hover{
 	//background: #BDF;
 	background-color: rgb(255,255,255 );
 	background-color: rgba(255,255,255, 0.6);
 	box-shadow: inset 0 0 4px #aaa;
 }
+
+.viewable a {
+	cursor: pointer;
+}
+
+
+
+.viewlink {
+	display: none;
+	background: #777F84;
+	color: #f1f1f1;
+	margin-left: 7px;
+	font-size: .85em;
+	padding: 4px;
+	padding-left: 6px;
+	padding-right: 6px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+.viewlink img {
+	vertical-align: -2px;
+}
+
+.viewlink_place {
+	color: #f1f1f1;
+	margin-left: 7px;
+	font-size: .85em;
+	padding: 4px;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+.viewlink_place img {
+	vertical-align: -2px;
+}
+
+
 
 /*
 li.directory A:hover {

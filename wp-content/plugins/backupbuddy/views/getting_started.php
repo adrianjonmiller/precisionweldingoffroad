@@ -58,7 +58,7 @@ echo '<div style="margin-top: 40px;">';
 	
 	
 	pb_backupbuddy::$ui->start_tab( 'quicksetup' );
-	require_once( 'quicksetup.php' );
+	require_once( '_quicksetup.php' );
 	pb_backupbuddy::$ui->end_tab();
 	
 	

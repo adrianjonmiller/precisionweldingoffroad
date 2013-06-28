@@ -17,7 +17,7 @@
 		
 		
 		/* Allow deleting of remote destinations from the list. */
-		jQuery('.pb_remotedestionation_delete').live( 'click', function(e) {
+		jQuery(document).on( 'click', '.pb_remotedestionation_delete', function(e) {
 			jQuery( '#pb_remotedestination_' + jQuery(this).parent( 'li' ).attr( 'id' ).substr( 21 ) ).remove();
 		});
 		
@@ -61,7 +61,7 @@ if ( count( $schedules ) == 0 ) {
 			'action'		=>		pb_backupbuddy::page_url(),
 			'columns'		=>		array(
 										__( 'Title', 'it-l10n-backupbuddy' ),
-										__( 'Type', 'it-l10n-backupbuddy' ),
+										__( 'Profile', 'it-l10n-backupbuddy' ),
 										__( 'Interval', 'it-l10n-backupbuddy' ),
 										__( 'Destinations', 'it-l10n-backupbuddy' ),
 										__( 'Run Time', 'it-l10n-backupbuddy' ) . pb_backupbuddy::tip( __( 'First run indicates the first time thie schedule ran or will run.  Last run time is the last time that this scheduled backup started. This does not imply that the backup completed, only that it began at this time. The last run time is reset if the schedule is edited. Next run indicates when it is next scheduled to run. If there is no server activity during this time the schedule will be delayed.', 'it-l10n-backupbuddy' ), '', false ),

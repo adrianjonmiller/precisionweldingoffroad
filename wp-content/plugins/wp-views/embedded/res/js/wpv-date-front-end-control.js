@@ -24,8 +24,9 @@ jQuery(document).ready(function() {
             showOn: "button",
             buttonImage: wpv_calendar_image,
             buttonText: wpv_calendar_text,
-            buttonImageOnly: true
-            
+            buttonImageOnly: true,
+            changeMonth: true,
+	    changeYear: true,
             
         });
     }

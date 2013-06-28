@@ -36,7 +36,7 @@ $settings_form->add_setting( array(
 $settings_form->add_setting( array(
 	'type'		=>		'text',
 	'name'		=>		'path',
-	'title'		=>		__( 'Remote path (optional)', 'it-l10n-backupbuddy' ) . ' ' . pb_backupbuddy::video( 'O2fK6W4tokE#43', __('Set a FTP remote directory', 'it-l10n-backupbuddy' ), false ),
+	'title'		=>		__( 'Remote path (optional)', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: /public_html/backups] - Remote path to place uploaded files into on the destination FTP server. Make sure this path is correct; if it does not exist BackupBuddy will attempt to create it. No trailing slash is needed.', 'it-l10n-backupbuddy' ),
 	'rules'		=>		'string[0-500]',
 ) );

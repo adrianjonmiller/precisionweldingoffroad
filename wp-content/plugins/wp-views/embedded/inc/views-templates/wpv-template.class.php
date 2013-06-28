@@ -175,7 +175,7 @@ class WPV_template{
 
         $view_template = '';
         //$view_template .= '<p><strong>' . __('Views template', 'wpv-views') . '</strong></p>';
-        $view_template .= '<select name="views_template" id="views_template">';
+        $view_template .= '<select name="views_template[' . $post->ID .  ']" id="views_template">';
 
         // Add a "None" type to the list.
         $none = new stdClass();
@@ -233,9 +233,9 @@ class WPV_template{
         
         if (isset($_POST['views_template'])) {
 			// make sure we only update this for the current post.
-	        if (isset($_POST['post_ID']) && $_POST['post_ID'] == $pidd) {
+	        if (isset($_POST['post_ID']) && $_POST['post_ID'] == $pidd && isset($_POST['views_template'][$pidd])) {
 			
-				$template_selected = $_POST['views_template'];
+				$template_selected = $_POST['views_template'][$pidd];
             
 				update_post_meta($pidd, '_views_template', $template_selected);
 			}

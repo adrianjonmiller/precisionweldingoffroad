@@ -489,9 +489,11 @@ class WP_Views{
 			
 			$meta_html = $view_settings['filter_meta_html'];
 			
-            if(preg_match('#\\[wpv-filter-controls\\](.*?)\\[\/wpv-filter-controls\\]#is', $meta_html, $matches)) {
+            if(preg_match('#\\[wpv-filter-controls(.*?)\\](.*?)\\[\/wpv-filter-controls\\]#is', $meta_html, $matches)) {
 				
-				$out .= wpv_do_shortcode($matches[0]);
+				$fixmatches = str_replace(' hide="true"', '', $matches[0]);
+				
+				$out .= wpv_do_shortcode($fixmatches);
 			
 			}
 			
@@ -1371,6 +1373,19 @@ jQuery(document).ready(function(){
 	
         return $settings;
     }
+    
+    function convert_ids_to_names_in_filters($id_list) {
+        global $wpdb;
+        $id_array = array_map('trim', explode(',', $id_list));
+        $post_names = array();
+        $counter = 0;
+        foreach ($id_array as $id_post) {
+		$name = $wpdb->get_var("SELECT post_name FROM {$wpdb->posts} WHERE ID = " . $id_post);
+		if (!is_null($name)) $post_names['post-'.$counter] = $name;
+		$counter++;
+        }
+        return $post_names;
+        }
 
     function convert_ids_to_names_in_layout_settings($settings) {
         global $wpdb;
@@ -1522,6 +1537,27 @@ jQuery(document).ready(function(){
 		}
         
         return $settings;
+    }
+    
+    function convert_names_to_ids_in_filters($names_array) {
+	global $wpdb;
+	if (!is_array($names_array)) return;
+	$ids_list = array();
+	$ids_lost = array();
+	foreach ($names_array as $post_name) {
+		$found_post = $wpdb->get_var("SELECT ID FROM {$wpdb->posts} WHERE post_name = '{$post_name}'");
+		if (is_null($found_post)) {
+			$ids_lost[] = $post_name;
+		} else {
+			$ids_list[] = $found_post;
+		}
+	}
+	$ids_list = implode(',', $ids_list);
+	$result = array(
+		'ids_list' => $ids_list,
+		'ids_lost' => $ids_lost
+	);
+	return $result;
     }
 
     function convert_names_to_ids_in_layout_settings($settings) {
@@ -1757,6 +1793,7 @@ jQuery(document).ready(function(){
 		if ($date_format == '') {
 			$date_format = get_option('date_format');
 		}
+		$date_format = str_replace('\\\\', '\\', $date_format); // this is needed to escape characters in the date_i18n function
 		
 		$date = $_POST['date'];
 		$date = mktime(0, 0, 0, substr($date, 2, 2), substr($date, 0, 2), substr($date, 4, 4));

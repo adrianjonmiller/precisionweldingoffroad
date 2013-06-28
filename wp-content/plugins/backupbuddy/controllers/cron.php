@@ -33,15 +33,22 @@ class pb_backupbuddy_cron extends pb_backupbuddy_croncore {
 	
 	
 	
-	// Deprecating eventually. Use destination_send() for any new destination sending.
-	// @param	string		$trigger	What triggered this backup. Valid values: scheduled, manual.
-	public function remote_send( $destination_id, $backup_file, $trigger, $send_importbuddy = false ) {
+	/* remote_send()
+	 *
+	 * Advanced cron-based remote file sending.
+	 *
+	 * @param	int		$destination_id		Numeric array key for remote destination to send to.
+	 * @param	string	$backup_file		Full file path to file to send.
+	 * @param	string	$trigger			Trigger of this cron event. Valid values: scheduled, manual
+	 *
+	 */
+	public function remote_send( $destination_id, $backup_file, $trigger, $send_importbuddy = false, $delete_after = false ) {
 		pb_backupbuddy::set_greedy_script_limits();
 		
 		if ( ( '' == $backup_file ) && ( $send_importbuddy ) ) {
 			pb_backupbuddy::status( 'message', 'Only sending ImportBuddy to remote destination `' . $destination_id . '`.' );
 		} else {
-			pb_backupbuddy::status( 'message', 'Sending `' . $backup_file . '` to remote destination `' . $destination_id . '`. Importbuddy?: `' . $send_importbuddy . '`.' );
+			pb_backupbuddy::status( 'message', 'Sending `' . $backup_file . '` to remote destination `' . $destination_id . '`. Importbuddy?: `' . $send_importbuddy . '`. Delete after?: `' . $delete_after . '`.' );
 		}
 		
 		if ( !isset( pb_backupbuddy::$options ) ) {
@@ -54,14 +61,15 @@ class pb_backupbuddy_cron extends pb_backupbuddy_croncore {
 			require_once( pb_backupbuddy::plugin_path() . '/classes/core.php' );
 			pb_backupbuddy::$classes['core'] = new pb_backupbuddy_core();
 		}
-		pb_backupbuddy::$classes['core']->send_remote_destination( $destination_id, $backup_file, $trigger, $send_importbuddy );
+		pb_backupbuddy::$classes['core']->send_remote_destination( $destination_id, $backup_file, $trigger, $send_importbuddy, $delete_after );
 	} // End remote_send().
 	
 	
 	
 	/*	destination_send()
 	 *	
-	 *	Send file(s) to a destination. Pass full array of destination settings.
+	 *	Straight-forward send file(s) to a destination. Pass full array of destination settings.
+	 *	NOTE: DOES NOT SUPPORT MULTIPART. SEE remote_send() ABOVE!
 	 *	
 	 *	@param		array		$destination_settings		All settings for this destination for this action.
 	 *	@param		array		$files						Array of files to send (full path).
@@ -288,10 +296,23 @@ class pb_backupbuddy_cron extends pb_backupbuddy_croncore {
 		} else {
 		    pb_backupbuddy::status( 'error', 'Error writing remote file locally to `' . $destination_file . '`.' );
 		}
-	
+		
 		// close this connection
 		ftp_close( $conn_id );
 	}
+	
+	
+	
+	function housekeeping() {
+		
+		if ( !isset( pb_backupbuddy::$classes['core'] ) ) {
+			require_once( pb_backupbuddy::plugin_path() . '/classes/core.php' );
+			pb_backupbuddy::$classes['core'] = new pb_backupbuddy_core();
+		}
+		
+		pb_backupbuddy::$classes['core']->periodic_cleanup();
+		
+	} // End housekeeping().
 	
 	
 }

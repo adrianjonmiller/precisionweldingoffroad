@@ -25,7 +25,7 @@ function wpv_filter_post_custom_field($query, $view_settings) {
 			$value = $view_settings['custom-field-' . $name . '_value'];
 			$value = wpv_apply_user_functions($value);
 			
-			if ($value != $no_parameter_found) { // Only add if we have found a parameter
+			if ($value !== $no_parameter_found) { // Only add if we have found a parameter
 				
 				$compare_mode = $view_settings['custom-field-' . $name . '_compare'];
 				

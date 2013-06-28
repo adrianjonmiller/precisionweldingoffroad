@@ -8,7 +8,12 @@ class WPV_template_plugin extends WPV_template {
           wp_enqueue_script( 'views-codemirror-script',
                 WPV_URL . '/res/js/views_codemirror_conf.js', array('jquery'),
                 WPV_VERSION );
-
+			
+		    $user_id = get_current_user_id();
+			$show_hightlight = get_user_meta( $user_id, 'show_highlight', true);
+			if ( !isset($show_hightlight) || $show_hightlight == '' ){
+				$show_hightlight = 1;	
+			}
         ?>
         <script type="text/javascript">                        
             
@@ -21,10 +26,14 @@ class WPV_template_plugin extends WPV_template {
                 jQuery('#ed_toolbar').append('<input type="button" value="<?php echo esc_js(__( "Syntax Highlight On", 'wpv-views' )); ?>" title="<?php echo esc_js(__(  "Syntax Highlight On", 'wpv-views' )); ?>" class="ed_button cred_qt_codemirror_on" id="qt_content_cred_syntax_highlight">');
 
                 // Show/hide elements
-                jQuery('.ed_button').hide();
-                jQuery('.insert-media.add_media').hide();
-                jQuery('#qt_content_cred_syntax_highlight').show();
-
+               <?php if ( $show_hightlight == 1 ){ ?>
+					jQuery('.ed_button').hide();
+					jQuery('.insert-media.add_media').hide();
+					jQuery('#qt_content_cred_syntax_highlight').show();
+ 				<?php } else{?>
+					jQuery('#qt_content_cred_syntax_highlight').removeClass('cred_qt_codemirror_on').addClass('cred_qt_codemirror_off').attr('title','<?php echo esc_js(__(  "Syntax Highlight Off", 'wpv-views' )); ?>').val('<?php echo esc_js(__(  "Syntax Highlight Off", 'wpv-views' )); ?>');
+					icl_editor.toggleCodeMirror('content', false);
+				<?php }?>
                 // Bind toggle click
                 jQuery('#qt_content_cred_syntax_highlight').click(function() {
                     // Toggle CodeMirror OFF
@@ -33,13 +42,16 @@ class WPV_template_plugin extends WPV_template {
                         jQuery('.insert-media.add_media').show();
                         jQuery(this).removeClass('cred_qt_codemirror_on').addClass('cred_qt_codemirror_off').attr('title','<?php echo esc_js(__(  "Syntax Highlight Off", 'wpv-views' )); ?>').val('<?php echo esc_js(__(  "Syntax Highlight Off", 'wpv-views' )); ?>');
                         icl_editor.toggleCodeMirror('content', false);
+						jQuery('input[name=show_highlight]').val('0');
                     }else{
+						
                         // Toggle CodeMirror ON
                         jQuery('.ed_button').hide();
                         jQuery('.insert-media.add_media').hide();
                         jQuery('#qt_content_cred_syntax_highlight').show();
                         jQuery(this).addClass('cred_qt_codemirror_on').removeClass('cred_qt_codemirror_off').attr('title','<?php echo esc_js(__(  "Syntax Highlight On", 'wpv-views' )); ?>').val('<?php echo esc_js(__(  "Syntax Highlight On", 'wpv-views' )); ?>');
                         icl_editor.toggleCodeMirror('content', true);
+						jQuery('input[name=show_highlight]').val('1');
                     }
                 });
             }
@@ -90,9 +102,10 @@ class WPV_template_plugin extends WPV_template {
 					jQuery('.' + where + '_edit').css({'height': '0', 'padding': '0'});
 					jQuery('#' + where + '_state').val('off');
 				});
-                                
+                                    
                                 setTimeout(CodeMirror_fix_toolbar, 500);
-                                
+                 
+				            
                
                
                
@@ -114,16 +127,25 @@ class WPV_template_plugin extends WPV_template {
 	 * Add admin metabox for custom CSS and javascript
 	 */
 	global $post;
+		$user_id = get_current_user_id();
+		$show_hightlight = get_user_meta( $user_id, 'show_highlight', true );
+		if ( !isset($show_hightlight) || $show_hightlight == '' ){
+			$show_hightlight = 1;	
+		}
         $template_extra_css = '';
         $template_extra_css = get_post_meta($post->ID, '_wpv_view_template_extra_css', true);
         $template_extra_js = '';
         $template_extra_js = get_post_meta($post->ID, '_wpv_view_template_extra_js', true);
         $template_extra_state = array();
         $template_extra_state = get_post_meta($post->ID, '_wpv_view_template_extra_state', true);
+		
+		
 	?>
 	<p><?php _e('Here you can modify specific CSS and javascript to be used with this View Template.', 'wpv-views'); ?>
 	</p>
 	<div class="template_meta_html_extra_edit">
+    	<!-- Save editor view status-->
+        <input type="hidden" name="show_highlight" value="<?php echo $show_hightlight; ?>" />
 		<input type="button" class="button-secondary" id="wpv_template_meta_html_extra_css" value="<?php _e('Edit CSS', 'wpv-views'); ?>" />
 		<input type="hidden" name="_wpv_view_template_extra_state[css]" id="wpv_template_meta_html_extra_css_state" value="<?php echo isset($template_extra_state['css']) ? $template_extra_state['css'] : 'off'; ?>" />
 		<div class="wpv_template_meta_html_extra_css_edit" style="margin-bottom:15px;overflow:hidden;background:<?php echo WPV_EDIT_BACKGROUND;?>;">
@@ -225,6 +247,11 @@ class WPV_template_plugin extends WPV_template {
             if ( !empty( $template_meta_html_state ) ) {
 		update_post_meta($pidd, '_wpv_view_template_extra_state', $template_meta_html_state);
             }
+			if ( isset($_POST['show_highlight']) ){
+				$user_id = get_current_user_id();
+				update_user_meta( $user_id, 'show_highlight', $_POST['show_highlight'] );
+				$show_hightlight = get_user_meta( $user_id, 'show_highlight', true );
+			}
             
         }
         

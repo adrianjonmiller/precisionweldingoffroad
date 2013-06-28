@@ -131,8 +131,27 @@ function wpv_admin_export_data($download = true) {
 				$value['author_mode']['type'] = $value['author_mode'][0];
 				unset($value['author_mode'][0]);
 			    }
+			    if (isset($value['taxonomy_parent_mode'])) {
+				$value['taxonomy_parent_mode']['state'] = $value['taxonomy_parent_mode'][0];
+				unset($value['taxonomy_parent_mode'][0]);
+			    }
+			    if (isset($value['taxonomy_search_mode'])) {
+				$value['taxonomy_search_mode']['state'] = $value['taxonomy_search_mode'][0];
+				unset($value['taxonomy_search_mode'][0]);
+			    }
+			    if (isset($value['search_mode'])) {
+				$value['search_mode']['state'] = $value['search_mode'][0];
+				unset($value['search_mode'][0]);
+			    }
+			    if (isset($value['id_mode'])) {
+				$value['id_mode']['state'] = $value['id_mode'][0];
+				unset($value['id_mode'][0]);
+			    }
                             
                             $value = $WP_Views->convert_ids_to_names_in_settings($value);
+                            if (isset($value['post_id_ids_list']) && !empty($value['post_id_ids_list'])) {
+				$value['post_id_ids_list'] = $WP_Views->convert_ids_to_names_in_filters($value['post_id_ids_list']);
+                            }
                             
                             $data['views']['view-' . $post['ID']]['meta'][$meta_key] = $value;
 
@@ -561,13 +580,32 @@ function wpv_admin_export_selected_data($items, $type = 'view', $mode = 'xml' ) 
                                         }
                                     }
                                     
-                                    if (isset($value['author_mode'])) {
-					$value['author_mode']['type'] = $value['author_mode'][0];
-					unset($value['author_mode'][0]);
-				    }
+					if (isset($value['author_mode'])) {
+						$value['author_mode']['type'] = $value['author_mode'][0];
+						unset($value['author_mode'][0]);
+					}
+					if (isset($value['taxonomy_parent_mode'])) {
+						$value['taxonomy_parent_mode']['state'] = $value['taxonomy_parent_mode'][0];
+						unset($value['taxonomy_parent_mode'][0]);
+					}
+					if (isset($value['taxonomy_search_mode'])) {
+						$value['taxonomy_search_mode']['state'] = $value['taxonomy_search_mode'][0];
+						unset($value['taxonomy_search_mode'][0]);
+					}
+					if (isset($value['search_mode'])) {
+						$value['search_mode']['state'] = $value['search_mode'][0];
+						unset($value['search_mode'][0]);
+					}
+					if (isset($value['id_mode'])) {
+						$value['id_mode']['state'] = $value['id_mode'][0];
+						unset($value['id_mode'][0]);
+					}
                                     
                                     $value = $WP_Views->convert_ids_to_names_in_settings($value);
-                                    
+					if (isset($value['post_id_ids_list']) && !empty($value['post_id_ids_list'])) {
+						$value['post_id_ids_list'] = $WP_Views->convert_ids_to_names_in_filters($value['post_id_ids_list']);
+					}
+					
                                     $data['views']['view-' . $post['ID']]['meta'][$meta_key] = $value;
                                     if ('module_manager' == $mode ) {
 					$hash_data['meta'][$meta_key] = $value;
@@ -590,6 +628,10 @@ function wpv_admin_export_selected_data($items, $type = 'view', $mode = 'xml' ) 
 					if (isset($value['layout_meta_html_css'])) $hash_data['meta'][$meta_key]['layout_meta_html_css'] = preg_replace('/\s+/', '', str_replace("\n","",$value['layout_meta_html_css']));
 					if (isset($value['layout_meta_html_js'])) $hash_data['meta'][$meta_key]['layout_meta_html_js'] = preg_replace('/\s+/', '', str_replace("\n","",$value['layout_meta_html_js']));
 					if (isset($value['author_mode'])) $hash_data['meta'][$meta_key]['author_mode'] = reset($value['author_mode']);
+					if (isset($value['taxonomy_parent_mode'])) $hash_data['meta'][$meta_key]['taxonomy_parent_mode'] = reset($value['taxonomy_parent_mode']);
+					if (isset($value['taxonomy_search_mode'])) $hash_data['meta'][$meta_key]['taxonomy_search_mode'] = reset($value['taxonomy_search_mode']);
+					if (isset($value['search_mode'])) $hash_data['meta'][$meta_key]['search_mode'] = reset($value['search_mode']);
+					if (isset($value['id_mode'])) $hash_data['meta'][$meta_key]['id_mode'] = reset($value['id_mode']);
 					
 					$cursed_array = array(
 						'filter_controls_enable',

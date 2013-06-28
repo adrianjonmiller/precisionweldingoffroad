@@ -134,7 +134,7 @@ class WPV_Widget_filter extends WP_Widget{
         global $WP_Views, $wpdb;
         $views = $WP_Views->get_views();        
 
-        $posts = $wpdb->get_results("SELECT ID, post_title, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[wpv-view%' AND post_type NOT IN ('revision')");
+        $posts = $wpdb->get_results("SELECT ID, post_title, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[wpv-view%' AND post_type NOT IN ('view','view-template','revision')");
 
         $instance = wp_parse_args( (array) $instance, 
             array( 

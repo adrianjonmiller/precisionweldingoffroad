@@ -75,7 +75,8 @@ if(is_admin()){
         if (isset($_POST['search'])) {
             // coming from the add filter button
             $defaults = array('search_mode' => $_POST['mode'],
-                              'post_search_value' => $_POST['search']);
+                              'post_search_value' => $_POST['search'],
+                              'post_search_content' => $_POST['search_content']);
             $view_settings = wp_parse_args($view_settings, $defaults);
         }
         
@@ -223,7 +224,7 @@ if(is_admin()){
         ob_start();
         ?>
             <input class="button-primary" type="button" value="<?php echo __('OK', 'wpv-views'); ?>" name="<?php echo __('OK', 'wpv-views'); ?>" onclick="wpv_show_filter_search_edit_ok('wpv-filter-taxonomy-search', 'taxonomy_search_value', 'taxonomy_search_mode', 'taxonomy_search')"/>
-            <input class="button-secondary" type="button" value="<?php echo __('Cancel', 'wpv-views'); ?>" name="<?php echo __('Cancel', 'wpv-views'); ?>" onclick="wpv_show_filter_taxonomy_search_edit_cancel()"/>
+            <input class="button-secondary" type="button" value="<?php echo __('Cancel', 'wpv-views'); ?>" name="<?php echo __('Cancel', 'wpv-views'); ?>" onclick="wpv_show_filter_search_edit_cancel('wpv-filter-taxonomy-search', 'taxonomy_search_value', 'taxonomy_search_mode')"/>
         <?php
         $td .= ob_get_clean();
         $td .= '</div></td>';
@@ -277,7 +278,8 @@ function wpv_add_search($args) {
     $view_settings = isset($args['view_settings']) ? $args['view_settings'] : array();
     
     $defaults = array('search_mode' => 'specific',
-                      'post_search_value' => '');
+                      'post_search_value' => '',
+                      'post_search_content' => 'full_content');
     $view_settings = wp_parse_args($view_settings, $defaults);
     
     
@@ -305,6 +307,15 @@ function wpv_add_search($args) {
                 <label><input type="radio" name="<?php echo $radio_name; ?>" value="manual" <?php echo $checked; ?> />&nbsp;<?php _e('I’ll add the search box to the HTML manually', 'wpv-views'); ?></label>
             </li>
         </ul>
+        <hr />
+        <div class="search-content">
+        <?php $checkbox = $edit ? '_wpv_settings[post_search_content]' : 'post_search_content'; ?>
+        <label><?php echo __('Where to search: ', 'wpv-views'); ?></label>
+        <select name="<?php echo $checkbox; ?>">
+		<option value="full_content"<?php if ($view_settings['post_search_content'] == 'full_content') echo ' selected="selected"';?>><?php echo __('Post content and title', 'wpv-views'); ?></option>
+		<option value="just_title"<?php if ($view_settings['post_search_content'] == 'just_title') echo ' selected="selected"';?>><?php echo __('Just post titles', 'wpv-views'); ?></option>
+        </select>
+        </div>
         
 	</div>
 

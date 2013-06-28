@@ -137,12 +137,6 @@ if ( $options !== false ) {
 		unset( pb_backupbuddy::$options['import_password'] );
 	}
 	
-	if ( isset( pb_backupbuddy::$options['repairbuddy_password'] ) ) { // Migrate repair password to just hash.
-		pb_backupbuddy::$options['repairbuddy_pass_length'] = strlen( pb_backupbuddy::$options['repairbuddy_password'] );
-		pb_backupbuddy::$options['repairbuddy_pass_hash'] = md5( pb_backupbuddy::$options['repairbuddy_password'] );
-		unset( pb_backupbuddy::$options['repairbuddy_password'] );
-	}
-	
 	// Migrate email_notify_scheduled -> email_notify_scheduled_complete
 	pb_backupbuddy::$options['email_notify_scheduled_complete'] = pb_backupbuddy::$options['email_notify_scheduled'];
 	
@@ -188,7 +182,7 @@ if ( $needs_saving === true ) {
 
 
 // ********** BEGIN 3.1.8.2 -> 3.1.8.3 DATA MIGRATION **********
-if ( pb_backupbuddy::$options['data_version'] == '3' ) {
+if ( pb_backupbuddy::$options['data_version'] < 4 ) {
 	pb_backupbuddy::$options['data_version'] = '4'; // Update data structure version to 4.
 	pb_backupbuddy::$options['role_access'] = 'activate_plugins'; // Change default role from `administrator` to `activate_plugins` capability.
 	pb_backupbuddy::save();
@@ -198,21 +192,79 @@ if ( pb_backupbuddy::$options['data_version'] == '3' ) {
 
 
 // ********** BEGIN 3.3.0 -> 3.3.0.1 BACKUP DATASTRUCTURE OPTIONS to FILEOPTIONS MIGRATION **********
-if ( isset( pb_backupbuddy::$options['backups'] ) && ( count( pb_backupbuddy::$options['backups'] ) > 0 ) ) {
-	pb_backupbuddy::anti_directory_browsing( pb_backupbuddy::$options['log_directory'] . 'fileoptions/' );
-	require_once( pb_backupbuddy::plugin_path() . '/classes/fileoptions.php' );
-	foreach( pb_backupbuddy::$options['backups'] as $serial => $backup ) {
-		$backup_options = new pb_backupbuddy_fileoptions( pb_backupbuddy::$options['log_directory'] . 'fileoptions/' . $serial . '.txt', $read_only = false, $ignore_lock = false, $create_file = true );
-		$backup_options->options = $backup;
-		if ( true === $backup_options->save() ) {
-			unset( pb_backupbuddy::$options['backups'][$serial] );
+if ( pb_backupbuddy::$options['data_version'] < 5 ) {
+	if ( isset( pb_backupbuddy::$options['backups'] ) && ( count( pb_backupbuddy::$options['backups'] ) > 0 ) ) {
+		pb_backupbuddy::anti_directory_browsing( pb_backupbuddy::$options['log_directory'] . 'fileoptions/' );
+		require_once( pb_backupbuddy::plugin_path() . '/classes/fileoptions.php' );
+		foreach( pb_backupbuddy::$options['backups'] as $serial => $backup ) {
+			$backup_options = new pb_backupbuddy_fileoptions( pb_backupbuddy::$options['log_directory'] . 'fileoptions/' . $serial . '.txt', $read_only = false, $ignore_lock = false, $create_file = true );
+			$backup_options->options = $backup;
+			if ( true === $backup_options->save() ) {
+				unset( pb_backupbuddy::$options['backups'][$serial] );
+			}
+			unset( $backup_options );
 		}
-		unset( $backup_options );
 	}
+	pb_backupbuddy::$options['data_version'] = '5';
+	pb_backupbuddy::save();
 }
-pb_backupbuddy::$options['data_version'] = '5';
-pb_backupbuddy::save();
 // ********** END 3.3.0 -> 3.3.0.1 BACKUP DATASTRUCTURE OPTIONS to FILEOPTIONS MIGRATION **********
+
+
+
+
+
+// ********** BEGIN 4.0 UPGRADE **********
+if ( pb_backupbuddy::$options['data_version'] < 6 ) {
+	// Migrate profile-specific settings into 'Defaults' key profile.
+	pb_backupbuddy::$options['profiles'][0]['skip_database_dump'] = pb_backupbuddy::$options['skip_database_dump'];
+	unset( pb_backupbuddy::$options['skip_database_dump'] );
+	pb_backupbuddy::$options['profiles'][0]['backup_nonwp_tables'] = pb_backupbuddy::$options['backup_nonwp_tables'];
+	unset( pb_backupbuddy::$options['backup_nonwp_tables'] );
+	pb_backupbuddy::$options['profiles'][0]['integrity_check'] = pb_backupbuddy::$options['integrity_check'];
+	unset( pb_backupbuddy::$options['integrity_check'] );
+
+	// Unset repairbuddy pass stuff as it now just uses same as importbuddy.
+	if ( isset( pb_backupbuddy::$options['repairbuddy_pass_hash'] ) ) {
+		unset( pb_backupbuddy::$options['repairbuddy_pass_hash'] );
+	}
+	if ( isset( pb_backupbuddy::$options['repairbuddy_pass_length'] ) ) {
+		unset( pb_backupbuddy::$options['repairbuddy_pass_length'] );
+	}
+
+	// Changing some names.
+	pb_backupbuddy::$options['last_backup_start'] = pb_backupbuddy::$options['last_backup'];
+	pb_backupbuddy::$options['last_backup_finish'] = pb_backupbuddy::$options['last_backup'];
+	unset( pb_backupbuddy::$options['last_backup'] );
+
+	// Existing chedules need profiles assigned.
+	foreach( pb_backupbuddy::$options['schedules'] as &$schedule ) {
+		if ( !isset( $schedule['profile'] ) || ( $schedule['profile'] == '' ) ) { // No profile set.
+			if ( $schedule['type'] == 'db' ) {
+				$schedule['profile'] = '1';
+			}
+			if ( $schedule['type'] == 'full' ) {
+				$schedule['profile'] = '2';
+			}
+			unset( $schedule['type'] );
+		}
+	}
+	
+	pb_backupbuddy::$options['data_version'] = '6';
+	pb_backupbuddy::save();
+}
+if ( pb_backupbuddy::$options['data_version'] < 7 ) {
+	pb_backupbuddy::$options['data_version'] = '7';
+	pb_backupbuddy::$options['profiles'][0]['excludes'] = pb_backupbuddy::$options['excludes'];
+	unset( pb_backupbuddy::$options['excludes'] );
+	pb_backupbuddy::save();
+}
+// ********** END 4.0 UPGRADE **********
+
+
+
+
+
 
 
 

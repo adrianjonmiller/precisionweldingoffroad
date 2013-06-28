@@ -586,12 +586,50 @@ if ( !class_exists( "pluginbuddy_zbzipziparchive" ) ) {
 		 *	extract()
 		 *
 		 *	Extracts the contents of a zip file to the specified directory using the best unzip methods possible.
+		 *	If no specific items given to extract then it's a complete unzip
+		 *
+		 *	@param	string		$zip_file					Full path & filename of ZIP file to extract from.
+		 *	@param	string		$destination_directory		Full directory path to extract into.
+		 *	@param	array		$items						Mapping of what to extract and to what
+		 *	@return	bool									true on success (all extractions successful), false otherwise
+		 */
+		public function extract( $zip_file, $destination_directory = '', $items = array() ) {
+		
+			$result = false;
+		
+			switch ( $this->get_os_type() ) {
+				case self::OS_TYPE_NIX:
+					if ( empty( $items ) ) {
+						$result = $this->extract_generic_full( $zip_file, $destination_directory );
+					} else {
+						$result = $this->extract_generic_selected( $zip_file, $destination_directory, $items );					
+					}
+					break;
+				case self::OS_TYPE_WIN:
+					if ( empty( $items ) ) {
+						$result = $this->extract_generic_full( $zip_file, $destination_directory );
+					} else {
+						$result = $this->extract_generic_selected( $zip_file, $destination_directory, $items );					
+					}
+					break;
+				default:
+					$result = false;
+			}
+			
+			return $result;
+			
+		}
+
+		/**
+		 *	extract_generic_full()
+		 *
+		 *	Extracts the contents of a zip file to the specified directory using the best unzip methods possible.
 		 *
 		 *	@param	string		$zip_file					Full path & filename of ZIP file to extract from.
 		 *	@param	string		$destination_directory		Full directory path to extract into.
 		 *	@return	bool									true on success, false otherwise
 		 */
-		public function extract( $zip_file, $destination_directory = '' ) {
+		protected function extract_generic_full( $zip_file, $destination_directory = '' ) {
 		
 			$result = false;
 			$za = NULL;
@@ -665,6 +703,23 @@ if ( !class_exists( "pluginbuddy_zbzipziparchive" ) ) {
 						
 		}
 
+		/**
+		 *	extract_generic_selected()
+		 *
+		 *	Extracts the contents of a zip file to the specified directory using the best unzip methods possible.
+		 *
+		 *	@param	string		$zip_file					Full path & filename of ZIP file to extract from.
+		 *	@param	string		$destination_directory		Full directory path to extract into.
+		 *	@param	array		$items						Mapping of what to extract and to what
+		 *	@return	bool									true on success (all extractions successful), false otherwise
+		 */
+		protected function extract_generic_selected( $zip_file, $destination_directory = '', $items ) {
+		
+			// Should never get here
+			return false;
+			
+		}
+		
 		/**
 		 *	file_exists()
 		 *	

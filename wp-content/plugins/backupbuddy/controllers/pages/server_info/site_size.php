@@ -18,11 +18,11 @@ pb_backupbuddy::load_style( 'jit_icicle.css' );
 		
 		jQuery( '.pb_backupbuddy_site_size_listing_button' ).click( function() {
 			jQuery( '#pb_backupbuddy_site_size_listing_intro > .pb_backupbuddy_loading' ).show();
-			jQuery.post( '<?php echo pb_backupbuddy::ajax_url( 'site_size_listing' ); ?>', 
+			jQuery.post( '<?php echo pb_backupbuddy::ajax_url( 'site_size_listing' ); ?>&profile=' + jQuery( '#pb_backupbuddy_filelistingprofile' ).val(), 
 				function( data ) {
 					jQuery( '#pb_backupbuddy_site_size_listing_content' ).html( data );
 					jQuery( '#pb_backupbuddy_site_size_listing_intro > .pb_backupbuddy_loading' ).hide();
-					jQuery( '#pb_backupbuddy_site_size_listing_intro' ).slideUp();
+					//jQuery( '#pb_backupbuddy_site_size_listing_intro' ).slideUp();
 					jQuery( '#pb_backupbuddy_site_size_listing_content' ).slideDown();
 				}
 			);
@@ -113,10 +113,23 @@ echo '<div class="pb_htitle">' . __('Directory Size Listing', 'it-l10n-backupbud
 echo '<a name="pb_backupbuddy_dir_size_listing">&nbsp;</a>';
 
 echo '<div id="pb_backupbuddy_site_size_listing_intro">';
-	echo __('This option displays a comprehensive listing of directories and the corresponding size of all contents within, including subdirectories.  This is useful for finding where space is being used. Note that this is a CPU intensive process and may take a while to load and even time out on some servers.', 'it-l10n-backupbuddy' );
-	echo '<br /><br /><a class="pb_backupbuddy_site_size_listing_button button secondary-button" style="margin-top: 3px;">', __('Display Directory Size Listing', 'it-l10n-backupbuddy' ),'</a> ';
-	echo '<span class="pb_backupbuddy_loading" style="display: none; margin-left: 10px;"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading.gif" alt="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" title="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" width="16" height="16" style="vertical-align: -3px;" /></span>';
-echo '</div>';
+echo __('This option displays a comprehensive listing of directories and the corresponding size of all contents within, including subdirectories.  This is useful for finding where space is being used. Note that this is a CPU intensive process and may take a while to load and even time out on some servers.', 'it-l10n-backupbuddy' );
+echo '<br /><br />';
+
+
+echo 'Backup profile for calculating exclusions: ';
+echo '<select id="pb_backupbuddy_filelistingprofile">';
+foreach( pb_backupbuddy::$options['profiles'] as $this_profile_id => $profile ) {
+	?>
+	<option value="<?php echo $this_profile_id; ?>" <?php if ( $profile_id == $this_profile_id ) { echo 'selected'; } ?>><?php echo htmlentities( $profile['title'] ); ?> (<?php echo $profile['type']; ?>)</a>
+	<?php
+}
+echo '</select>';
+
+
+echo '&nbsp;&nbsp;&nbsp;<a class="pb_backupbuddy_site_size_listing_button button secondary-button" style="margin-top: 3px;">', __('Display Directory Size Listing', 'it-l10n-backupbuddy' ),'</a> ';
+echo '<span class="pb_backupbuddy_loading" style="display: none; margin-left: 10px;"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading.gif" alt="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" title="' . __('Loading...', 'it-l10n-backupbuddy' ) . '" width="16" height="16" style="vertical-align: -3px;" /></span>';
+echo '</div><br>';
 echo '<div id="pb_backupbuddy_site_size_listing_content" style="display: none;"></div>';
 echo '<br>';
 ?>

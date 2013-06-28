@@ -11,7 +11,7 @@ Auth::require_authentication(); // Die if not logged in.
 <div id="pb_createadmin_modal" style="display: none; height: 90%;">
 		<div class="modal">
 			<div class="modal_header">
-				<a class="modal_close">X</a>
+				<a class="modal_close">&times;</a>
 				<h2>Server Information</h2>
 			</div>
 			<div class="modal_content">

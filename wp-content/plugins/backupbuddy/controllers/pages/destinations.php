@@ -1,3 +1,27 @@
+<?php
+// Tutorial
+pb_backupbuddy::load_script( 'jquery.joyride-2.0.3.js' );
+pb_backupbuddy::load_script( 'modernizr.mq.js' );
+pb_backupbuddy::load_style( 'joyride.css' );
+?>
+<a href="" class="pb_backupbuddy_begintour">Tour This Page</a>
+<ol id="pb_backupbuddy_tour" style="display: none;">
+	<li data-id="ui-id-1">Remote destinations allow you to send your backups offsite to another location for safe-keeping.</li>
+	<li data-id="ui-id-2" data-button="Finish">View a list of backups recently sent to a remote destination.</li>
+</ol>
+<script>
+jQuery(window).load(function() {
+	jQuery( '.pb_backupbuddy_begintour' ).click( function() {
+		jQuery("#pb_backupbuddy_tour").joyride({
+			tipLocation: 'top',
+		});
+		return false;
+	});
+});
+</script>
+
+
+
 <script type="text/javascript">
 	function pb_backupbuddy_selectdestination( destination_id, destination_title, callback_data ) {
 		if ( callback_data != '' ) {

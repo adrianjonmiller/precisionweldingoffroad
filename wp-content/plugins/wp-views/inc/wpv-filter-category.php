@@ -390,6 +390,7 @@ function wpv_get_table_row_ui_post_category($row, $type, $cats_selected, $not_us
 					<span class="url"<?php if ($view_settings['tax_' . $taxonomy . '_relationship'] != 'FROM URL') {echo ' style="display:none;"';}?>><?php echo __('URL parameter', 'wpv-views');?></span>
 					: <input type="text" class="wpv_taxonomy_param" name="_wpv_settings[taxonomy-<?php echo $taxonomy; ?>-attribute-url]" value="<?php echo $view_settings['taxonomy-' . $taxonomy . '-attribute-url']; ?>" />
 					<span class="wpv_taxonomy_param_missing"><?php echo __('<- Please enter a value here', 'wpv-views'); ?></span>
+					<span class="wpv_taxonomy_param_forbidden" style="color:red;"></span>
 					<?php echo __('Using : ');?>
 					<?php
 						if (!isset($view_settings['taxonomy-' . $taxonomy . '-attribute-url-format'])) {
@@ -449,6 +450,7 @@ function wpv_add_category_checkboxes($args) {
 		
 		<input type="text" class="wpv_taxonomy_param" name="tax_<?php echo $args['taxonomy']; ?>_attribute_url" style="display:none;" />
 		<span class="wpv_taxonomy_param_missing"><?php echo __('<- Please enter a value here', 'wpv-views'); ?></span>
+		<span class="wpv_taxonomy_param_forbidden" style="color:red;"></span>
 
 		<br />
 		<span class="wpv-taxonomy-help"><i>

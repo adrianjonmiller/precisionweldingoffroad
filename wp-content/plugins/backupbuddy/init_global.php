@@ -17,7 +17,7 @@ pb_backupbuddy::add_action( array( 'pb_backupbuddy-cron_scheduled_backup', 'proc
 /********** CRON (global) **********/
 pb_backupbuddy::add_cron( 'process_backup', 10, 1 ); // Normal (manual) backup. Normal backups use cron system for scheduling each step when in modern mode. Classic mode skips this and runs all in one PHP process.
 pb_backupbuddy::add_cron( 'final_cleanup', 10, 1 ); // Cleanup after backup.
-pb_backupbuddy::add_cron( 'remote_send', 10, 4 ); // Manual remote destination sending.
+pb_backupbuddy::add_cron( 'remote_send', 10, 5 ); // Manual remote destination sending.
 pb_backupbuddy::add_cron( 'destination_send', 10, 2 ); // Manual remote destination sending.
 
 // Remote destination copying. Eventually combine into one function to pass to individual remote destination classes to process.
@@ -26,7 +26,7 @@ pb_backupbuddy::add_cron( 'process_remote_copy', 10, 3 );
 pb_backupbuddy::add_cron( 'process_dropbox_copy', 10, 2 );
 pb_backupbuddy::add_cron( 'process_rackspace_copy', 10, 5 );
 pb_backupbuddy::add_cron( 'process_ftp_copy', 10, 7 );
-
+pb_backupbuddy::add_cron( 'housekeeping', 10, 0 );
 
 
 /********** FILTERS (global) **********/

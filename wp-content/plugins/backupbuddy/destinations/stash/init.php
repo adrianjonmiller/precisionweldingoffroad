@@ -642,8 +642,12 @@ class pb_backupbuddy_destination_stash { // Change class name end to match desti
 		$remote_path = site_url();
 		$remote_path = str_ireplace( 'http://', '', $remote_path );
 		$remote_path = str_ireplace( 'https://', '', $remote_path );
+		
+		//$remote_path = preg_replace('/[^\da-z]/i', '_', $remote_path );
+		
 		$remote_path = str_ireplace( '/', '_', $remote_path );
 		$remote_path = str_ireplace( '~', '_', $remote_path );
+		$remote_path = str_ireplace( ':', '_', $remote_path );
 		
 		$remote_path = '/' . trim( $remote_path, '/\\' ) . '/';
 		

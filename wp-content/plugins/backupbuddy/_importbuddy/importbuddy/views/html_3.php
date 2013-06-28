@@ -3,10 +3,24 @@ if ( ! defined( 'PB_IMPORTBUDDY' ) || ( true !== PB_IMPORTBUDDY ) ) {
 	die( '<html></html>' );
 }
 
-$page_title = 'URL & Database Settings';
+$page_title = '<a href="" class="pb_backupbuddy_begintour">Tour This Page</a>URL & Database Settings';
 require_once( '_header.php' );
 echo '<div class="wrap">';
+?>
 
+
+<ol id="pb_backupbuddy_tour" style="display: none;">
+	<li data-id="site_url">This is the URL of your WordPress site. If you are importing to a new domain or subdirectory this should reflect that.</li>
+	<li data-id="new_cpanel_db_link">If you need help manually creating a database in cPanel (if applicable) click this link to open a new tab with an instructional video.</li>
+	<li data-class="createdb_modal_link">Click here to create a new cPanel database (if applicable) for you by providing your cPanel login and details.</li>
+	<li data-id="server_info_button">Enter your mySQL server details in the fields below. Some settings will be provided by your hosting provider.</li>
+	<li data-id="advanced_options_button">Click for additional advanced configuration options useful for customizing restores or working around server problems.</li>
+	<li data-id="test_db_button">Click to test your database settings before you may proceed to the next step.</li>
+	<li data-id="next_step_button" data-button="Finish">Once your database settings are successfully verified you may click here to proceed to the next step.</li>
+</ol>
+
+
+<?php
 pb_backupbuddy::flush(); // Prevents hanging page from blocking any of the step from loading.
 $database_defaults = get_database_defaults();
 $database_previous = get_previous_database_settings();
@@ -14,6 +28,23 @@ $default_url = get_default_url();
 $custom_home_tip = 'OPTIONAL. This is also known as the site address. This is the home address
 	where your main site resides. This may differ from your WordPress URL. For example: http://foo.com';
 ?>
+
+
+<style type="text/css">
+	.db_test_container {
+		clear: both;
+		display: none;
+		background-color: #FAFAFA;
+		
+		border-radius: 4px;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
+		border: 1px solid #DFDFDF;
+		
+		margin-right:10px;
+		padding:8px;
+	}
+</style>
 
 <script type="text/javascript" src="importbuddy/js/jquery.leanModal.min.js"></script>
 
@@ -57,7 +88,7 @@ $custom_home_tip = 'OPTIONAL. This is also known as the site address. This is th
 				 }, function(data) {
 				 	data = jQuery.trim( data );
 					jQuery('#ithemes_loading').html( data );
-					if ( data.slice( -7 ) == 'Success' ) {
+					if ( data.slice( -17 ) == '<!-- Success. -->' ) {
 						jQuery('.pb_database_next_submit').removeClass( 'button_disabled' );
 					} else {
 						jQuery('.pb_database_next_submit').addClass( 'button_disabled' );
@@ -206,7 +237,7 @@ $custom_home_tip = 'OPTIONAL. This is also known as the site address. This is th
 			
 			<table width="100%"><tr>
 				<td>
-					<a target="_new" href="http://ithemes.com/tutorial-create-database-in-cpanel/">
+					<a target="_new" id="new_cpanel_db_link" href="http://ithemes.com/tutorial-create-database-in-cpanel/">
 						Use your host's control panel to create a database (if it doesn't exist yet) then enter its settings below
 					</a>
 				</td>
@@ -276,30 +307,7 @@ $custom_home_tip = 'OPTIONAL. This is also known as the site address. This is th
 		<label>&nbsp;</label>
 		
 		<div style="margin-top: 12px;">
-			<!-- span class="toggle button-secondary" id="ithemes_mysql_test">Test database settings...</span -->
-			<?php
-			/*
-			<span class="toggle button-secondary" id="advanced">Advanced Configuration Options</span>
-			<div id="toggle-advanced" class="toggled" style="margin-top: 12px; margin-left: 135px;">
-				<?php
-				//pb_backupbuddy::alert( 'WARNING: These are advanced configuration options.', 'Use caution as improper use could result in data loss or other difficulties.' );
-				?>
-				<b>WARNING:</b> Improper use of Advanced Options could result in data loss.
-				<br><br>
-				
-				<input type="checkbox" name="wipe_database" onclick="
-					if ( !confirm( 'WARNING! WARNING! WARNING! WARNING! WARNING! \n\nThis will clear any existing WordPress installation or other content in this database. This could result in loss of posts, comments, pages, settings, and other software data loss. Verify you are using the exact database settings you want to be using. PluginBuddy & all related persons hold no responsibility for any loss of data caused by using this option. \n\n Are you sure you want to do this and potentially wipe existing data? \n\n WARNING! WARNING! WARNING! WARNING! WARNING!' ) ) {
-						return false;
-					}
-				" <?php if ( pb_backupbuddy::$options['wipe_database'] == '1' ) echo 'checked'; ?>> Wipe database on import. Use with caution. <?php pb_backupbuddy::tip( 'WARNING: Checking this box will have this script clear ALL existing data from your database prior to import, including non-WordPress data. This is useful if you are restoring over an existing site or for repaired a failed migration. Use caution when using this option.' ); ?><br>
-				<input type="checkbox" name="skip_database_import" <?php if ( pb_backupbuddy::$options['skip_database_import'] == '1' ) echo 'checked'; ?>> Skip import of database. <br>
-				<input type="checkbox" name="skip_database_migration" <?php if ( pb_backupbuddy::$options['skip_database_migration'] == '1' ) echo 'checked'; ?>> Skip migration of database. <br>
-				<br>
-				<b>After importing, skip data migration on these tables:</b><?php pb_backupbuddy::tip( 'Database tables to exclude from migration. These tables will still be imported into the database but URLs and paths will not be modified. This is useful if the migration is timing out.' ); ?><br><textarea name="exclude_tables" style="width: 300px; height: 75px;"></textarea>
-			</div>
-			*/
-			?>
-			<div style="clear: both; display: none; background-color: #F1EDED; -moz-border-radius:4px 4px 4px 4px; border:1px solid #DFDFDF; margin-right:10px; padding:3px;" id="ithemes_loading">
+			<div class="db_test_container" id="ithemes_loading">
 				<img src="importbuddy/images/loading.gif">Loading ...</div>
 			</div>
 		
@@ -325,10 +333,10 @@ $custom_home_tip = 'OPTIONAL. This is also known as the site address. This is th
 	<input type="hidden" name="file" value="<?php echo htmlentities( pb_backupbuddy::$options['file'] ); ?>" />
 	</div><!-- /wrap -->
 	<div class="main_box_foot">
-		<a href="#pb_advanced_modal" class="button button-tertiary leanModal" style="float: left; font-size: 13px;">Advanced Options</a>
-		<input type="submit" name="submit" value="Test Database Settings" class="button pb_database_next_test">
+		<a href="#pb_advanced_modal" class="button button-tertiary leanModal" id="advanced_options_button" style="float: left; font-size: 13px;">Advanced Options</a>
+		<input type="submit" name="submit" id="test_db_button" value="Test Database Settings" class="button pb_database_next_test">
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="submit" value="Next Step &rarr;" class="button button_disabled pb_database_next_submit">
+		<input type="submit" name="submit" id="next_step_button" value="Next Step &rarr;" class="button button_disabled pb_database_next_submit">
 	</div>
 
 
@@ -337,7 +345,7 @@ $custom_home_tip = 'OPTIONAL. This is also known as the site address. This is th
 	<div id="pb_advanced_modal" style="display: none;">
 		<div class="modal">
 			<div class="modal_header">
-				<a class="modal_close">X</a>
+				<a class="modal_close">&times;</a>
 				<h2>Advanced Options</h2>
 				These advanced options allow customization of various ImportBuddy functionality for custom purposes or troubleshooting.
 				<b>Exercise caution</b> as some advanced options may have unforeseen effects if not used properly, such as overwriting existing files
@@ -442,7 +450,7 @@ $custom_home_tip = 'OPTIONAL. This is also known as the site address. This is th
 <div id="pb_createdb_modal" style="display: none;">
 	<div class="modal">
 		<div class="modal_header">
-			<a class="modal_close">X</a>
+			<a class="modal_close">&times;</a>
 			<h2>Automatically Create Database via cPanel</h2>
 			A new database will be created along with a new database user with permissions. cPanel with the default theme required.
 		</div>

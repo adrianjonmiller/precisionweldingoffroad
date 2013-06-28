@@ -367,6 +367,12 @@ function view_layout_fields($post, $view_layout_settings) {
     </div>  
 
     <script type="text/javascript">
+		jQuery('.wpv_add_fields_button').click(function(){
+			setTimeout(searchFocus,300);
+		});
+		function searchFocus(){
+			jQuery('#add_field_popup').find('.search_field').focus();
+		}
         var wpv_shortcodes = new Array();
         <?php
             $current_index = add_short_codes_to_js(array('post', 'taxonomy', 'taxonomy-view', 'post-view'), null, 'short_code_variable_callback');

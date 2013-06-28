@@ -1,7 +1,5 @@
 <?php // This code runs whenever in the wp-admin.
 
-
-
 /********** MISC **********/
 
 
@@ -31,13 +29,10 @@ if ( is_multisite() ) { // Try to read site-specific settings in.
 }
 
 
-/********** Begin directory checking. NOTE: Run before activation.php! **********/
-pb_backupbuddy::$classes['core']->verify_directories();
-/********** End directory checking. **********/
-
 
 if ( $options !== false ) { // If options is not false then we need to upgrade.
 	pb_backupbuddy::status( 'details', 'Migrating data structure. 2.x data discovered.' );
+	pb_backupbuddy::$classes['core']->verify_directories();
 	require_once( pb_backupbuddy::plugin_path() . '/controllers/activation.php' );
 }
 unset( $options );
@@ -45,6 +40,7 @@ unset( $options );
 // Check if data version is behind & run activation upgrades if needed.
 $default_options = pb_backupbuddy::settings( 'default_options' );
 if ( pb_backupbuddy::$options['data_version'] < $default_options['data_version'] ) {
+	pb_backupbuddy::$classes['core']->verify_directories();
 	pb_backupbuddy::status( 'details', 'Data structure version of `' . pb_backupbuddy::$options['data_version'] . '` behind current version of `' . $default_options['data_version'] . '`. Running activation upgrade.' );
 	require_once( pb_backupbuddy::plugin_path() . '/controllers/activation.php' );
 }
@@ -108,6 +104,8 @@ pb_backupbuddy::add_ajax( 'db_repair' ); // Repair db integrity of a table.
 pb_backupbuddy::add_ajax( 'refresh_zip_methods' ); // Server info page available zip methods update.
 pb_backupbuddy::add_ajax( 'refresh_site_size' ); // Server info page site size update.
 pb_backupbuddy::add_ajax( 'refresh_site_size_excluded' ); // Server info page site size (sans exclusions) update.
+pb_backupbuddy::add_ajax( 'refresh_site_objects' ); // Server info page site objects file count update.
+pb_backupbuddy::add_ajax( 'refresh_site_objects_excluded' ); // Server info page site objects file count (sans exclusions) update.
 pb_backupbuddy::add_ajax( 'refresh_database_size' ); // Server info page database size update.
 pb_backupbuddy::add_ajax( 'refresh_database_size_excluded' ); // Server info page site size (sans exclusions) update.
 pb_backupbuddy::add_ajax( 'phpinfo' ); // Server info page extended PHPinfo thickbox.
@@ -120,7 +118,6 @@ pb_backupbuddy::add_ajax( 'exclude_tree' ); // Directory exclusions picker for s
 pb_backupbuddy::add_ajax( 'download_archive' ); // Directory exclusions picker for settings page.
 pb_backupbuddy::add_ajax( 'set_backup_note' ); // Used for setting a note on a backup archive in the backup listing.
 pb_backupbuddy::add_ajax( 'integrity_status' ); // Display backup integrity status.
-pb_backupbuddy::add_ajax( 'backup_step_status' ); // Display backup step status in thickbox for recent backups section.
 pb_backupbuddy::add_ajax( 'view_status_log' ); // Display status log in thickbox for recent backups section.
 pb_backupbuddy::add_ajax( 'importbuddy' ); // ImportBuddy download link.
 pb_backupbuddy::add_ajax( 'repairbuddy' ); // RepairBuddy download link.
@@ -129,8 +126,12 @@ pb_backupbuddy::add_ajax( 'ajax_controller_callback_function' ); // Tell WordPre
 pb_backupbuddy::add_ajax( 'disalert' ); // Dismissable alert saving. Currently framework does NOT auto-load this AJAX ability to save disalerts.
 pb_backupbuddy::add_ajax( 'importexport_settings' ); // Popup thickbox for importing and exporting settings.
 pb_backupbuddy::add_ajax( 'file_tree' ); // Display file listing of zip.
+pb_backupbuddy::add_ajax( 'restore_file_view' ); // File viewer (view content only) in the file restore page.
+pb_backupbuddy::add_ajax( 'restore_file_restore' ); // File restorer (actual unzip/restore) in the file restore page.
 //pb_backupbuddy::add_ajax( 'quickstart_stash_test' ); // Getting Started Quick Start Stash auth testing.
 pb_backupbuddy::add_ajax( 'quickstart_form' ); // Getting Started Quick Start form saving.
+pb_backupbuddy::add_ajax( 'backup_profile_settings' ); // Settings page backup profile editing.
+pb_backupbuddy::add_ajax( 'email_error_test' ); // Test email error notification.
 
 
 /********** DASHBOARD (admin) **********/
@@ -176,10 +177,10 @@ if ( is_multisite() && pb_backupbuddy::$classes['core']->is_network_activated() 
 
 			if ( $multisite_export == '1' ) { // Settings enable admins to export. Set capability to admin and higher only.
 				$capability = pb_backupbuddy::$options['role_access'];
-				$export_title = '<span title="Note: Enabled for both subsite Admins and Network Superadmins based on BackupBuddy settings">' . __( 'MS Export (beta)', 'it-l10n-backupbuddy' ) . '</span>';
+				$export_title = '<span title="Note: Enabled for both subsite Admins and Network Superadmins based on BackupBuddy settings">' . __( 'MS Export (experimental)', 'it-l10n-backupbuddy' ) . '</span>';
 			} else { // Settings do NOT allow admins to export; set capability for superadmins only.
 				$capability = 'manage_network';
-				$export_title = '<span title="Note: Enabled for Network Superadmins only based on BackupBuddy settings">' . __( 'MS Export SA (beta)', 'it-l10n-backupbuddy' ) . '</span>';
+				$export_title = '<span title="Note: Enabled for Network Superadmins only based on BackupBuddy settings">' . __( 'MS Export SA (experimental)', 'it-l10n-backupbuddy' ) . '</span>';
 			}
 			
 			//pb_backupbuddy::add_page( '', 'getting_started', array( pb_backupbuddy::settings( 'name' ), 'Getting Started' . $export_note ), $capability );

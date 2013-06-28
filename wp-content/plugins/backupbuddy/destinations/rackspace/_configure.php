@@ -21,7 +21,7 @@ $settings_form->add_setting( array(
 	'name'		=>		'api_key',
 	'title'		=>		__( 'API key', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: 9032jk09jkdspo9sd32jds9swd039dwe] - Log in to your Rackspace Cloudfiles Account and navigate to Your Account: API Access', 'it-l10n-backupbuddy' ),
-	'after'		=>		' ' . pb_backupbuddy::video( 'lfTs_GtAp1I#14s', __('Get your Rackspace Cloudfiles API key', 'it-l10n-backupbuddy' ), false ),
+	'after'		=>		'',
 	'css'		=>		'width: 255px;',
 	'rules'		=>		'required|string[1-100]',
 ) );
@@ -32,7 +32,7 @@ $settings_form->add_setting( array(
 	'name'		=>		'container',
 	'title'		=>		__( 'Container', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: wordpress_backups] - This container will NOT be created for you automatically if it does not already exist. Please create it first.', 'it-l10n-backupbuddy' ),
-	'after'		=>		' ' . pb_backupbuddy::video( 'lfTs_GtAp1I#26', __('Create a container from the Rackspace Cloudfiles panel', 'it-l10n-backupbuddy' ), false ),
+	'after'		=>		'',
 	'css'		=>		'width: 255px;',
 	'rules'		=>		'string[0-500]',
 ) );

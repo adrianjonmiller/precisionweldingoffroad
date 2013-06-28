@@ -130,7 +130,7 @@ if ( true === $result ) {
 <div id="pb_log_modal" style="display: none;">
 	<div class="modal">
 		<div class="modal_header">
-			<a class="modal_close">X</a>
+			<a class="modal_close">&times;</a>
 			<h2>Import Log</h2>
 			Much of the Import process is logged for debugging or troubleshooting purposes.
 			This log may be helpful when seeking technical support or assistance.

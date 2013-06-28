@@ -2,7 +2,6 @@
 
 pb_backupbuddy::$ui->title( 'Backup Site' . ' ' . pb_backupbuddy::video( '9ZHWGjBr84s', __('Backups page tutorial', 'it-l10n-backupbuddy' ), false ) );
 
-
 /*
 wp_enqueue_style('dashboard');
 wp_print_styles('dashboard');
@@ -16,10 +15,40 @@ wp_print_styles( 'thickbox' );
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		
-		jQuery( '.pb_backupbuddy_hoveraction_send' ).click( function(e) {
-			tb_show( 'BackupBuddy', '<?php echo pb_backupbuddy::ajax_url( 'destination_picker' ); ?>&callback_data=' + jQuery(this).attr('rel') + '&sending=1&TB_iframe=1&width=640&height=455', null );
+		jQuery( '.pb_backupbuddy_backuplaunch' ).click( function() {
+			var url = jQuery(this).attr( 'href' );
+			url = url + '&after_destination=' + jQuery( '#pb_backupbuddy_backup_remotedestination' ).val();
+			url = url + '&delete_after=' + jQuery( '#pb_backupbuddy_backup_deleteafter' ).val();
+			window.location.href = url;
 			return false;
 		});
+		
+		jQuery( '.pb_backupbuddy_hoveraction_send' ).click( function(e) {
+			tb_show( 'BackupBuddy', '<?php echo pb_backupbuddy::ajax_url( 'destination_picker' ); ?>&callback_data=' + jQuery(this).attr('rel') + '&sending=1&action_verb=to%20send%20to&TB_iframe=1&width=640&height=455', null );
+			return false;
+		});
+		
+		
+		// Click label for after backup remote send.
+		jQuery( '#pb_backupbuddy_afterbackupremote' ).click( function(e) {
+			var checkbox = jQuery( '#pb_backupbuddy_afterbackupremote_box' );
+			checkbox.prop('checked', !checkbox[0].checked);
+			
+			if ( checkbox[0].checked ) { // Only show if just checked.
+				afterbackupremote();
+			}
+			return false;
+		});
+		
+		
+		// Click checkbox for after backup remote send.
+		jQuery( '#pb_backupbuddy_afterbackupremote_box' ).click( function(e) {
+			var checkbox = jQuery( '#pb_backupbuddy_afterbackupremote_box' );
+			if ( checkbox[0].checked ) { // Only show if just checked.
+				afterbackupremote();
+			}
+		});
+		
 		
 		jQuery( '.pb_backupbuddy_hoveraction_hash' ).click( function(e) {
 			tb_show( 'BackupBuddy', '<?php echo pb_backupbuddy::ajax_url( 'hash' ); ?>&callback_data=' + jQuery(this).attr('rel') + '&TB_iframe=1&width=640&height=455', null );
@@ -58,25 +87,42 @@ wp_print_styles( 'thickbox' );
 		
 	});
 	
-	function pb_backupbuddy_selectdestination( destination_id, destination_title, callback_data ) {
-		if ( callback_data != '' ) {
-			jQuery.post( '<?php echo pb_backupbuddy::ajax_url( 'remote_send' ); ?>', { destination_id: destination_id, destination_title: destination_title, file: callback_data, trigger: 'manual' }, 
+	function pb_backupbuddy_selectdestination( destination_id, destination_title, callback_data, delete_after ) {
+		
+		if ( ( callback_data != '' ) && ( callback_data != 'delayed_send' ) ) {
+			jQuery.post( '<?php echo pb_backupbuddy::ajax_url( 'remote_send' ); ?>', { destination_id: destination_id, destination_title: destination_title, file: callback_data, trigger: 'manual', delete_after: delete_after }, 
 				function(data) {
 					data = jQuery.trim( data );
 					if ( data.charAt(0) != '1' ) {
 						alert( '<?php _e('Error starting remote send', 'it-l10n-backupbuddy' ); ?>:' + "\n\n" + data );
 					} else {
-						alert( "<?php _e('Your file has been scheduled to be sent now. It should arrive shortly.', 'it-l10n-backupbuddy' ); ?> <?php _e( 'You will be notified by email if any problems are encountered.', 'it-l10n-backupbuddy' ); ?>" + "\n\n" + data.slice(1) );
+						if ( delete_after == true ) {
+							var delete_alert = "<?php _e( 'The local backup will be deleted upon successful transfer as selected.', 'it-l10n-backupbuddy' ); ?>";
+						} else {
+							var delete_alert = '';
+						}
+						alert( "<?php _e('Your file has been scheduled to be sent now. It should arrive shortly.', 'it-l10n-backupbuddy' ); ?> <?php _e( 'You will be notified by email if any problems are encountered.', 'it-l10n-backupbuddy' ); ?>" + " " + delete_alert + "\n\n" + data.slice(1) );
+						/* Try to ping server to nudge cron along since sometimes it doesnt trigger as expected. */
+						jQuery.post( '<?php echo admin_url('admin-ajax.php'); ?>',
+							function(data) {
+							}
+						);
 					}
 				}
 			);
-			
-			/* Try to ping server to nudge cron along since sometimes it doesnt trigger as expected. */
-			jQuery.post( '<?php echo admin_url('admin-ajax.php'); ?>',
-				function(data) {
-				}
-			);
-
+		} else if ( callback_data == 'delayed_send' ) { // Specified a destination to send to later.
+			/*
+			if ( delete_after == true ) {
+				var delete_alert_text = "<?php _e( 'The local backup will be deleted upon successful transfer as selected.', 'it-l10n-backupbuddy' ); ?>";
+			} else {
+				var delete_alert_text = '';
+			}
+			alert( 'delayed' + delete_alert_text );
+			*/
+			jQuery( '#pb_backupbuddy_backup_remotedestination' ).val( destination_id );
+			jQuery( '#pb_backupbuddy_backup_deleteafter' ).val( delete_after );
+			jQuery( '#pb_backupbuddy_backup_remotetitle' ).html( 'Destination: "' + destination_title + '".' );
+			jQuery( '#pb_backupbuddy_backup_remotetitle' ).slideDown();
 		} else {
 			//window.location.href = '<?php echo pb_backupbuddy::page_url(); ?>&custom=remoteclient&destination_id=' + destination_id;
 			window.location.href = '<?php
@@ -90,11 +136,11 @@ wp_print_styles( 'thickbox' );
 	}
 	
 	
-	/*
-	function pb_backupbuddy_selectdestination( destination_id, destination_title, callback_data ) {
-		window.location.href = '<?php echo admin_url( 'admin.php' ); ?>?page=pb_backupbuddy_backup&custom=remoteclient&destination_id=' + destination_id;
+	function afterbackupremote() {
+		tb_show( 'BackupBuddy', '<?php echo pb_backupbuddy::ajax_url( 'destination_picker' ); ?>&callback_data=delayed_send&sending=1&action_verb=to%20send%20to&TB_iframe=1&width=640&height=455', null );
 	}
-	*/
+	
+	
 </script>
 
 <style> 
@@ -127,11 +173,12 @@ wp_print_styles( 'thickbox' );
 		color: #464646;
 	}
 	.duo-button a {
-		font-size: 22px;
-		line-height: 21px;
+		font-size: 18px;
+		//line-height: 17px;
 		display: block;
 		float: left;
 		margin: 0;
+		margin-right: 3px;
 		text-decoration: none;
 		background: #fff;
 		border: 1px solid #CFCFCF;
@@ -159,6 +206,10 @@ wp_print_styles( 'thickbox' );
 	.duo-button .right {
 		border-radius: 0 4px 4px 0;
 		border-left: none;
+	}
+	.duo-button .leftright {
+		border-radius: 4px 4px 4px 4px;
+		border-right: 1px solid #d6d6d6;
 	}
 	.backupbutton {
 		background: url('<?php echo pb_backupbuddy::plugin_url();; ?>/images/press.png') top no-repeat;
@@ -252,16 +303,39 @@ wp_print_styles( 'thickbox' );
 </style>
 
 
-
-
 <br>
 <div class="duo-button">
-	<div class="choose"><?php _e( 'Choose a backup type to create', 'it-l10n-backupbuddy' ) ?>:</div>
-	<a class="left" title="<?php _e( 'Just your database. I like your minimalist style.', 'it-l10n-backupbuddy' ); ?>" href="<?php echo pb_backupbuddy::page_url(); ?>&backupbuddy_backup=db"><?php _e( 'Database Only', 'it-l10n-backupbuddy' ); ?></a>
-	<a class="right" title="<?php _e( 'A complete backup. I\'ll spare no expense. The database, media library, photos, non-WP files, themes, plugins, the kitchen sink, all the marbles, and that sock you lost in 1996.', 'it-l10n-backupbuddy' ); ?>" href="<?php echo pb_backupbuddy::page_url(); ?>&backupbuddy_backup=full"><?php _e( 'Complete Backup', 'it-l10n-backupbuddy' ); ?></a>
+	<div class="choose"><?php _e( 'Choose a backup profile to run', 'it-l10n-backupbuddy' ) ?>:</div>
+	<?php
+	global $pb_backupbuddy_directory_verification;
+	if ( false === $pb_backupbuddy_directory_verification ) {
+		echo '&nbsp;&nbsp;&nbsp;&nbsp;<b>' . __( 'Error: Fatal errors listed above prevent ability to create a backup. Correct them to proceed.', 'it-l10n-backupbuddy' ) . '</b>';
+	} else {
+		foreach( pb_backupbuddy::$options['profiles'] as $profile_id => $profile ) {
+			if ( $profile_id == 0 ) { continue; }
+			if ( $profile['type'] == 'db' ) {
+				$type = 'database';
+			} elseif ( $profile['type'] == 'full' ) {
+				$type = 'full';
+			} else {
+				$type = '{unknown_type:' . htmlentities( $profile['type'] ) . '}';
+			}
+			?>
+			<a class="pb_backupbuddy_backuplaunch leftright" title="Create this <?php echo $type; ?> backup" href="<?php echo pb_backupbuddy::page_url(); ?>&backupbuddy_backup=<?php echo $profile_id; ?>"><?php echo htmlentities( $profile['title'] ); ?></a>
+			<?php
+		}
+	}
+	?>
+	<div style="clear: both; padding-top: 9px; padding-left: 4px;">
+		<input type="checkbox" name="pb_backupbuddy_afterbackupremote" id="pb_backupbuddy_afterbackupremote_box"> <label id="pb_backupbuddy_afterbackupremote" for="pb_backupbuddy_afterbackupremote">Send to remote destination as part of backup process. <span id="pb_backupbuddy_backup_remotetitle"></span></label>
+		
+		<input type="hidden" name="remote_destination" id="pb_backupbuddy_backup_remotedestination">
+		<input type="hidden" name="delete_after" id="pb_backupbuddy_backup_deleteafter">
+		
+		<?php //echo '<a href="' . pb_backupbuddy::ajax_url( 'destination_picker' ) . '&#038;TB_iframe=1&#038;width=640&#038;height=600" class="thickbox button secondary-button" style="margin-top: 3px;" title="' . __( 'Select a Destination', 'it-l10n-backupbuddy' ) . '">' . __('Select Remote Destination', 'it-l10n-backupbuddy' ) . '</a>'; ?>
+	</div>
 	<div class="clearfix"></div>
 </div>
-
 
 
 
@@ -271,7 +345,6 @@ wp_print_styles( 'thickbox' );
 
 <?php
 pb_backupbuddy::flush();
-
 
 
 
@@ -386,7 +459,7 @@ if ( count( $backups_list ) == 0 ) {
 		
 		// Technical details link.
 		$status .= '<div class="row-actions">';
-		$status .= '<a title="' . __( 'Backup Process Technical Details', 'it-l10n-backupbuddy' ) . '" href="' . pb_backupbuddy::ajax_url( 'backup_step_status' ) . '&serial=' . $backup['serial'] . '&#038;TB_iframe=1&#038;width=640&#038;height=600" class="thickbox">View Technical Details</a>';
+		$status .= '<a title="' . __( 'Backup Process Technical Details', 'it-l10n-backupbuddy' ) . '" href="' . pb_backupbuddy::ajax_url( 'integrity_status' ) . '&serial=' . $backup['serial'] . '&#038;TB_iframe=1&#038;width=640&#038;height=600" class="thickbox">View Details</a>';
 		$status .= '</div>';
 		
 		// Calculate finish time (if finished).

@@ -88,20 +88,33 @@ class pb_backupbuddy_settings {
 		if ( $settings['default'] != '' ) { // Default was passed to add_setting().
 			$default_value = $settings['default'];
 		} else { // No default explictly set.
-			if ( $this->_savepoint !== false ) {
+			$savepoint = $this->_savepoint;
+			$raw_name = $settings['name'];
+			
+			if ( stristr( $settings['name'], '#' ) );
+			if ( false !== ( $last_hashpoint = strrpos( $settings['name'], '#' ) ) ) {
+				$temp_savepoint = substr( $settings['name'], 0, $last_hashpoint );
+				if ( ( $savepoint === false ) || ( $savepoint == '' ) ) {
+					$savepoint = $temp_savepoint;
+				} else {
+					$savepoint = $savepoint . '#' . $temp_savepoint;
+				}
+				$raw_name = substr( $settings['name'], $last_hashpoint + 1 ); // Item name with savepoint portion stripped out.
+			}
+			if ( $savepoint !== false ) {
 				
-				if ( is_array( $this->_savepoint ) ) { // Array of defaults was passed instead of savepoint.
-					$default_value = $this->_savepoint[ $settings['name'] ];
+				if ( is_array( $savepoint ) ) { // Array of defaults was passed instead of savepoint.
+					$default_value = $savepoint[ $raw_name ];
 					
 				} else { // No defaults provided, seek them out in plugins options array.
 					
 					// Default values are overwritten after a process() run with the latest data if a form was submitted.
-					$group = pb_backupbuddy::get_group( $this->_savepoint );
+					$group = pb_backupbuddy::get_group( $savepoint );
 					if ( $group === false ) {
 						$default_value = '';
 					} else {
-						if ( isset( $group[$settings['name']] ) ) { // Default is defined.
-							$default_value = $group[$settings['name']];
+						if ( isset( $group[ $raw_name ] ) ) { // Default is defined.
+							$default_value = $group[ $raw_name ];
 						} else { // Default not defined.
 							$default_value = '';
 						}

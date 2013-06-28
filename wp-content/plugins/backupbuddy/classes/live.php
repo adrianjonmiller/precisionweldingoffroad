@@ -1,4 +1,4 @@
-<?php
+//<?php
 /* Class pb_backupbuddy_live
  *
  * Live backup of files to Stash servers.
@@ -22,11 +22,15 @@ class pb_backupbuddy_live {
 	 *
 	 * @return		null
 	 */
-	public function generate_queue( $sha1 = false ) {
+	public function generate_queue( $root = '', $generate_sha1 = true ) {
 		
-		$root = WP_CONTENT_DIR . '/uploads/'; 
+		if ( $root == '' ) {
+			$root = WP_CONTENT_DIR . '/uploads/'; 
+		}
+		
 		echo 'mem:' . memory_get_usage(true) . '<br>';
 		$files = (array) pb_backupbuddy::$filesystem->deepglob( $root );
+		
 		echo 'mem:' . memory_get_usage(true) . '<br>';
 		$root_len = strlen( $root );
 		$new_files = array();
@@ -38,15 +42,21 @@ class pb_backupbuddy_live {
 			}
 			$new_file = substr( $file, $root_len );
 			
-			$sha1 = 0;
-			if ( ( true === $sha1 ) && ( $stat['size'] < 1073741824 ) ) { // < 100mb
+			$sha1 = '';
+			if ( ( true === $generate_sha1 ) && ( $stat['size'] < 1073741824 ) ) { // < 100mb
 				$sha1 = sha1_file( $file );
 			}
 			
 			$new_files[$new_file] = array(
+				'scanned'	=>	time(),
 				'size'		=> $stat['size'],
 				'modified'	=> $stat['mtime'],
 				'sha1'		=> $sha1,
+				
+				
+				// TODO: don't render sha1 here? do it in a subsequent step(s) with cron to allow for more time? update fileoptions file every x number of tiles and a count attempts without proceeding to assume failure? max_overall attempts?
+				
+				
 			);
 			unset( $files[$file_id] ); // Better to free memory or leave out for performance?
 			
@@ -66,7 +76,9 @@ class pb_backupbuddy_live {
 		echo '</pre>';
 		
 		
-		pb_backupbuddy::$classes['core']->st_stable_options( 'xxx', 'test', 5 );
+		// fileoptions file live_signatures.txt
+		
+		//pb_backupbuddy::$classes['core']->st_stable_options( 'xxx', 'test', 5 );
 		
 			// get file listing of site: glob and store in an array
 			// open previously generated master list (master file listing since last queue generation).

@@ -1275,7 +1275,7 @@ function add_short_codes_to_js($types, $editor, $call_back = null){
             if ($WP_Views->does_view_have_form_controls($view->ID) && !$WP_Views->is_archive_view($view->ID)) {               
                 $editor->add_insert_shortcode_menu($view->post_title,
                                                     'wpv-form-view name="' . $view->post_title . '"',
-                                                    __('View Form', 'wpv-views'),
+                                                    __('Parametric search form', 'wpv-views'),
                                                     'wpv_insert_view_form_popup(' . $view->ID . ')');
 
                 $index += 1;

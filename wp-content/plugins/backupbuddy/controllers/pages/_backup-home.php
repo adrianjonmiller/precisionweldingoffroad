@@ -9,27 +9,36 @@ pb_backupbuddy_live::generate_queue();
 //die();
 
 
+
 // Tutorial
-//pb_backupbuddy::load_script( 'jquery.joyride-2.0.3.js' );
-//pb_backupbuddy::load_script( 'modernizr.mq.js' );
-//pb_backupbuddy::load_style( 'joyride.css' );
-// BEGIN TOUR.
+pb_backupbuddy::load_script( 'jquery.joyride-2.0.3.js' );
+pb_backupbuddy::load_script( 'modernizr.mq.js' );
+pb_backupbuddy::load_style( 'joyride.css' );
 ?>
+<a href="" class="pb_backupbuddy_begintour">Tour This Page</a>
 <ol id="pb_backupbuddy_tour" style="display: none;">
-	<li data-class="duo-button">Click a backup type to start a backup now...</li>
-	<li data-id="pb_backupbuddy_backup_locations_tab_local">Backups stored on this server are listed here... You can view remote backups by clicking the button at the bottom of this page.</li>
+	<li data-class="pb_backupbuddy_backuplaunch">Click a backup type to start a backup now...</li>
+	<li data-id="pb_backupbuddy_afterbackupremote">Select to send a backup to a remote destination after the manual backup completes. After selecting this option select a profile above to start a backup.</li>
+	<li data-id="ui-id-1">Backups stored on this server are listed here... Hover over backups listed for additional options such as sending to another server or restoring files.</li>
+	<li data-id="ui-id-2" data-button="Finish">This provides a historical listing of recently created backups and the status of each.</li>
 </ol>
 <script>
-  jQuery(window).load(function() {
-    /*
-    jQuery("#pb_backupbuddy_tour").joyride({
-    	tipLocation: 'top',
-    });
-  */
-  });
+jQuery(window).load(function() {
+	jQuery( '.pb_backupbuddy_begintour' ).click( function() {
+		jQuery("#pb_backupbuddy_tour").joyride({
+			tipLocation: 'top',
+		});
+		return false;
+	});
+});
 </script>
 <?php
 // END TOUR.
+
+
+pb_backupbuddy::disalert( 'new_filerestore_tip', 'New in BackupBuddy v4.0! Hover over a Local Archive File in the listing below and select "View & Restore Files" to see the contents of your backup, view text-based file contents, or restore files.' );
+
+
 
 $time_start = time();
 

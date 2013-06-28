@@ -1,14 +1,30 @@
 <?php
 if ( !is_admin() ) { die( 'Access Denied.' ); }
 
+echo '<a name="database_replace"></a>';
+
 echo '<p><b>Warning: This is an advanced feature. Use with caution; improper use may result in data loss.</b></p>';
 if ( pb_backupbuddy::_GET( 'database_replace' ) == '1' ) {
 	
 	global $pb_backupbuddy_js_status;
 	$pb_backupbuddy_js_status = true;
 	
+	?>
+	<script type="text/javascript">
+			function pb_status_append( status_string ) {
+				target_id = 'pb_backupbuddy_status'; // importbuddy_status or pb_backupbuddy_status
+				if( jQuery( '#' + target_id ).length == 0 ) { // No status box yet so suppress.
+					return;
+				}
+				jQuery( '#' + target_id ).append( "\n" + status_string );
+				textareaelem = document.getElementById( target_id );
+				textareaelem.scrollTop = textareaelem.scrollHeight;
+			}
+		</script>
+	<?php
+	
 	echo pb_backupbuddy::status_box( 'Mass replacing in database with Server Tools from BackupBuddy v' . pb_backupbuddy::settings( 'version' ) . '...' );
-	echo '<div id="pb_importbuddy_working"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading_large.gif" title="Working... Please wait as this may take a moment..."></div>';
+	//echo '<div id="pb_backupbuddy_replace_working"><img src="' . pb_backupbuddy::plugin_url() . '/images/loading_large.gif" title="Working... Please wait as this may take a moment..."></div>';
 	
 	// Instantiate database replacement class.
 	require_once( pb_backupbuddy::plugin_path() . '/lib/dbreplace/dbreplace.php' );
@@ -18,7 +34,7 @@ if ( pb_backupbuddy::_GET( 'database_replace' ) == '1' ) {
 	$needle = mysql_real_escape_string( pb_backupbuddy::_POST( 'needle' ) );
 	if ( $needle == '' ) {
 		echo '<b>Error #4456582. Missing needle. You must enter text to search for.';
-		echo '<br><a href="' . pb_backupbuddy::page_url() . '#database_replace" class="button secondary-button">&larr; ' .  __( 'back', 'it-l10n-backupbuddy' ) . '</a>';
+		echo '<br><a href="' . pb_backupbuddy::page_url() . '&tab=3#database_replace" class="button secondary-button">&larr; ' .  __( 'back', 'it-l10n-backupbuddy' ) . '</a>';
 		return;
 	}
 	$replacement = mysql_real_escape_string( pb_backupbuddy::_POST( 'replacement' ) );
@@ -79,7 +95,7 @@ if ( pb_backupbuddy::_GET( 'database_replace' ) == '1' ) {
 		die( 'Error #4456893489349834. Unknown method.' );
 	}
 	
-	echo '<br><a href="' . pb_backupbuddy::page_url() . '#database_replace" class="button secondary-button">&larr; ' .  __( 'back', 'it-l10n-backupbuddy' ) . '</a>';
+	echo '<br><a href="' . pb_backupbuddy::page_url() . '&tab=3#database_replace" class="button secondary-button">&larr; ' .  __( 'back', 'it-l10n-backupbuddy' ) . '</a>';
 	
 	$pb_backupbuddy_js_status = false;
 	return;
@@ -119,7 +135,7 @@ $prefixes = array_unique( $prefixes );
 natsort( $prefixes );
 ?>
 <div>
-	<form action="<?php echo pb_backupbuddy::page_url();?>&database_replace=1#pb_backupbuddy_getting_started_tab_tools" method="post">
+	<form action="<?php echo pb_backupbuddy::page_url();?>&database_replace=1&tab=3#database_replace" method="post">
 		<input type="hidden" name="action" value="replace">
 		
 		<h4>Replace <?php pb_backupbuddy::tip( 'Text you want to be searched for and replaced. Everything in the box is considered one match and may span multiple lines.' ); ?></h4>

@@ -1,15 +1,8 @@
 jQuery(document).ready(function($){
     wpv_register_add_filter_callback('wpv_post_author_add_filter');
-    jQuery('.wpv_author_url_param_missing').hide();
-    jQuery('.wpv_author_url_param_ilegal').hide();
-    jQuery('.wpv_author_shortcode_param_missing').hide();
-    jQuery('.wpv_author_shortcode_param_ilegal').hide();
-    jQuery('.wpv_author_helper').hide();
+    jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing, .wpv_author_shortcode_param_ilegal, .wpv_author_helper').hide();
     jQuery('input[name=author_mode\\[\\]]').change(function() {
-      jQuery('.wpv_author_url_param_missing').hide();
-      jQuery('.wpv_author_url_param_ilegal').hide();
-      jQuery('.wpv_author_shortcode_param_missing').hide();
-      jQuery('.wpv_author_shortcode_param_ilegal').hide();
+	    jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing, .wpv_author_shortcode_param_ilegal').hide();
       if (jQuery('input[name=author_mode\\[\\]]:checked').val() == 'by_url') {
 	wpv_add_author_help();
       } else if (jQuery('input[name=author_mode\\[\\]]:checked').val() == 'shortcode') {
@@ -27,10 +20,7 @@ jQuery(document).ready(function($){
 });
 
 function wpv_add_author_help() {
-  jQuery('.wpv_author_url_param_missing').hide();
-  jQuery('.wpv_author_url_param_ilegal').hide();
-  jQuery('.wpv_author_shortcode_param_missing').hide();
-  jQuery('.wpv_author_shortcode_param_ilegal').hide();
+	jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing, .wpv_author_shortcode_param_ilegal').hide();
   if (jQuery('input[name=author_mode\\[\\]]:checked').val() == 'by_url') {
     var url_mode = jQuery('select[name=wpv_author_url_type_add]').val();
     var url_value = jQuery('input[name=author_url]').val();
@@ -42,6 +32,15 @@ function wpv_add_author_help() {
       if (pat.test(url_value) == false) {
 	jQuery('.wpv_author_helper').html('');
 	jQuery('.wpv_author_url_param_ilegal').show();
+      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.wordpress) > -1) {
+	      jQuery('.wpv_author_helper').html('');
+	      jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
+      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.post_type) > -1) {
+	      jQuery('.wpv_author_helper').html('');
+	      jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
+      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.taxonomy) > -1) {
+	      jQuery('.wpv_author_helper').html('');
+	      jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
       } else {
 	var url_example = [];
 	url_example['id'] = '1';
@@ -149,8 +148,7 @@ function wpv_show_filter_author_edit() {
     previous_author_url_type = jQuery('select[name=_wpv_settings\\[author_url_type\\]]').val();
     previous_author_shortcode = jQuery('input[name=_wpv_settings\\[author_shortcode\\]]').val();
     previous_author_shortcode_type = jQuery('select[name=_wpv_settings\\[author_shortcode_type\\]]').val();
-    jQuery('.wpv_author_url_param_missing').hide();
-    jQuery('.wpv_author_shortcode_param_missing').hide();
+    jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing').hide();
     
     jQuery('#wpv-filter-author-edit').parent().parent().css('background-color', jQuery('#wpv-filter-author-edit').css('background-color'));
 
@@ -158,10 +156,7 @@ function wpv_show_filter_author_edit() {
     jQuery('#wpv-filter-author-show').hide();
     
     jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]').change(function() {
-      jQuery('.wpv_author_url_param_missing').hide();
-      jQuery('.wpv_author_url_param_ilegal').hide();
-      jQuery('.wpv_author_shortcode_param_missing').hide();
-      jQuery('.wpv_author_shortcode_param_ilegal').hide();
+	    jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing, .wpv_author_shortcode_param_ilegal').hide();
       if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'by_url') {
 	wpv_edit_author_help();
       } else if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'shortcode') {
@@ -205,24 +200,27 @@ function wpv_show_filter_author_edit_ok() {
     var turl = jQuery('input[name=_wpv_settings\\[author_url\\]]').val();
     
     if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'by_url' && jQuery('input[name=_wpv_settings\\[author_url\\]]').val() == '') {
-      jQuery('.wpv_author_url_param_missing').show();
-      jQuery('.wpv_author_shortcode_param_missing').hide();
-      jQuery('.wpv_author_shortcode_param_ilegal').hide();
+	    jQuery('.wpv_author_url_param_missing').show();
+	    jQuery('.wpv_author_shortcode_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing, .wpv_author_shortcode_param_ilegal').hide();
     } else if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'by_url' && paturl.test(turl) == false) {
-      jQuery('.wpv_author_shortcode_param_missing').hide();
-      jQuery('.wpv_author_url_param_missing').hide();
-      jQuery('.wpv_author_shortcode_param_ilegal').hide();
-      jQuery('.wpv_author_url_param_ilegal').show();
+	    jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing, .wpv_author_shortcode_param_ilegal').hide();
+	    jQuery('.wpv_author_url_param_ilegal').show();
+    } else if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'by_url' && jQuery.inArray(turl, wpv_forbidden_parameters.wordpress) > -1) {
+	    jQuery('.wpv_author_helper').html('');
+	    jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
+    } else if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'by_url' && jQuery.inArray(turl, wpv_forbidden_parameters.post_type) > -1) {
+	    jQuery('.wpv_author_helper').html('');
+	    jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
+    } else if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'by_url' && jQuery.inArray(turl, wpv_forbidden_parameters.taxonomy) > -1) {
+	    jQuery('.wpv_author_helper').html('');
+	    jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
     } else if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'shortcode' && jQuery('input[name=_wpv_settings\\[author_shortcode\\]]').val() == '') {
-      jQuery('.wpv_author_shortcode_param_missing').show();
-      jQuery('.wpv_author_url_param_missing').hide();
-      jQuery('.wpv_author_shortcode_param_ilegal').hide();
+	    jQuery('.wpv_author_shortcode_param_missing').show();
+	    jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_ilegal').hide();
     } else if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'shortcode' && pat.test(t) == false) {
-      jQuery('.wpv_author_shortcode_param_missing').hide();
-      jQuery('.wpv_author_url_param_missing').hide();
-      jQuery('.wpv_author_shortcode_param_ilegal').show();
-      jQuery('.wpv_author_url_param_ilegal').hide();
-    } else {    
+	    jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing').hide();
+	    jQuery('.wpv_author_shortcode_param_ilegal').show();
+    } else {  
     var td = '';
     jQuery.post(ajaxurl, data, function(response) {
         td = response;
@@ -239,10 +237,7 @@ function wpv_show_filter_author_edit_ok() {
 }
 
 function wpv_edit_author_help() {
-  jQuery('.wpv_author_url_param_missing').hide();
-  jQuery('.wpv_author_url_param_ilegal').hide();
-  jQuery('.wpv_author_shortcode_param_missing').hide();
-  jQuery('.wpv_author_shortcode_param_ilegal').hide();
+	jQuery('.wpv_author_url_param_missing, .wpv_author_url_param_ilegal, .wpv_author_url_param_forbidden, .wpv_author_shortcode_param_missing, .wpv_author_shortcode_param_ilegal').hide();
   if (jQuery('input[name=_wpv_settings\\[author_mode\\]\\[\\]]:checked').val() == 'by_url') {
     var url_mode = jQuery('select[name=_wpv_settings\\[author_url_type\\]]').val();
     var url_value = jQuery('input[name=_wpv_settings\\[author_url\\]]').val();
@@ -254,6 +249,15 @@ function wpv_edit_author_help() {
       if (pat.test(url_value) == false) {
 	jQuery('.wpv_author_helper').html('');
 	jQuery('.wpv_author_url_param_ilegal').show();
+      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.wordpress) > -1) {
+	      jQuery('.wpv_author_helper').html('');
+	      jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
+      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.post_type) > -1) {
+	      jQuery('.wpv_author_helper').html('');
+	      jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
+      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.taxonomy) > -1) {
+	      jQuery('.wpv_author_helper').html('');
+	      jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
       } else {
 	var url_example = [];
 	url_example['id'] = '1';

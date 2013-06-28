@@ -52,6 +52,21 @@ function wpv_validate_custom_field_data(in_popup) {
                     jQuery(this).parent().find('.wpv_custom_field_param_missing').hide();
                 }
             }
+            if ('url' == relationship) {
+		    var param = jQuery(this).val();
+		    if (jQuery.inArray(param, wpv_forbidden_parameters.wordpress) > -1) {
+			    jQuery(this).parent().find('.wpv_custom_field_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
+			    wpv_filter_edit_is_ok = false;
+		    } else if (jQuery.inArray(param, wpv_forbidden_parameters.post_type) > -1) {
+			    jQuery(this).parent().find('.wpv_custom_field_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
+			    wpv_filter_edit_is_ok = false;
+		    } else if (jQuery.inArray(param, wpv_forbidden_parameters.taxonomy) > -1) {
+			    jQuery(this).parent().find('.wpv_custom_field_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
+			    wpv_filter_edit_is_ok = false;
+		    } else {
+			    jQuery(this).parent().find('.wpv_custom_field_param_forbidden').hide();
+		    }
+	    }
         }
         
     });

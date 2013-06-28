@@ -3,9 +3,6 @@ if ( ! defined( 'PB_IMPORTBUDDY' ) || ( true !== PB_IMPORTBUDDY ) ) {
 	die( '<html></html>' );
 }
 
-$ITXAPI_KEY = 'ixho7dk0p244n0ob';
-$ITXAPI_URL = 'http://api.ithemes.com';
-
 // Handle small size PHP upload limit knocking off authentication when uploading a backup.
 if ( isset( $_SERVER['CONTENT_LENGTH'] ) && ( intval( $_SERVER['CONTENT_LENGTH'] ) > 0 ) && ( count( $_POST ) === 0 ) ) {
 	pb_backupbuddy::alert( 'Error #5484548595. Unable to upload. Your PHP post_max_size setting is too small so it discarded POST data. You may have to log back in.', true );
@@ -15,10 +12,24 @@ $step = '1';
 if ( true !== Auth::is_authenticated() ) { // Need authentication.
 	$page_title = 'Authentication Required';
 } else {
-	$page_title = 'Choose your backup file';
+	$page_title = '<a href="" class="pb_backupbuddy_begintour">Tour This Page</a>Choose your backup file';
 }
 require_once( '_header.php' );
 ?>
+
+
+
+<ol id="pb_backupbuddy_tour" style="display: none;">
+	<li data-id="server_tab">Backup files currently on this server. Select one of these to restore.</li>
+	<li data-id="upload_tab">Upload a backup file from your computer's web browser up to this server so you can restore it.</li>
+	<li data-id="stash_tab">Retrieve a backup file stored on BackupBuddy Stash (iThemes' cloud backup storage) and pull it to this server for restoring.</li>
+	<li data-id="view_meta_1">Additional details about the backup file can be viewed here, if available.</li>
+	<li data-id="server_info_button">Displays information about your server such as configuration and compatibility.</li>
+	<li data-id="advanced_options_button">Provides additional advanced configuration options useful for customizing restores or working around server problems.</li>
+	<li data-id="next_step_button" data-button="Finish">Click here to proceed to the next step when ready.</li>
+</ol>
+
+
 
 <script type="text/javascript" src="importbuddy/js/jquery.leanModal.min.js"></script>
 <script type="text/javascript">
@@ -28,6 +39,8 @@ require_once( '_header.php' );
 		);
 	});
 </script>
+
+
 
 <?php
 echo pb_backupbuddy::$classes['import']->status_box( 'Step 1 debugging information for ImportBuddy ' . pb_backupbuddy::settings( 'version' ) . ' from BackupBuddy v' . pb_backupbuddy::$options['bb_version'] . '...', true );
@@ -106,192 +119,18 @@ if ( true !== Auth::is_authenticated() ) { // Need authentication.
 		echo '<br><br>';
 		?>
 		
+		
+		
 		<div id="pluginbuddy-tabs">
 			<ul>
-				<li><a href="#pluginbuddy-tabs-server"><span>Server</span></a></li>
-				<li><a href="#pluginbuddy-tabs-upload"><span>Upload</span></a></li>
-				<li><a href="#pluginbuddy-tabs-stash"><span>Stash</span></a></li>
+				<li><a href="#pluginbuddy-tabs-server" id="server_tab"><span>Server</span></a></li>
+				<li><a href="#pluginbuddy-tabs-upload" id="upload_tab"><span>Upload</span></a></li>
+				<li><a href="#pluginbuddy-tabs-stash" id="stash_tab"><span>Stash</span></a></li>
 			</ul>
 			<div id="pluginbuddy-tabs-stash">
 				<div class="tabs-item">
 					
-					<?php
-					
-						//print_r( $_POST );
-					
-						$credentials_form = new pb_backupbuddy_settings( 'pre_settings', false, 'step=1&upload=stash#pluginbuddy-tabs-stash' ); // name, savepoint|false, additional querystring
-						
-						$credentials_form->add_setting( array(
-							'type'		=>		'hidden',
-							'name'		=>		'pass_hash',
-							'default'	=>		PB_PASSWORD,
-						) );
-						$credentials_form->add_setting( array(
-							'type'		=>		'hidden',
-							'name'		=>		'options',
-							'default'	=>		htmlspecialchars( serialize( pb_backupbuddy::$options ) ),
-						) );
-						
-						$credentials_form->add_setting( array(
-							'type'		=>		'text',
-							'name'		=>		'itxapi_username',
-							'title'		=>		__( 'iThemes username', 'it-l10n-backupbuddy' ),
-							'rules'		=>		'required|string[1-45]',
-						) );
-						$credentials_form->add_setting( array(
-							'type'		=>		'password',
-							'name'		=>		'itxapi_password_raw',
-							'title'		=>		__( 'iThemes password', 'it-l10n-backupbuddy' ),
-							'rules'		=>		'required|string[1-45]',
-						) );
-						
-						$settings_result = $credentials_form->process();
-						$login_welcome = __( 'Connect to Stash with your iThemes.com member account to select a backup to restore.', 'it-l10n-backupbuddy' ) . '<br><br>';
-						
-						if ( count( $settings_result ) == 0 ) { // No form submitted.
-							
-							echo $login_welcome;
-							$credentials_form->display_settings( 'Connect to Stash' );
-						} else { // Form submitted.
-							if ( count( $settings_result['errors'] ) > 0 ) { // Form errors.
-								echo $login_welcome;
-								
-								pb_backupbuddy::alert( implode( '<br>', $settings_result['errors'] ) );
-								$credentials_form->display_settings( 'Connect to Stash' );
-								
-							} else { // No form errors; process!
-								
-								
-								$itx_helper_file = dirname( dirname( __FILE__ ) ) . '/classes/class.itx_helper.php';
-								require_once( $itx_helper_file );
-								
-								$itxapi_username = $settings_result['data']['itxapi_username'];
-								$itxapi_password = ITXAPI_Helper::get_password_hash( $itxapi_username, $settings_result['data']['itxapi_password_raw'] ); // Generates hash for use as password for API.
-								
-								
-								$requestcore_file = dirname( dirname( __FILE__ ) ) . '/lib/requestcore/requestcore.class.php';
-								require_once( $requestcore_file );
-								
-								
-								$stash = new ITXAPI_Helper( $ITXAPI_KEY, $ITXAPI_URL, $itxapi_username, $itxapi_password );
-								
-								$files_url = $stash->get_files_url();
-								
-								$request = new RequestCore( $files_url );
-								$response = $request->send_request(true);
-								
-								// See if the request was successful.
-								if(!$response->isOK())
-									pb_backupbuddy::status( 'error', 'Stash request for files failed.' );
-								
-								// See if we got a json response.
-								if(!$stash_files = json_decode($response->body, true))
-									pb_backupbuddy::status( 'error', 'Stash did not get valid json response.' );
-								
-								// Finally see if the API returned an error.
-								if(isset($stash_files['error'])) {            
-									if ( $stash_files['error']['code'] == '3002' ) {
-										pb_backupbuddy::alert( 'Invalid iThemes.com Member account password. Please verify your password. <a href="http://ithemes.com/member/member.php" target="_new">Forget your password?</a>' );
-									} else {
-										pb_backupbuddy::alert( implode( ' - ', $stash_files['error'] ) );
-									}
-									
-									$credentials_form->display_settings( 'Submit' );
-								} else { // NO ERRORS
-									
-									/*
-									echo '<pre>';
-									print_r( $stash_files );
-									echo '</pre>';
-									*/
-									
-									$backup_list_temp = array();
-									foreach( $stash_files['files'] as $stash_file ) {
-										$file = $stash_file['filename'];
-										$url = $stash_file['link'];
-										$size = $stash_file['size'];
-										$modified = $stash_file['last_modified'];
-										
-										if ( substr( $file, 0, 3 ) == 'db/' ) {
-											$backup_type = 'Database';
-										} elseif ( substr( $file, 0, 5 ) == 'full/' ) {
-											$backup_type = 'Full';
-										} elseif( $file == 'importbuddy.php' ) {
-											$backup_type = 'ImportBuddy Tool';
-										} else {
-											if ( stristr( $file, '/db/' ) !== false ) {
-												$backup_type = 'Database';
-											} elseif( stristr( $file, '/full/' ) !== false ) {
-												$backup_type = 'Full';
-											} else {
-												$backup_type = 'Unknown';
-											}
-										}
-										
-										$backup_list_temp[ $modified ] = array(
-											$url,
-											$file,
-											pb_backupbuddy::$format->date( pb_backupbuddy::$format->localize_time( $modified ) ) . '<br /><span class="description">(' . pb_backupbuddy::$format->time_ago( $modified ) . ' ago)</span>',
-											pb_backupbuddy::$format->file_size( $size ),
-											$backup_type,
-										);
-									}
-									
-									krsort( $backup_list_temp );
-									
-									$backup_list = array();
-									foreach( $backup_list_temp  as $backup_item ) {
-										$backup_list[ $backup_item[0] ] = array(
-											$backup_item[1],
-											$backup_item[2],
-											$backup_item[3],
-											$backup_item[4],
-											'<form action="?step=1#pluginbuddy-tabs-server" method="POST">
-												<input type="hidden" name="pass_hash" value="' . PB_PASSWORD . '">
-												<input type="hidden" name="upload" value="stash">
-												<input type="hidden" name="options" value="' . htmlspecialchars( serialize( pb_backupbuddy::$options ) ) . '">
-												<input type="hidden" name="link" value="' . $backup_item[0] . '">
-												<input type="hidden" name="itxapi_username" value="' . $itxapi_username . '">
-												<input type="hidden" name="itxapi_password" value="' . $itxapi_password . '">
-												<input type="submit" name="submit" value="Import" class="button-primary">
-											</form>
-											'
-										);
-									}
-									unset( $backup_list_temp );
-									
-									
-									// Render table listing files.
-									if ( count( $backup_list ) == 0 ) {
-										echo '<b>';
-										_e( 'You have not sent any backups to Stash yet (or files are still transferring).', 'it-l10n-backupbuddy' );
-										echo '</b>';
-									} else {
-										echo 'Select a backup to import from Stash (beta feature):<br><br>';
-										pb_backupbuddy::$ui->list_table(
-											$backup_list,
-											array(
-												//'action'		=>	pb_backupbuddy::page_url() . '&custom=remoteclient&destination_id=' . htmlentities( pb_backupbuddy::_GET( 'destination_id' ) ) . '&remote_path=' . htmlentities( pb_backupbuddy::_GET( 'remote_path' ) ),
-												'columns'		=>	array( 'Backup File', 'Uploaded <img src="' . pb_backupbuddy::plugin_url() . '/images/sort_down.png" style="vertical-align: 0px;" title="Sorted most recent first">', 'File Size', 'Type', '&nbsp;' ),
-												'css'			=>		'width: 100%;',
-											)
-										);
-									}
-									
-									
-									
-									if ( $stash_files === false ) {
-										$credentials_form->display_settings( 'Submit' );
-									}
-								} // end no errors getting file info from API.
-								
-							}
-							
-						} // end form submitted.
-					?>
-					
-					<br><br>
-					<i>You can manage your Stash backups at <a href="http://ithemes.com/member/stash.php">http://ithemes.com/member/stash.php</a></i>
+					<?php require_once( '_html_1_stash.php' ); ?>
 					
 				</div>
 			</div>
@@ -383,12 +222,59 @@ if ( true !== Auth::is_authenticated() ) { // Need authentication.
 								}
 								
 								if ( $backup_archive['comment']['siteurl'] != '' ) {
-									echo '<br>Site: ' . $backup_archive['comment']['siteurl'] . '<br>';
+									echo '<br>Site: ' . $backup_archive['comment']['siteurl'];
+								}
+								
+								if ( $backup_archive['comment']['profile'] != '' ) {
+									echo '<br>Profile: ' . htmlentities( $backup_archive['comment']['profile'] );
 								}
 								
 								if ( $backup_archive['comment']['note'] != '' ) {
 									echo '<br>Note: ' . htmlentities( $backup_archive['comment']['note'] ) . '<br>';
 								}
+								
+								
+								
+								// Show meta button if meta info available.
+								if ( $backup_archive['comment']['type'] != '' ) {
+									$file_hash = md5( $backup_archive['file'] );
+									echo '<a href="#info_' . $file_hash . '" class="button button-tertiary leanModal" style="float: left; font-size: 10px; margin-right: 5px; padding: 4px; float: right;" id="view_meta_' . $i . '">View Meta</a>';
+									?>
+									<div id="<?php echo 'info_' . $file_hash; ?>" style="display: none; height: 90%;">
+										<div class="modal">
+											<div class="modal_header">
+												<a class="modal_close">&times;</a>
+												<h2>Backup Meta Information</h2>
+											</div>
+											<div class="modal_content">
+												<?php
+												$comment_meta = array();
+												foreach( $backup_archive['comment'] as $comment_line_name => $comment_line_value ) { // Loop through all meta fields in the comment array to display.
+													
+													if ( false !== ( $response = pb_backupbuddy::$classes['core']->pretty_meta_info( $comment_line_name, $comment_line_value ) ) ) {
+														$comment_meta[] = $response;
+													}
+													
+												}
+												if ( count( $comment_meta ) > 0 ) {
+													pb_backupbuddy::$ui->list_table(
+														$comment_meta,
+														array(
+															'columns'		=>	array( 'Meta Information', 'Value' ),
+															'css'			=>	'width: 100%; min-width: 200px;',
+														)
+													);
+												} else {
+													echo '<i>No meta data found in zip comment. Skipping meta information display.</i>';
+												}
+												?>
+											</div>
+										</div>
+									</div>
+									<?php
+								} // end if type not blank.
+								
+								
 								
 								//echo implode( ' - ', $meta );
 								echo '</div>';
@@ -415,9 +301,9 @@ if ( true !== Auth::is_authenticated() ) { // Need authentication.
 	if ( !empty( $backup_archives ) ) {
 		echo '</div><!-- /wrap -->';
 		echo '<div class="main_box_foot">';
-		echo '<a href="#pb_serverinfo_modal" class="button button-tertiary leanModal" style="float: left; font-size: 13px; margin-right: 5px;">Server Information</a>';
-		echo '<a href="#pb_advanced_modal" class="button button-tertiary leanModal" style="float: left; font-size: 13px;">Advanced Options</a>';
-		echo '<input type="submit" name="submit" value="Next Step &rarr;" class="button">';
+		echo '<a id="server_info_button" href="#pb_serverinfo_modal" class="button button-tertiary leanModal" style="float: left; font-size: 13px; margin-right: 5px;">Server Information</a>';
+		echo '<a id="advanced_options_button" href="#pb_advanced_modal" class="button button-tertiary leanModal" style="float: left; font-size: 13px;">Advanced Options</a>';
+		echo '<input type="submit" name="submit" value="Next Step &rarr;" class="button" id="next_step_button">';
 		echo '</div>';
 	} else {
 		//pb_backupbuddy::alert( 'Upload a backup file to continue.' );
@@ -430,7 +316,7 @@ if ( true !== Auth::is_authenticated() ) { // Need authentication.
 	<div id="pb_advanced_modal" style="display: none;">
 		<div class="modal">
 			<div class="modal_header">
-				<a class="modal_close">X</a>
+				<a class="modal_close">&times;</a>
 				<h2>Advanced Options</h2>
 				These advanced options allow customization of various ImportBuddy functionality for custom purposes or troubleshooting.
 				<b>Exercise caution</b> as some advanced options may have unforeseen effects if not used properly, such as overwriting existing files
@@ -472,7 +358,7 @@ if ( true !== Auth::is_authenticated() ) { // Need authentication.
 	<div id="pb_serverinfo_modal" style="display: none; height: 90%;">
 		<div class="modal">
 			<div class="modal_header">
-				<a class="modal_close">X</a>
+				<a class="modal_close">&times;</a>
 				<h2>Server Information</h2>
 			</div>
 			<div class="modal_content">
