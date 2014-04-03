@@ -74,19 +74,6 @@ function wpv_add_filter_submit(div_id) {
 		  jQuery('.wpv_author_url_param_ilegal').show();
 		  return;
 		}
-		if (jQuery.inArray(t, wpv_forbidden_parameters.wordpress) > -1) {
-			jQuery('.wpv_author_helper').html('');
-			jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
-			return;
-		} else if (jQuery.inArray(t, wpv_forbidden_parameters.post_type) > -1) {
-			jQuery('.wpv_author_helper').html('');
-			jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
-			return;
-		} else if (jQuery.inArray(t, wpv_forbidden_parameters.taxonomy) > -1) {
-			jQuery('.wpv_author_helper').html('');
-			jQuery('.wpv_author_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
-			return;
-		}
 	}
     }
     
@@ -106,7 +93,7 @@ function wpv_add_filter_submit(div_id) {
 		}
 	}
     }
-	
+    
 	if (jQuery('input[name=id_mode\\[\\]]:checked').val() == 'by_url') {
 		if (jQuery('input[name=post_ids_url]').val() == '') {
 			jQuery('.wpv_id_url_param_missing').show();
@@ -117,22 +104,9 @@ function wpv_add_filter_submit(div_id) {
 			var t = jQuery('input[name=post_ids_url]').val();
 			if(pat.test(t) == false)
 			{
-				jQuery('.wpv_id_helper').html('');
-				jQuery('.wpv_id_url_param_ilegal').show();
-				return;
-			}
-			if (jQuery.inArray(t, wpv_forbidden_parameters.wordpress) > -1) {
-				jQuery('.wpv_id_helper').html('');
-				jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
-				return;
-			} else if (jQuery.inArray(t, wpv_forbidden_parameters.post_type) > -1) {
-				jQuery('.wpv_id_helper').html('');
-				jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
-				return;
-			} else if (jQuery.inArray(t, wpv_forbidden_parameters.taxonomy) > -1) {
-				jQuery('.wpv_id_helper').html('');
-				jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
-				return;
+			  jQuery('.wpv_id_helper').html('');
+			  jQuery('.wpv_id_url_param_ilegal').show();
+			  return;
 			}
 		}
     }
@@ -153,7 +127,7 @@ function wpv_add_filter_submit(div_id) {
 			}
 		}
     }
-    
+	
     if (type.substr(0, 13) == 'custom-field-') {
         if (wpv_add_edit_custom_field(div_id, type, 'add')) {
 			jQuery('option[value="'+type+'"]').hide();
@@ -341,9 +315,6 @@ function on_delete_wpv_filter(index) {
     }
     if(jQuery('#wpv_filter_row_' + index + ' input[name="_wpv_settings\\[author_mode\\]\\[\\]"]').length) {
 	    jQuery('option[value="post_author"]').show();
-    }
-	if(jQuery('#wpv_filter_row_' + index + ' input[name="_wpv_settings\\[id_mode\\]\\[\\]"]').length) {
-	    jQuery('option[value="post_id"]').show();
     }
     
     jQuery('#wpv_filter_row_' + index).remove();

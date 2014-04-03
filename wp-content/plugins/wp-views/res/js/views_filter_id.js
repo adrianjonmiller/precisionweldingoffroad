@@ -1,10 +1,10 @@
 jQuery(document).ready(function($){
     wpv_register_add_filter_callback('wpv_post_id_add_filter');
-    jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal,.wpv_id_helper').hide();
-    
+    jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal,.wpv_id_helper').hide();
+
 	jQuery('input[name=id_mode\\[\\]]').change(function() {
-		jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
-		wpv_add_id_help();
+      jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
+	  wpv_add_id_help();
     });
     jQuery('input[name=post_ids_url]').change(wpv_add_id_help);
     jQuery('input[name=post_ids_shortcode]').change(wpv_add_id_help);
@@ -13,8 +13,8 @@ jQuery(document).ready(function($){
 });
 
 function wpv_add_id_help() {
-	jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
-    if (jQuery('input[name=id_mode\\[\\]]:checked').val() == 'by_url') {
+  jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
+  if (jQuery('input[name=id_mode\\[\\]]:checked').val() == 'by_url') {
     var url_value = jQuery('input[name=post_ids_url]').val();
     if (url_value == '') {
       jQuery('.wpv_id_url_param_missing').show();
@@ -24,15 +24,6 @@ function wpv_add_id_help() {
       if (pat.test(url_value) == false) {
 	  jQuery('.wpv_id_helper').html('');
 	  jQuery('.wpv_id_url_param_ilegal').show();
-      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.wordpress) > -1) {
-	      jQuery('.wpv_id_helper').html('');
-	      jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
-      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.post_type) > -1) {
-	      jQuery('.wpv_id_helper').html('');
-	      jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
-      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.taxonomy) > -1) {
-	      jQuery('.wpv_id_helper').html('');
-	      jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
       } else {
 		var id_help = '<small>To control the IDs, link to the page that includes this View with the argument set as '+
 		'<strong class="author_url_param">\''+ url_value + '\'</strong>. <br>For example:';
@@ -115,7 +106,7 @@ function wpv_show_filter_id_edit() {
     previous_post_id_ids_list = jQuery('input[name=_wpv_settings\\[post_id_ids_list\\]]').val();
     previous_post_ids_shortcode = jQuery('input[name=_wpv_settings\\[post_ids_shortcode\\]]').val();
     previous_post_ids_url = jQuery('input[name=_wpv_settings\\[post_ids_url\\]]').val();
-    jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing').hide();
+    jQuery('.wpv_id_url_param_missing,.wpv_id_shortcode_param_missing').hide();
     
     jQuery('#wpv-filter-id-edit').parent().parent().css('background-color', jQuery('#wpv-filter-id-edit').css('background-color'));
 
@@ -123,8 +114,8 @@ function wpv_show_filter_id_edit() {
     jQuery('#wpv-filter-id-show').hide();
     
     jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]').change(function() {
-	    jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
-	    wpv_edit_id_help();
+      jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
+      wpv_edit_id_help();
     });
     jQuery('input[name=_wpv_settings\\[post_ids_url\\]]').change(wpv_edit_id_help);
     jQuery('input[name=_wpv_settings\\[post_ids_shortcode\\]]').change(wpv_edit_id_help);
@@ -153,24 +144,17 @@ function wpv_show_filter_id_edit_ok() {
     var paturl = /^[a-z0-9\-\_]+$/;
     var turl = jQuery('input[name=_wpv_settings\\[post_ids_url\\]]').val();
     
-    if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url' 
+    if (jQuery('input[name=_wpv_settings\\[id\\]\\[\\]]:checked').val() == 'by_url' 
 		&& jQuery('input[name=_wpv_settings\\[post_ids_url\\]]').val() == '') {
       jQuery('.wpv_id_url_param_missing').show();
-    jQuery('.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
-	} else if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url' 
+      jQuery('.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
+    } 
+	else if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url' 
 		&& paturl.test(turl) == false) {
-		jQuery('.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal,.wpv_id_url_param_missing').hide();
-	jQuery('.wpv_id_url_param_ilegal').show();
-		} else if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url' && jQuery.inArray(turl, wpv_forbidden_parameters.wordpress) > -1) {
-		jQuery('.wpv_id_helper').html('');
-		jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
-		} else if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url' && jQuery.inArray(turl, wpv_forbidden_parameters.post_type) > -1) {
-			jQuery('.wpv_id_helper').html('');
-			jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
-		} else if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url' && jQuery.inArray(turl, wpv_forbidden_parameters.taxonomy) > -1) {
-			jQuery('.wpv_id_helper').html('');
-			jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
-	} else if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'shortcode' 
+      jQuery('.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal,.wpv_id_url_param_missing').hide();
+      jQuery('.wpv_id_url_param_ilegal').show();
+    } 
+	else if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'shortcode' 
 		&& jQuery('input[name=_wpv_settings\\[post_ids_shortcode\\]]').val() == '') {
       jQuery('.wpv_id_shortcode_param_missing').show();
       jQuery('.wpv_id_url_param_missing,.wpv_id_shortcode_param_ilegal').hide();
@@ -194,8 +178,8 @@ function wpv_show_filter_id_edit_ok() {
 
 function wpv_edit_id_help() {
 	
-	jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_url_param_forbidden,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
-    if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url') {
+  jQuery('.wpv_id_url_param_missing,.wpv_id_url_param_ilegal,.wpv_id_shortcode_param_missing,.wpv_id_shortcode_param_ilegal').hide();
+  if (jQuery('input[name=_wpv_settings\\[id_mode\\]\\[\\]]:checked').val() == 'by_url') {
     var url_value = jQuery('input[name=_wpv_settings\\[post_ids_url\\]]').val();
     if (url_value == '') {
       jQuery('.wpv_id_url_param_missing').show();
@@ -205,15 +189,6 @@ function wpv_edit_id_help() {
       if (pat.test(url_value) == false) {
 	jQuery('.wpv_id_helper').html('');
 	jQuery('.wpv_id_url_param_ilegal').show();
-      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.wordpress) > -1) {
-	      jQuery('.wpv_id_helper').html('');
-	      jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.wordpress).show();
-      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.post_type) > -1) {
-	      jQuery('.wpv_id_helper').html('');
-	      jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.post_type).show();
-      } else if (jQuery.inArray(url_value, wpv_forbidden_parameters.taxonomy) > -1) {
-	      jQuery('.wpv_id_helper').html('');
-	      jQuery('.wpv_id_url_param_forbidden').html(wpv_forbidden_parameters_error.taxonomy).show();
       } else {
 		var id_help = '<small>To control the IDs, link to the page that includes this View with the argument set as '+
 			'<strong class="author_url_param">\''+ url_value + '\'</strong>. <br>For example:';

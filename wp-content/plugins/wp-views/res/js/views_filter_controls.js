@@ -116,7 +116,7 @@ function wpv_filter_controls_code() {
 		}
 	}
 	
-	controls = '[wpv-filter-controls]' + controls + '[/wpv-filter-controls]\n';
+	controls = controls;
     
     return controls;
 }

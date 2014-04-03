@@ -792,7 +792,7 @@ if ( !class_exists( "pluginbuddy_zbzipcore" ) ) {
 					// TODO: Supposedly change the perms on the item so we can delete it?
 					@chmod( $directory . "/" . $item, 0777 );
 					
-					if ( !$this->delete_directory__recursive( $directory . "/" . $item ) ) {
+					if ( !$this->delete_directory_recursive( $directory . "/" . $item ) ) {
 					
 						return false;
 						
@@ -820,7 +820,7 @@ if ( !class_exists( "pluginbuddy_zbzipcore" ) ) {
 			$sanitized_exclusions = array();
 			
 			pb_backupbuddy::status( 'details', 'Creating backup exclusions file `' . $file . '`.' );
-			//$exclusions = pb_backupbuddy::$classes['core']->get_directory_exclusions();
+			//$exclusions = backupbuddy_core::get_directory_exclusions();
 			
 			// Test each exclusion for validity (presence) and drop those not actually present
 			foreach( $exclusions as $exclusion ) {

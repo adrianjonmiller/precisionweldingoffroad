@@ -3,8 +3,8 @@ if ( ! defined( 'PB_IMPORTBUDDY' ) || ( true !== PB_IMPORTBUDDY ) ) {
 	die( '<html></html>' );
 }
 
-Auth::require_authentication(); // Die if not logged in.
 
+Auth::require_authentication(); // Die if not logged in.
 
 
 // Tests variables to populate with results.
@@ -81,6 +81,10 @@ function test_warn() {
 
 function fatal_test_die() {
 	echo '<div style="padding: 10px;"><b>Fatal errors encountered during testing. Please resolve them to continue tests.</b></div>';
+	if ( pb_backupbuddy::_POST( 'skip_database_import' ) == '1' ) {
+		echo '<br><span class="pb_label pb_label-info">Important</span> Database import set to be skipped based on advanced options. Any failures ignored.<br><br>';
+		echo '<!-- Success. -->';
+	}
 	die();
 }
 ?>
@@ -185,13 +189,19 @@ $fatal_error = false;
 		if ( false === $tests['wordpress_exists'] ) { // No existing WordPress in database with this prefix.
 			test_pass();
 		} else { // WordPress exists in database with same prefix.
-			if ( ( $_POST['wipe_database'] == '1' ) || ( $_POST['wipe_database_all'] == '1' ) ) { // Wiping enabled so only warn, not error.
+			if ( $_POST['wipe_database'] == '1' ) {
 				test_warn();
-			} else { // No wiping so this fails due to collision..
+			} elseif ( $_POST['wipe_database_all'] == '1' ) {
+				test_warn();
+			} elseif ( pb_backupbuddy::_POST( 'skip_database_import' ) == '1' ) {
+				test_warn();
+			} elseif ( pb_backupbuddy::_POST( 'ignore_sql_errors' ) == '1' ) {
+				test_warn();
+			} else { // No wiping and NOT skipping import so this fails due to collision..
 				test_fail();
 				$fatal_error = true;
 			}
-			$warn_message .= 'A WordPress installation appears to already exist with the same prefix. ';
+			$warn_message .= 'A WordPress installation appears to already exist with the same prefix.<br>Select the <b>Advanced Options</b> button below to delete existing database content.';
 		}
 		// Notify about any wiping going on.
 		if ( $_POST['wipe_database'] == '1' ) { // Option to wipe JUST MATCHING THIS PREFIX enabled.
@@ -214,21 +224,41 @@ $fatal_error = false;
 	<div class="test_status">
 		<?php
 		$prefix_pass = false;
-		if ( preg_match('/^[a-z0-9]+_$/i', $_POST['prefix'] ) ) {
-			test_pass();
-			$prefix_pass = true;
-		} else {
+		$prefix_warning = false;
+		
+		if ( preg_match('|[^a-z0-9_]|i', $_POST['prefix'] ) ) { // WordPress' regex match which is quite loose.
 			test_fail();
+		} else {
+			if ( preg_match('/^[a-z0-9]+_$/i', $_POST['prefix'] ) ) { // Suggested format XX_
+				test_pass();
+				$prefix_pass = true;
+			} else {
+				test_warn();
+				$prefix_pass = true;
+				$prefix_warning = true;
+			}
 		}
 		?>
 	</div>
 	<div class="test_title">5. Verifying specified prefix is in valid format</div>
-	<?php if ( false === $prefix_pass ) {
-		echo '<div class="test_error description">Error: Prefix contains characters that are not allowed. Prefixes should be in the format of letters or numbers and must end with an underscore. Ex: wp_, wp5_, mywordpress_, etc.</div>';
+	<?php
+	if ( false === $prefix_pass ) {
+		echo '<div class="test_error description">Error: Prefix contains characters that are not allowed. Prefixes should be in the format of letters or numbers and underscore. Ex: wp_, wp5_, mysite_, etc.</div>';
 		$fatal_error = true;
-	} ?>
+	}
+	if ( true === $prefix_warning ) {
+		echo '<div class="test_error description">Warning: A prefix in the format of alphanumeric characters followed by an underscore is <b>highly recommended</b> to conform to WordPress & BackupBuddy conventions & expectations. Ex: wp_, wp5_, mysite_, etc.</div>';
+	}
+	?>
 </div>
 
+
+<?php
+if ( ( pb_backupbuddy::_POST( 'skip_database_import' ) == '1' ) && ( pb_backupbuddy::_POST( 'skip_database_migration' ) == '1' ) ) {
+	$fatal_error = false;
+	echo '<br><span class="pb_label pb_label-info">Important</span> Database import & migration set to be skipped based on advanced options. Any failures ignored.<br><br>';
+}
+?>
 
 
 <div class="test" style="border-bottom: 0;">
@@ -247,10 +277,3 @@ $fatal_error = false;
 		echo '<div class="test_title"><b>Overall result success. Proceed to next step.</b></div>';
 	} ?>
 </div>
-
-
-<?php
-// Ouput message for AJAX to detect and allow passage to next step.
-if ( false === $fatal_error ) {
-	echo '<!-- Success. -->';
-}

@@ -61,5 +61,3 @@
 <div id="main" role="main">
 	<div class="container">
 		<div class="grid">
-
-	

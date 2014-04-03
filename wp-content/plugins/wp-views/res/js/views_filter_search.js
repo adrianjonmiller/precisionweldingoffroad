@@ -56,7 +56,7 @@ function wpv_show_filter_search_edit_cancel(search_div_pre, search_value, search
     });
     previous_search_mode.attr('checked', true);
     jQuery('select[name="_wpv_settings\\[post_search_content\\]"]').val(previous_search_content);
-
+    
     
     jQuery('#' + search_div_pre + '-edit').parent().parent().css('background-color', '');
     jQuery('#' + search_div_pre + '-edit').hide();

@@ -142,3 +142,94 @@ a.wpv-header-asc:hover .wpv-sorting-indicator {
 	display: inline;
 	background-position: -7px 0;
 }
+
+.added_to_cart {
+    margin-left: 8%;
+}
+#phptemplateassignment_wc_views {
+    margin-bottom: 30px;
+}
+#woocommerce_batchprocessing_submit {
+    margin-top: 10px;
+}
+#woocommerce_views_submit {
+    margin-top: 3px;
+}
+#woocommerce_views_form .submit {
+	padding-bottom:10px;
+}
+#requestformanualbatchprocessing {
+	margin-bottom: 15px;
+}
+#wc_viewsresetbutton {
+	margin-top: 15px;
+}
+#ajax_result_batchprocessing {
+	width: 25%;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+#ajax_result_batchprocessing_time {
+	font-style:italic;
+}
+#wc_views_sys_cron_path {
+	width: 55%;
+	margin-left:10px;
+}
+#ajax_result_batchprocessing_logging {
+	margin-bottom:15px;
+}
+#update_settings_div_wc_views {
+	width: 25%;
+	padding-top:10px;
+	padding-bottom:10px;	
+}
+.woocommerce-error {
+	list-style: none outside none !important;
+    margin: 0 0 2em !important;
+    padding: 1em 1em 1em 3.5em !important;		
+}
+#add_to_cart_text_wc_views_shortcodegui,#add_to_cart_textproductpage_wc_views_shortcodegui,#linktoproduct_text_wc_views_shortcodegui {
+	width:65%;	
+}
+#addtocarttext_wcviews_gui,#imagesetting_wcviews_gui,#wc_viewsguiheader,#linktoproducttext_wcviews_gui,#descriptionheader_gui_wcviews {
+	font-weight:bold;
+}
+#defaulttext_wcviews_gui,#descriptiontext_gui_wcviews {
+	font-style:italic;
+}
+#addtocarttext_wcviews_gui {
+	margin-top:35px;
+	margin-bottom:6px;
+}
+#imagesetting_wcviews_gui {
+	margin-top:40px;
+	margin-bottom:6px;
+}
+#defaulttext_wcviews_gui {
+	margin-top:0px;
+	margin-bottom:25px;
+}
+#add_to_cart_text_wcviewsenclosure,#linktoproduct_text_wcviewsenclosure {
+	margin-bottom:0px;
+	margin-top:3px;
+}
+#linktoproducttext_wcviews_gui {
+	margin-top:60px;
+	margin-bottom:6px;
+}
+#wc_viewsshortcode_gui_description {
+	margin-top:5px;
+}
+#imagesizes_outputtext_wcviews {
+	font-style:italic;
+	margin-left:5px;
+}
+#update_needed_wcviews {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    width: 40%;
+}
+.wcviews_plugin_error ol {
+	list-style-type:circle;
+}

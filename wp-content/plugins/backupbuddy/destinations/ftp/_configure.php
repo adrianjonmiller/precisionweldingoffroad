@@ -1,12 +1,98 @@
 <?php
+if ( 'save' != $mode ) {
+?>
+<script>
+	jQuery(document).ready(function() {
+			// Test a remote destination.
+		jQuery( '.pb_backupbuddy_ftpdestination_pathpicker' ).click( function() {
+			
+			jQuery( '.pb_backupbuddy_ftpdestination_pathpickerboxtree' ).remove(); // Remove any current trees.
+			jQuery( '.pb_backupbuddy_ftppicker_load' ).show();
+			
+			var thisPickObj = jQuery(this);
+			var pathPickerBox = thisPickObj.closest( 'form' ).find( '.pb_backupbuddy_ftpdestination_pathpickerbox' );
+			var serializedFormData = thisPickObj.closest( 'form' ).serialize();
+			
+			// Get root FTP path.
+			jQuery.get( '<?php echo pb_backupbuddy::ajax_url( 'destination_ftp_pathpicker' ); ?>&' + serializedFormData,
+				function(data) {
+					data = jQuery.trim( data );
+					pathPickerBox.html( '<div class="jQueryOuterTree" style="width: 100%;">' + data + '</div>' );
+					pathPickerBox.slideDown();
+					
+					// File picker.
+					jQuery('.pb_backupbuddy_ftpdestination_pathpickerboxtree').fileTree(
+						{
+							root: '/',
+							multiFolder: false,
+							script: '<?php echo pb_backupbuddy::ajax_url( 'destination_ftp_pathpicker' ); ?>&' + serializedFormData
+						},
+						function(file) {
+							alert( file );
+						},
+						function(directory) {
+							
+							thisPickObj.closest( 'form' ).find( '#pb_backupbuddy_path' ).val( directory );
+							
+						}
+					);
+					
+					jQuery( '.pb_backupbuddy_ftppicker_load' ).hide();
+					
+				}
+			);
+			
+			//pathPickerBox.html( '<div id="exlude_dirs" class="pb_backupbuddy_ftpdestination_pathpickerboxtree"></div>' );
+			
+			
+			
+			/*
+			jQuery.post( '<?php echo pb_backupbuddy::ajax_url( 'destination_ftp_pathpicker' ); ?>', thisPickObj.parent( 'form' ).serialize(), 
+				function(data) {
+					//jQuery( '.pb_backupbuddy_destpicker_testload' ).hide();
+					data = jQuery.trim( data );
+					alert( data );
+					thisPickObj.find( '.pb_backupbuddy_ftpdestination_pathpickerbox' ).html( data );
+				}
+			);
+*/
+			
+			return false;
+		} );
+		
+		
+		
+		
+		jQuery(document).on('mouseover mouseout', '.pb_backupbuddy_ftpdestination_pathpickerboxtree > li a', function(event) {
+			if ( event.type == 'mouseover' ) {
+				jQuery(this).children( '.pb_backupbuddy_treeselect_control' ).css( 'visibility', 'visible' );
+			} else {
+				jQuery(this).children( '.pb_backupbuddy_treeselect_control' ).css( 'visibility', 'hidden' );
+			}
+		});
+		
+		
+		
+		
+	});
+	
+	
+	
+</script>
+<?php
+}
 
+$default_name = NULL;
+if ( 'add' == $mode ) {
+	$default_name = 'My FTP';
+}
 $settings_form->add_setting( array(
 	'type'		=>		'text',
 	'name'		=>		'title',
 	'title'		=>		__( 'Destination name', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( 'Name of the new destination to create. This is for your convenience only.', 'it-l10n-backupbuddy' ),
-	'rules'		=>		'required|string[0-45]',
-	'default'	=>		'My FTP',
+	'rules'		=>		'required|string[1-45]',
+	'default'	=>		$default_name,
 ) );
 
 $settings_form->add_setting( array(
@@ -14,7 +100,7 @@ $settings_form->add_setting( array(
 	'name'		=>		'address',
 	'title'		=>		__( 'Server address', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: ftp.foo.com] - FTP server address.  Do not include http:// or ftp:// or any other prefixes. You may specify an alternate port in the format of ftp_address:ip_address such as yourftp.com:21', 'it-l10n-backupbuddy' ),
-	'rules'		=>		'required|string[0-45]',
+	'rules'		=>		'required|string[0-500]',
 ) );
 
 $settings_form->add_setting( array(
@@ -22,7 +108,7 @@ $settings_form->add_setting( array(
 	'name'		=>		'username',
 	'title'		=>		__( 'Username', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: foo] - Username to use when connecting to the FTP server.', 'it-l10n-backupbuddy' ),
-	'rules'		=>		'required|string[0-100]',
+	'rules'		=>		'required|string[0-250]',
 ) );
 
 $settings_form->add_setting( array(
@@ -30,7 +116,7 @@ $settings_form->add_setting( array(
 	'name'		=>		'password',
 	'title'		=>		__( 'Password', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: 1234xyz] - Password to use when connecting to the FTP server.', 'it-l10n-backupbuddy' ),
-	'rules'		=>		'required|string[0-100]',
+	'rules'		=>		'required|string[0-250]',
 ) );
 
 $settings_form->add_setting( array(
@@ -39,6 +125,11 @@ $settings_form->add_setting( array(
 	'title'		=>		__( 'Remote path (optional)', 'it-l10n-backupbuddy' ),
 	'tip'		=>		__( '[Example: /public_html/backups] - Remote path to place uploaded files into on the destination FTP server. Make sure this path is correct; if it does not exist BackupBuddy will attempt to create it. No trailing slash is needed.', 'it-l10n-backupbuddy' ),
 	'rules'		=>		'string[0-500]',
+	'after'		=>		' <span class="pb_backupbuddy_ftpdestination_pathpicker">
+							<a href="#" class="button secondary-button" title="Browse FTP Folders">Browse & Select FTP Path</a>
+							<img class="pb_backupbuddy_ftppicker_load" style="vertical-align: -3px; margin-left: 5px; display: none;" src="' . pb_backupbuddy::plugin_url() . '/images/loading.gif" title="Loading... This may take a few seconds...">
+						</span>
+						<div class="pb_backupbuddy_ftpdestination_pathpickerbox" style="margin-top: 10px; display: none;">Loading...</div>',
 ) );
 
 
@@ -57,7 +148,7 @@ $settings_form->add_setting( array(
 	'tip'		=>		__( 'Enter the URL corresponding to the FTP destination path. This URL must lead to the location where files uploaded to this remote destination would end up. If the destination is in a subdirectory make sure to match it in the corresponding URL.', 'it-l10n-backupbuddy' ),
 	'css'		=>		'width: 100%;',
 	'default'	=>		$default_url,
-	'rules'		=>		'string[0-100]',
+	'rules'		=>		'string[0-500]',
 ) );
 
 

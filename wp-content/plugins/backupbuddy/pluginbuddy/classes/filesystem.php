@@ -257,12 +257,14 @@ class pb_backupbuddy_filesystem {
 					
 				} else { // FILE.
 					
-					$stats = stat( $dir . '/' . $file );
-					$ret += $stats['size'];
-					$ret_objects++;
-					if ( ( $exclusions !== true ) && !in_array( $dir_path, $exclusions ) ) { // Not excluding.
-						$ret_with_exclusions += $stats['size'];
-						$ret_objects_with_exclusions++;
+					$stats = @stat( $dir . '/' . $file );
+					if ( is_array( $stats ) ) {
+						$ret += $stats['size'];
+						$ret_objects++;
+						if ( ( $exclusions !== true ) && !in_array( $dir_path, $exclusions ) ) { // Not excluding.
+							$ret_with_exclusions += $stats['size'];
+							$ret_objects_with_exclusions++;
+						}
 					}
 					unset( $file );
 					
@@ -313,6 +315,25 @@ class pb_backupbuddy_filesystem {
 				break;
 		}
 	}
+	
+	// Newest to oldest.
+	function glob_by_date( $pattern ) {
+		$file_array = array();
+		$glob_result = glob( $pattern );
+		if ( ! is_array( $glob_result ) ) {
+			$glob_result = array();
+		}
+		foreach ( $glob_result as $filename ) {
+			$ctime = filectime( $filename );
+			while( isset( $file_array[$ctime] ) ) { // Avoid collisions.
+				$ctime = $ctime + 0.1;
+			}
+			$file_array[$ctime] = $filename; // or just $filename
+		}
+		krsort( $file_array );
+		return $file_array;
+		
+	} // End glob_by_date().
 	
 	
 } // End class pluginbuddy_settings.

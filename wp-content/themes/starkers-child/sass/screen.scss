@@ -555,7 +555,7 @@ ul.products {
 		padding-right: $pad;
 		float: left;
 		padding-bottom: $pad;
-		height: 300px;
+		height: 400px;
 		
 		.module {
 			padding: $pad;
@@ -1165,4 +1165,11 @@ input[name*='quantity'] {
 			margin-right: .5em;
 		}
 	}
+}
+
+
+.woocommerce a.button {
+	bottom: $pad;
+	left: $pad;
+	position: absolute;
 }
